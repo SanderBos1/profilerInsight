@@ -1,0 +1,81 @@
+{%extends "base.html"%}
+{%block content%}
+
+<div class="row">
+   <div class="offset-10">
+     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+        Add connection.
+     </button>                
+  </div>
+</div>
+<div class="row">
+   <div class="col-12">
+     <div class="modal fade" id="addConnectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+           <form id="addConnectionForm">
+
+              <div class="modal-content">
+                 <div class="modal-header">
+                    <h5 class="Modal Title" id="exampleModalLabel">Add connection</h5>
+                 </div>
+                 <div class="modal-body">
+                    <div class="form-group">
+                      <label for="connectionHost">Host Adress</label>
+                      <input type="text" class="form-control" placeholder="Enter text" id="connectionHost" name="connectionHost">
+                    </div>
+                    <div class="form-group">
+                       <label for="connectionPort">Port Number</label>
+                       <input type="text" class="form-control" placeholder="Enter text" id="connectionPort" name="connectionPort">
+                    </div>
+                    <div class="form-group">
+                       <label for="connectionDBName">database Name</label>
+                       <input type="text" class="form-control" placeholder="Enter text" id="connectionDBName" name="connectionDBName">
+                     </div>
+                     <div class="form-group">
+                       <label for="connectionUser">database User</label>
+                       <input type="text" class="form-control" placeholder="Enter text" id="connectionUser" name="connectionUser">
+                     </div>
+                     <div class="form-group">
+                       <label for="exampleInputPassword1">Password</label>
+                       <input type="password" class="form-control" id="connectionPassword" placeholder="Password" name="connectionPassword">
+                     </div>
+                     <div class="form-group">
+                       <label for="connectionType">Database Type</label>
+                       <select class="form-control" id="connectionType" name="connectionType">
+                          <option>Select option</option>
+                          <option>postgres</option>
+                        </select>
+                     </div>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                 <button type="submit" class="btn btn-primary">Submit</button>
+              </div>
+           </div>
+        </form>
+
+        </div>
+     </div>
+       <table class="table" id="connectionTable">
+           <thead class="thead-dark">
+               <tr>
+                 <th scope="col">Host</th>
+                 <th scope="col">Port</th>
+                 <th scope="col">DataBase</th>
+                 <th scope="col">Username</th>
+                 <th scope="col">Password</th>
+                 <th scope="col">Database Type</th>
+               </tr>
+             </thead>
+           <tbody>
+          </tbody>
+       </table>
+   </div>
+</div>
+
+
+{%endblock%}
+{%block contentScripts%}
+<script src="{{url_for('static', filename='scripts/connectionPage.js')}}"></script>
+
+{%endblock%}
