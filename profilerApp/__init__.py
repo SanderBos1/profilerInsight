@@ -1,9 +1,13 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
+from cryptography.fernet import Fernet
 
 db = SQLAlchemy()
 
+#define the encrpyion keys:
+key = os.getenv('ENCRYPTION_KEY')
+cipher_suite = Fernet(key)
 
 def create_app():
 
