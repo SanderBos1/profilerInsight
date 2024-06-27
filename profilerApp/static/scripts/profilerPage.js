@@ -11,7 +11,6 @@ function getOverview(button){
         contentType: 'application/json',
         data: tableNameJson,
         success: function(response){
-            console.log(response)
             displayRowCount = document.getElementById('rowCount')
             displayRowCount.innerHTML = response['rowCount']
         },
