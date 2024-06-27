@@ -1,14 +1,14 @@
 from marshmallow import Schema, fields
 
 class tableSchema(Schema):
+    uniqueTableName = fields.Str(required=True)
     connectionId = fields.Str(required=True)
     schema = fields.Str(required=True)
     table = fields.Str(required=True)
 
 
 class deleteTableSchema(Schema):
-    schema = fields.Str(required=True)
-    table = fields.Str(required=True)
+    uniqueTableName = fields.Str(required=True)
 
 
 

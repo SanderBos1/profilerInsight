@@ -44,13 +44,13 @@ def addConnection():
     except ValidationError as e:
         return jsonify(e.messages), 400
     try:
-        connectionID = data['connectionId']
-        Host = data['host']
-        Port = data['port']
-        UserName = data['username']
-        Password = data['password']
-        Database = data['database']
-        new_connection = dbConncetions(connectionID=connectionID, Host=Host, Port=Port, UserName=UserName, Password=Password, DataBase=Database)
+        connectionId = data['connectionId']
+        host = data['host']
+        port = data['port']
+        username = data['username']
+        password = data['password']
+        database = data['database']
+        new_connection = dbConncetions(connectionId=connectionId, host=host, port=port, username=username, password=password, database=database)
         try:
             db.session.add(new_connection)
             db.session.commit()
@@ -80,8 +80,8 @@ def deleteConnection():
     except ValidationError as e:
         return jsonify(e.messages), 400
     try:
-        connectionID = data['connectionId']
-        connection = dbConncetions.query.filter_by(connectionID=connectionID).first()
+        connectionId = data['connectionId']
+        connection = dbConncetions.query.filter_by(connectionId=connectionId).first()
         db.session.delete(connection)
         db.session.commit()
         return "Connection deleted successfully!", 200

@@ -41,10 +41,11 @@ def addTable():
     except ValidationError as e:
         return jsonify(e.messages), 400
     try:
+        uniqueTableName = data['uniqueTableName']
         connectionId = data['connectionId']
         schema = data['schema']
         table = data['table']
-        new_connection = userTable(connectionId=connectionId, schema=schema, table=table)
+        new_connection = userTable(uniqueTableName=uniqueTableName, connectionId=connectionId, schema=schema, table=table)
         try:
             db.session.add(new_connection)
             db.session.commit()
@@ -69,17 +70,14 @@ def addTable():
 """
 @usertableBP.route('/deleteTable', methods=['POST'])
 def deleteTable():
-    print(request.get_json())
-
     try:
         connection_schema = deleteTableSchema()
         data = connection_schema.load(request.get_json())
     except ValidationError as e:
         return jsonify(e.messages), 400
     try:
-        schema = data['schema']
-        table = data['table']
-        connection = userTable.query.filter_by(schema=schema, table=table).first()
+        uniqueTableName = data['uniqueTableName']
+        connection = userTable.query.filter_by(uniqueTableName=uniqueTableName).first()
         db.session.delete(connection)
         db.session.commit()
         return "Connection deleted successfully!", 200

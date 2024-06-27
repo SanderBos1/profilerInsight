@@ -19,6 +19,10 @@
                   <div class="modal-body">
                      <form id="addTableForm">
                         <div class="form-group">
+                           {{ form.uniqueTableName.label(class="form-label") }}
+                           {{ form.uniqueTableName(class="form-control") }}
+                           </div>
+                        <div class="form-group">
                         {{ form.connectionId.label(class="form-label") }}
                         {{ form.connectionId(class="form-control") }}
                         </div>
@@ -44,9 +48,10 @@
        <table class="table" id="connectionTable">
            <thead class="thead-dark">
                <tr>
+                  <th scope="col">uniqueTableName</th>
                   <th scope="col">connectionId</th>
-                 <th scope="col">schema</th>
-                 <th scope="col">table</th>
+                  <th scope="col">schema</th>
+                  <th scope="col">table</th>
                </tr>
              </thead>
            <tbody>
