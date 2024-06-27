@@ -1,6 +1,9 @@
 from flask import Blueprint, render_template
 from ..userConnections import connectionForm
 from ..userTables import tableForm
+from ..userConnections import dbConncetions
+from ..userTables import userTable
+
 
 htmlPagesBP = Blueprint(
     "htmlPagesBP",
@@ -14,8 +17,9 @@ def home():
 
 @htmlPagesBP.route('/profiler', methods=['GET'])
 def profiler():
-
-    return render_template('profilerPage.html')
+    tableList = userTable.query.with_entities(userTable.uniqueTableName).all()
+    tableList = [str(connection_id[0]) for connection_id in tableList]
+    return render_template('profilerPage.html', tables=tableList)
 
 @htmlPagesBP.route('/connections', methods=['GET'])
 def connections():
@@ -25,6 +29,9 @@ def connections():
 @htmlPagesBP.route('/tables', methods=['GET'])
 def tables():
     form = tableForm()
+    connectionList = dbConncetions.query.with_entities(dbConncetions.connectionId).all()
+    connectionList = [str(connection_id[0]) for connection_id in connectionList]
+    form.connectionId.choices = connectionList
     return render_template('tables.html', form=form)
 
 

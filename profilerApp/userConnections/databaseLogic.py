@@ -1,7 +1,7 @@
 import psycopg2
 class DatabaseConnection:
 
-    def __init__(self, host, port, dbname, user, password ):
+    def __init__(self, host, port, user, password, dbname ):
         self.dbname = dbname
         self.user = user
         self.password = password
@@ -38,12 +38,10 @@ class DatabaseConnection:
         try:
             cursor.execute(query)
             dataset = cursor.fetchall()
+            return dataset
         except:
             exception = "There is an error in the query"
-            print(exception)
-
-        self.closeConnection()
-        return dataset
+        return "something went wrong"
     
 
 

@@ -1,6 +1,21 @@
 {%extends "base.html"%}
 {%block content%}
+<div class="row">
+   <div class="col-2">
+    <h2> Tables</h2>
+    <div class="btn-group-vertical">
+        {% for table in tables %}
+        <button class="btn btn-secondary" value={{table}} OnClick="getOverview(this)" > {{table}} </button> 
+        {% endfor %}
+    </div>
+    <div class="col-9">
+        <h3> Overview</h3>
+        <p>
+            RowCount = <var id="rowCount"></var></h3>
+        </p>
 
+    </div>
+   </div>
 {%endblock%}
 {%block contentScripts%}
 <script src="{{url_for('static', filename='scripts/profilerPage.js')}}"></script>

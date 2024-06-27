@@ -25,10 +25,12 @@ def create_app():
     from .userConnections import databaseBP
     from .pages import htmlPagesBP
     from .userTables import usertableBP
+    from .profiler import profilerBP
 
     app.register_blueprint(databaseBP)
     app.register_blueprint(htmlPagesBP)
     app.register_blueprint(usertableBP)
+    app.register_blueprint(profilerBP)
 
     with app.app_context():
         # uncomment drop_all if you want to replace the database (when you have changed something)

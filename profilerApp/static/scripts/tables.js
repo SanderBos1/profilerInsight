@@ -12,12 +12,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 // Clear existing data
                 tableBody.innerHTML = '';
                 // Populate the table with new data
-                data.forEach(connection => {
+                data.forEach(table => {
+                    console.log(table)
+
                     const row = `
                         <tr>
-                            <td>${connection['connectionId']}</td>
-                            <td>${connection['schema']}</td>
-                            <td>${connection['table']}</td>
+                            <td>${data['uniqueTableName']}</td>
+                            <td>${table['connectionId']}</td>
+                            <td>${table['schema']}</td>
+                            <td>${table['table']}</td>
                             <td><button class="btn" type="button" name="remove"  onclick="deleteRow(this)">Remove</button></td>
                         </tr>
                     `;
@@ -45,6 +48,7 @@ $(document).ready(function() {
                 const tableBody = document.querySelector('#connectionTable tbody');
                 const row = `
                         <tr>
+                            <td>${data['uniqueTableName']}</td>
                             <td>${data['connectionId']}</td>
                             <td>${data['schema']}</td>
                             <td>${data['table']}</td>
@@ -71,11 +75,9 @@ function deleteRow(button){
     var tableRow=button.parentNode.parentNode;
     var rowIndex = tableRow.rowIndex
     cells = tableRow.getElementsByTagName('td');
-    schema = cells[1].innerHTML
-    table = cells[2].innerHTML
+    uniqueTableName = cells[0].innerHTML
     dataOBJ = {
-                "schema": schema,
-                "table": table
+                "uniqueTableName": uniqueTableName,
             }   
     dataOBJJson = JSON.stringify(dataOBJ)
     $.ajax({

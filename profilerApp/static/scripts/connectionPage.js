@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 data.forEach(connection => {
                     const row = `
                         <tr>
-                            <td>${connection['connectionID']}</td>
+                            <td>${connection['connectionId']}</td>
                             <td>${connection['host']}</td>
                             <td>${connection['port']}</td>
                             <td>${connection['username']}</td>
@@ -83,7 +83,7 @@ function deleteRow(button){
     dataOBJ = {"connectionId": connectionId}
     connectionIdJson = JSON.stringify(dataOBJ)
     $.ajax({
-        url: '/deleteTable',  // Replace with your server endpoint
+        url: '/deleteConnection',  // Replace with your server endpoint
         type: 'POST',
         contentType: 'application/json',
 
