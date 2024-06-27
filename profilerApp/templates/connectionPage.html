@@ -1,0 +1,78 @@
+{%extends "base.html"%}
+{%block content%}
+
+<div class="row">
+   <div class="offset-10">
+     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+        Add connection.
+     </button>                
+  </div>
+</div>
+<div class="row">
+   <div class="col-12">
+     <div class="modal fade" id="addConnectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="Modal Title" id="exampleModalLabel">Add connection</h5>
+                  </div>
+                  <div class="modal-body">
+                     <form id="addConnectionForm">
+                        <div class="form-group">
+                        {{ form.connectionId.label(class="form-label") }}
+                        {{ form.connectionId(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                           {{ form.host.label(class="form-label") }}
+                           {{ form.host(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                           {{ form.port.label(class="form-label") }}
+                           {{ form.port(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                           {{ form.username.label(class="form-label") }}
+                           {{ form.username(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                           {{ form.password.label(class="form-label") }}
+                           {{ form.password(class="form-control") }}
+                        </div>
+                        <div class="form-group">
+                           {{ form.database.label(class="form-label") }}
+                           {{ form.database(class="form-control") }}
+                        </div>
+                  </div>
+                     
+                  <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+               </form>
+               </div>
+           </div>
+
+        </div>
+     </div>
+       <table class="table" id="connectionTable">
+           <thead class="thead-dark">
+               <tr>
+                  <th scope="col">connectionId</th>
+                 <th scope="col">Host</th>
+                 <th scope="col">Port</th>
+                 <th scope="col">Username</th>
+                 <th scope="col">Password</th>
+                 <th scope="col">DataBase</th>
+               </tr>
+             </thead>
+           <tbody>
+          </tbody>
+       </table>
+   </div>
+</div>
+
+
+{%endblock%}
+{%block contentScripts%}
+<script src="{{url_for('static', filename='scripts/connectionPage.js')}}"></script>
+
+{%endblock%}
