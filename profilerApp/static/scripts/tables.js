@@ -13,11 +13,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 tableBody.innerHTML = '';
                 // Populate the table with new data
                 data.forEach(table => {
-                    console.log(table)
-
                     const row = `
                         <tr>
-                            <td>${data['uniqueTableName']}</td>
+                            <td>${table['uniqueTableName']}</td>
                             <td>${table['connectionId']}</td>
                             <td>${table['schema']}</td>
                             <td>${table['table']}</td>

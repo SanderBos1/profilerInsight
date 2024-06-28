@@ -1,9 +1,9 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from ..userTables import userTable
 from ..userConnections import dbConncetions
 from marshmallow import ValidationError
-from ..userConnections import DatabaseConnection
-from .jsonSchemas import overviewSchema 
+from ..userConnections import postgresqlConnection
+from .jsonSchemas import getColumnsSchema, overviewSchema 
 
 profilerBP = Blueprint(
     "profilerBP",
@@ -22,6 +22,34 @@ profilerBP = Blueprint(
         500: an error occurred while adding the connection to the database
     
 """
+@profilerBP.route('/getColumns', methods=['POST'])
+def getColumns():
+    try:
+        overviewSchemaInstance = getColumnsSchema()
+        data = overviewSchemaInstance.load(request.get_json())
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    try:
+        session['tableName'] = data['tableName']
+        userTableValues = userTable.query.filter(userTable.uniqueTableName==data['tableName']).first()
+        connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
+        userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
+        columns = userDatabaseConnection.query(f"SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = '{userTableValues.table}' ORDER BY table_name, ordinal_position;")
+        columnNames = []
+        for tuple in columns:
+            columnNames.append(tuple[1])
+
+        answer = {
+            "columnNames": columnNames,
+            "columnCount": len(columnNames)
+
+        }
+        return jsonify(answer), 200
+    except Exception as e:
+        return str(e), 500
+    
+
+
 @profilerBP.route('/getOverview', methods=['POST'])
 def getOverview():
     try:
@@ -29,15 +57,20 @@ def getOverview():
         data = overviewSchemaInstance.load(request.get_json())
     except ValidationError as e:
         return jsonify(e.messages), 400
-    try:
-        userTableValues = userTable.query.filter(userTable.uniqueTableName==data['tableName']).first()
-        connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
-        print("connection", connection.host, connection.port, connection.username, connection.password, connection.database)
-        userDatabaseConnection = DatabaseConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
-        rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
-        answer = {
-            "rowCount": rowCount[0][0]
-        }
-        return jsonify(answer), 200
-    except Exception as e:
-        return str(e), 500
+    userTableValues = userTable.query.filter(userTable.uniqueTableName==session['tableName']).first()
+    connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
+    userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
+    rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
+
+    distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{data['columName']}')FROM {userTableValues.schema}.{userTableValues.table}")
+    nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{data['columName']}' IS NULL")
+    
+    answer = {
+        "rowCount": rowCount[0][0],
+        "distinctValues": distinctValues[0][0], 
+        "nanValues": nanValues[0][0],
+    }
+    return jsonify(answer), 200
+
+
+

@@ -10,3 +10,4 @@ Flask-Migrate
 flask-WTF
 marshmallow
 cryptography
+ Flask-Session

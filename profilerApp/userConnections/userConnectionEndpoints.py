@@ -36,7 +36,7 @@ def getConnections():
         500: an error occurred while adding the connection to the database
 
 """
-@databaseBP.route('/addConnection', methods=['POST'])
+@databaseBP.route('/addPostgresqlConnection', methods=['POST'])
 def addConnection():
     try:
         connection_schema = ConnectionSchema()

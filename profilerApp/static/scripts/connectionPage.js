@@ -43,7 +43,7 @@ $(document).ready(function() {
         formData = convertFormToJSON($(this));
         $.ajax({
             type: "POST",
-            url: "/addConnection",
+            url: "/addPostgresqlConnection",
             contentType: 'application/json',
             data: formData, // serializes the form's elements.
             success: function (data) {

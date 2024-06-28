@@ -3,9 +3,9 @@
 
 <div class="row">
    <div class="offset-10">
-     <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
-        Add connection.
-     </button>                
+      <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addConnectionModal">
+         Add connection.
+      </button>    
   </div>
 </div>
 <div class="row">
@@ -17,42 +17,62 @@
                     <h5 class="Modal Title" id="exampleModalLabel">Add connection</h5>
                   </div>
                   <div class="modal-body">
-                     <form id="addConnectionForm">
-                        <div class="form-group">
-                        {{ form.connectionId.label(class="form-label") }}
-                        {{ form.connectionId(class="form-control") }}
+                     <div class="row">
+                        <h3> Choose connectionType</h3>
+                        <div class="col-4">
+                        <input type="image" class="img-thumbnail" src="{{url_for('static', filename='Images/postgresLogo.jpg')}}" data-bs-toggle="modal" data-bs-target="#postgresModal"/>
                         </div>
-                        <div class="form-group">
-                           {{ form.host.label(class="form-label") }}
-                           {{ form.host(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                           {{ form.port.label(class="form-label") }}
-                           {{ form.port(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                           {{ form.username.label(class="form-label") }}
-                           {{ form.username(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                           {{ form.password.label(class="form-label") }}
-                           {{ form.password(class="form-control") }}
-                        </div>
-                        <div class="form-group">
-                           {{ form.database.label(class="form-label") }}
-                           {{ form.database(class="form-control") }}
-                        </div>
-                  </div>
-                     
+                     </div>
                   <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary">Submit</button>
-               </form>
+                  </div>
                </div>
-           </div>
+            </div>
+         </div>
+      </div>
+      <div class="modal fade" id="postgresModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="Modal Title" id="exampleModalLabel">Add connection</h5>
+               </div>
+            <form id="addConnectionForm">
+               <div class="modal-body">
+                  <div class="form-group">
+                     {{ form.connectionId.label(class="form-label") }}
+                     {{ form.connectionId(class="form-control") }}
+                     </div>
+                     <div class="form-group">
+                        {{ form.host.label(class="form-label") }}
+                        {{ form.host(class="form-control") }}
+                     </div>
+                     <div class="form-group">
+                        {{ form.port.label(class="form-label") }}
+                        {{ form.port(class="form-control") }}
+                     </div>
+                     <div class="form-group">
+                        {{ form.username.label(class="form-label") }}
+                        {{ form.username(class="form-control") }}
+                     </div>
+                     <div class="form-group">
+                        {{ form.password.label(class="form-label") }}
+                        {{ form.password(class="form-control") }}
+                     </div>
+                     <div class="form-group">
+                        {{ form.database.label(class="form-label") }}
+                        {{ form.database(class="form-control") }}
+                     </div>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Submit</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
 
-        </div>
-     </div>
+     
        <table class="table" id="connectionTable">
            <thead class="thead-dark">
                <tr>
