@@ -1,5 +1,5 @@
 import psycopg2
-class DatabaseConnection:
+class postgresqlConnection:
 
     def __init__(self, host, port, user, password, dbname ):
         self.dbname = dbname
@@ -39,9 +39,8 @@ class DatabaseConnection:
             cursor.execute(query)
             dataset = cursor.fetchall()
             return dataset
-        except:
-            exception = "There is an error in the query"
-        return "something went wrong"
+        except Exception as e:
+            return str(e)
     
 
 

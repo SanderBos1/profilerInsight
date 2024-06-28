@@ -3,19 +3,37 @@
 <div class="row">
    <div class="col-2">
     <h2> Tables</h2>
-    <div class="btn-group-vertical">
-        {% for table in tables %}
-        <button class="btn btn-secondary" value={{table}} OnClick="getOverview(this)" > {{table}} </button> 
-        {% endfor %}
+        <div class="btn-group-vertical">
+            {% for table in tables %}
+            <button class="btn btn-secondary" value={{table}} OnClick="getColumns(this)" > {{table}} </button> 
+            {% endfor %}
+        </div>
     </div>
-    <div class="col-9">
-        <h3> Overview</h3>
-        <p>
-            RowCount = <var id="rowCount"></var></h3>
-        </p>
-
+    <div class="col-2">
+        <h2> Table Columns</h2>
+        <div class="btn-group-vertical" id="columnButton">
+        </div>
     </div>
-   </div>
+    <div class="col-7  mt-3">
+        <div class="container mt-3">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#Overview" type="button" role="tab" aria-controls="Overview" aria-selected="true">Overview</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="placeholder-tab" data-bs-toggle="tab" data-bs-target="#Placeholder" type="button" role="tab" aria-controls="Placeholder" aria-selected="false">Placeholder</button>
+                </li>
+            </ul>
+            <div class="tab-content" id="profilerTabsContent">
+                <div class="tab-pane fade show active" id="Overview" role="tabpanel" aria-labelledby="overview-tab">
+                </div>
+                <div class="tab-pane fade" id="Placeholder" role="tabpanel" aria-labelledby="placeholder-tab">
+                    <p>This is a Placeholder</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {%endblock%}
 {%block contentScripts%}
 <script src="{{url_for('static', filename='scripts/profilerPage.js')}}"></script>
