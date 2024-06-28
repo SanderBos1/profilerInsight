@@ -18,7 +18,7 @@ def getConnections():
         answer = json.dumps(dictTabelList)
         return answer, 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
 
 """
     input: A JSOn object with the following structure:
@@ -53,7 +53,7 @@ def addTable():
             return "the chosen table + schema have already been chosen", 500
         return data, 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
     
 
 """
@@ -82,4 +82,4 @@ def deleteTable():
         db.session.commit()
         return "Connection deleted successfully!", 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500

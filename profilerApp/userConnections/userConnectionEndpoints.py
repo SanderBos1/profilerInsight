@@ -58,7 +58,7 @@ def addConnection():
             return "Connection name has already been chosen", 500
         return data, 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
 
 
 """
@@ -86,6 +86,6 @@ def deleteConnection():
         db.session.commit()
         return "Connection deleted successfully!", 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
 
 

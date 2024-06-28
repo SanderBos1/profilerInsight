@@ -46,7 +46,7 @@ def getColumns():
         }
         return jsonify(answer), 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
     
 
 
@@ -57,20 +57,23 @@ def getOverview():
         data = overviewSchemaInstance.load(request.get_json())
     except ValidationError as e:
         return jsonify(e.messages), 400
-    userTableValues = userTable.query.filter(userTable.uniqueTableName==session['tableName']).first()
-    connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
-    userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
-    rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
+    try:
+        userTableValues = userTable.query.filter(userTable.uniqueTableName==session['tableName']).first()
+        connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
+        userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
+        rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
 
-    distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{data['columName']}')FROM {userTableValues.schema}.{userTableValues.table}")
-    nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{data['columName']}' IS NULL")
+        distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{data['columName']}')FROM {userTableValues.schema}.{userTableValues.table}")
+        nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{data['columName']}' IS NULL")
     
-    answer = {
-        "rowCount": rowCount[0][0],
-        "distinctValues": distinctValues[0][0], 
-        "nanValues": nanValues[0][0],
-    }
-    return jsonify(answer), 200
+        answer = {
+            "rowCount": rowCount[0][0],
+            "distinctValues": distinctValues[0][0], 
+            "nanValues": nanValues[0][0],
+        }
+        return jsonify(answer), 200
+    except Exception as e:
+        return jsonify(str(e)), 500
 
 
 
