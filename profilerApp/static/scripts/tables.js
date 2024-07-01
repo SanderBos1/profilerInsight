@@ -37,11 +37,15 @@ document.addEventListener("DOMContentLoaded", function() {
 $(document).ready(function() {
     $('#addTableForm').submit(function (e) {
         formData = convertFormToJSON($(this));
+        var csrfToken = getCsrfToken();
         $.ajax({
             type: "POST",
             url: "/addTable",
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
             contentType: 'application/json',
-            data: formData, // serializes the form's elements.
+            data: formData, 
             success: function (data) {
                 const tableBody = document.querySelector('#connectionTable tbody');
                 const row = `
@@ -54,22 +58,17 @@ $(document).ready(function() {
                         </tr>
                     `;
                     tableBody.insertAdjacentHTML('beforeend', row);
-            }
-        });
-        e.preventDefault(); // block the traditional submission of the form.
-    });
-
-    // Inject our CSRF token into our AJAX request.
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
-            }
+            },
+        error: function(error) {
+            console.error('Error:', error);
         }
-    })
+        });
+        e.preventDefault();
+    });
 });
 
 function deleteRow(button){
+    var csrfToken = getCsrfToken();
     var tableRow=button.parentNode.parentNode;
     var rowIndex = tableRow.rowIndex
     cells = tableRow.getElementsByTagName('td');
@@ -80,7 +79,10 @@ function deleteRow(button){
     dataOBJJson = JSON.stringify(dataOBJ)
     $.ajax({
         url: '/deleteTable',  
-        type: 'POST',
+        type: 'DELETE',
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
         contentType: 'application/json',
         data: dataOBJJson,
         success: function(response) {

@@ -39,7 +39,7 @@ def addTable():
         connection_schema = tableSchema()
         data = connection_schema.load(request.get_json())
     except ValidationError as e:
-        return jsonify(e.messages), 400
+        return str(e), 400
     try:
         uniqueTableName = data['uniqueTableName']
         connectionId = data['connectionId']
@@ -68,7 +68,7 @@ def addTable():
         500: an error occurred while adding the connection to the database
 
 """
-@usertableBP.route('/deleteTable', methods=['POST'])
+@usertableBP.route('/deleteTable', methods=['DELETE'])
 def deleteTable():
     try:
         connection_schema = deleteTableSchema()
