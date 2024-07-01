@@ -51,51 +51,51 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: formData, // serializes the form's elements.
             success: function (data) {
-                const tableBody = document.querySelector('#connectionTable tbody');
+                const tableBody = $('#connectionTable tbody');
                 const row = `
                         <tr>
-                            <td>${data['connectionId']}</td>
-                            <td>${data['host']}</td>
-                            <td>${data['port']}</td>
-                            <td>${data['username']}</td>
+                            <td>${data.connectionId}</td>
+                            <td>${data.host}</td>
+                            <td>${data.port}</td>
+                            <td>${data.username}</td>
                             <td>*****</td>
-                            <td>${data['database']}</td>
+                            <td>${data.database}</td>
                             <td><button class="btn" type="button" name="remove"  onclick="deleteRow(this)">Remove</button></td>
                         </tr>
                     `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
+                tableBody.append(row);
+            },
+            error: function(error){
+                console.log(error);
+                alert('Failed to add connection. Please try again.');
+            }
+
+            });
+            e.preventDefault(); // block the traditional submission of the form.
+        });
+    });
+
+
+    function deleteRow(button) {
+        const tableRow = button.closest('tr');
+        const connectionId = $(tableRow).find('td').eq(0).text();
+        const dataOBJ = { "connectionId": connectionId };
+        const connectionIdJson = JSON.stringify(dataOBJ);
+        const csrfToken = getCsrfToken();
+        $.ajax({
+            url: '/deleteConnection',
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
+            type: 'DELETE',
+            contentType: 'application/json',
+            data: connectionIdJson,
+            success: function(response) {
+                $(tableRow).remove(); // Use jQuery to remove the row
+            },
+            error: function(error) {
+                console.error('Error:', error);
+                alert('Failed to delete connection. Please try again.'); // Provide feedback to the user
             }
         });
-        e.preventDefault(); // block the traditional submission of the form.
-    });
-});
-
-function deleteRow(button){
-    var tableRow=button.parentNode.parentNode;
-    var rowIndex = tableRow.rowIndex
-    cells = tableRow.getElementsByTagName('td');
-    connectionId = cells[0].innerHTML
-    dataOBJ = {"connectionId": connectionId}
-    connectionIdJson = JSON.stringify(dataOBJ)
-    var csrfToken = getCsrfToken();
-    $.ajax({
-        url: '/deleteConnection', 
-        headers: {
-            'X-CSRFToken': csrfToken
-        },
-        type: 'DELETE',
-        contentType: 'application/json',
-
-        data: connectionIdJson,
-        success: function(response) {
-            document.getElementById('connectionTable').deleteRow(rowIndex);
-        },
-        error: function(error) {
-            console.error('Error:', error);
-            // Optionally, handle error
-        }
-    });
-
-
-
-};
+    }

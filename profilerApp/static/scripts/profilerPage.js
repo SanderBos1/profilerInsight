@@ -1,52 +1,98 @@
-function getColumns(button){
-    var tableName = button.value
-    console.log(tableName)
-    console.log(typeof(tableName))
+function getColumns(element) {
+    var tableName = element.getAttribute('value');
+    var dropdownButton = $('#dropdownMenuButton');
+    dropdownButton.text(tableName);
+
     $.ajax({
         url: 'getColumns/' + tableName,
         type: 'GET',
-        success: function(response){
-            displayProfilerBasics = document.getElementById('Overview')
-            displayProfilerBasics.innerHTML = ''
-            columnButtons = document.getElementById('columnButton')
-            columnButtons.innerHTML = ''
-            for (var i = 0; i < response['columnNames'].length; i++){
+        success: function(response) {
+            // Clear existing content
+            $('#ingestButton').empty();
+            $('#profilerOverviewContent').empty();
+            $('#columnButton').empty();
 
-                columnButtons.innerHTML += '<button class="btn btn-primary" onclick="getOverview(this)" value="' + response['columnNames'][i] + '">' + response['columnNames'][i] + '</button>'
+            // Populate column buttons
+            var columnButtons = $('#columnButton');
+            for (var i = 0; i < response.columnNames.length; i++) {
+                var columnName = response.columnNames[i];
+                var buttonHtml = `<button class="btn btn-primary" onclick="getOverview(this)" value="${columnName}">${columnName}</button>`;
+                columnButtons.append(buttonHtml);
             }
         },
-        error: function(error){
-            console.log(error);
+        error: function(error) {
+            console.log('Error fetching columns:', error);
+            // Optionally show an error message to the user
+            alert('Error fetching columns. Please try again.');
         }
     });
+}
+
+
+
+function DisplayOverview(response){
+    $('#profilerOverviewContent').empty()
+    var displayProfilerBasics = $('#profilerOverviewContent');
+    
+    rowCount = document.createElement("p")
+    uniqueValuesCount = document.createElement("p")
+    nanCount = document.createElement("p")
+    columType = document.createElement("p")
+
+    var rowCount = $('<p>').text("Number of rows: " + response.rowCount);
+    var uniqueValuesCount = $('<p>').text("Unique values: " + response.distinctValues);
+    var nanCount = $('<p>').text("Total missing values: " + response.nanValues);
+    var columnType = $('<p>').text("Column type: " + response.columnType);
+
+    displayProfilerBasics.append(rowCount, uniqueValuesCount, nanCount, columnType);
 }
 
 
 function getOverview(button){
+    ingestButtonDiv = $('#ingestButtonDiv')
+    ingestButtonDiv.empty()
+
+    var ingestButton = $('<button>').text("Ingest Data")
+    .val(button.value)
+    .addClass("btn btn-primary")
+    .click(function() {
+        ingestData(this);
+    });
+    ingestButtonDiv.append(ingestButton);
+
     $.ajax({
         url: '/getOverview/' + button.value,
         type: 'GET',
         success: function(response){
-            displayProfilerBasics = document.getElementById('Overview')
-            displayProfilerBasics.innerHTML = ''
-            rowCount = document.createElement("p")
-            uniqueValuesCount = document.createElement("p")
-            nanCount = document.createElement("p")
-            columType = document.createElement("p")
 
-            rowCount.innerText = "Number of rows: " + response['rowCount']
-            uniqueValuesCount.innerText = "Unique values: " + response['distinctValues']
-            nanCount.innerText = "Total missing values: " + response['nanValues']
-            columType.innerText = "Column type: " + response['columnType']
+            if( response != "No ingestion was done"){
+                DisplayOverview(response)
+            }
+            else{
+                var displayProfilerBasics = $('#profilerOverviewContent');
+                displayProfilerBasics.empty();
+                displayProfilerBasics.text("No ingestion was done");
 
-            displayProfilerBasics.appendChild(rowCount)
-            displayProfilerBasics.appendChild(uniqueValuesCount)
-            displayProfilerBasics.appendChild(nanCount)
-            displayProfilerBasics.appendChild(columType)
+            }
 
         },
         error: function(error){
             console.log(error);
         }
-    });
-}
+    })
+};
+    
+
+function ingestData(button){
+    $.ajax({
+        url: '/ingest/' + button.value,
+        type: 'GET',
+        success: function(response){
+            DisplayOverview(response)
+
+        },
+        error: function(error){
+            console.log(error);
+        }
+    })
+};

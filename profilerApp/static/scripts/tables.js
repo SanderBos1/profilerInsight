@@ -1,16 +1,20 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // API endpoint URL
-    const apiEndpoint = 'http://127.0.0.1:5000/getTables';
+$(document).ready(function() {
+    const apiEndpoint = '/getTables'; // Replace with your actual API endpoint
 
     // Function to fetch and display data
     function fetchConnections() {
         fetch(apiEndpoint)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
                 // Reference to the table body
-                const tableBody = document.querySelector('#connectionTable tbody');
+                const tableBody = $('#connectionTable tbody');
                 // Clear existing data
-                tableBody.innerHTML = '';
+                tableBody.empty();
                 // Populate the table with new data
                 data.forEach(table => {
                     const row = `
@@ -19,14 +23,15 @@ document.addEventListener("DOMContentLoaded", function() {
                             <td>${table['connectionId']}</td>
                             <td>${table['schema']}</td>
                             <td>${table['table']}</td>
-                            <td><button class="btn" type="button" name="remove"  onclick="deleteRow(this)">Remove</button></td>
+                            <td><button class="btn btn-danger" type="button" name="remove" onclick="deleteRow(this)">Remove</button></td>
                         </tr>
                     `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
+                    tableBody.append(row);
                 });
             })
             .catch(error => {
                 console.error('Error fetching data:', error);
+                alert('Failed to fetch connections. Please try again.');
             });
     }
 
@@ -36,8 +41,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
 $(document).ready(function() {
     $('#addTableForm').submit(function (e) {
-        formData = convertFormToJSON($(this));
-        var csrfToken = getCsrfToken();
+
+        let formData = convertFormToJSON($(this));
+        let csrfToken = getCsrfToken();
+
         $.ajax({
             type: "POST",
             url: "/addTable",
@@ -47,20 +54,21 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: formData, 
             success: function (data) {
-                const tableBody = document.querySelector('#connectionTable tbody');
+                const tableBody = $('#connectionTable tbody');
                 const row = `
-                        <tr>
-                            <td>${data['uniqueTableName']}</td>
-                            <td>${data['connectionId']}</td>
-                            <td>${data['schema']}</td>
-                            <td>${data['table']}</td>
-                            <td><button class="btn" type="button" name="remove"  onclick="deleteRow(this)">Remove</button></td>
-                        </tr>
+                    <tr>
+                        <td>${data.uniqueTableName}</td>
+                        <td>${data.connectionId}</td>
+                        <td>${data.schema}</td>
+                        <td>${data.table}</td>
+                        <td><button class="btn btn-danger" type="button" name="remove" onclick="deleteRow(this)">Remove</button></td>
+                    </tr>
                     `;
-                    tableBody.insertAdjacentHTML('beforeend', row);
-            },
+                    tableBody.append(row);
+                },
         error: function(error) {
             console.error('Error:', error);
+            alert('Failed to add table. Please try again.');         
         }
         });
         e.preventDefault();
@@ -68,31 +76,29 @@ $(document).ready(function() {
 });
 
 function deleteRow(button){
-    var csrfToken = getCsrfToken();
-    var tableRow=button.parentNode.parentNode;
-    var rowIndex = tableRow.rowIndex
-    cells = tableRow.getElementsByTagName('td');
-    uniqueTableName = cells[0].innerHTML
-    dataOBJ = {
-                "uniqueTableName": uniqueTableName,
-            }   
-    dataOBJJson = JSON.stringify(dataOBJ)
+    const csrfToken = getCsrfToken();
+    const tableRow = button.closest('tr'); // Using closest for better readability
+    const uniqueTableName = $(tableRow).find('td').eq(0).text(); // Using jQuery for consistency
+
+    const dataOBJ = {
+        "uniqueTableName": uniqueTableName
+    };
+    const dataOBJJson = JSON.stringify(dataOBJ);
+
     $.ajax({
-        url: '/deleteTable',  
+        url: '/deleteTable',
         type: 'DELETE',
         headers: {
             'X-CSRFToken': csrfToken
         },
         contentType: 'application/json',
         data: dataOBJJson,
-        success: function(response) {
-            document.getElementById('connectionTable').deleteRow(rowIndex);
+        success: function() {
+            $(tableRow).remove(); // Use jQuery to remove the row for consistency
         },
         error: function(error) {
             console.error('Error:', error);
+            alert('Failed to delete table. Please try again.'); // Provide feedback to the user
         }
     });
-
-
-
-};
+}

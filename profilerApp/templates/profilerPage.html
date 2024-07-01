@@ -1,21 +1,27 @@
-{%extends "base.html"%}
-{%block content%}
-<div class="row">
-   <div class="col-2">
-    <h2> Tables</h2>
-        <div class="btn-group-vertical">
-            {% for table in tables %}
-            <button class="btn btn-secondary" value={{table}} OnClick="getColumns(this)" > {{table}} </button> 
-            {% endfor %}
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <h2 class="text-center">Table</h2>
+            <div class="dropdown w-100">
+                <button class="btn btn-secondary dropdown-toggle w-100" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Select Table
+                </button>
+                <div class="dropdown-menu w-100" aria-labelledby="dropdownMenuButton">
+                    {% for table in tables %}
+                    <a class="dropdown-item" href="#" value="{{ table }}" onclick="getColumns(this)">{{ table }}</a>
+                    {% endfor %}
+                </div>
+            </div>
+        <div class="row">
+            <h2 class="w-100 text-center">Columns</h2>
+            <div class="btn-group-vertical w-100" id="columnButton">
+                <!-- Columns will be populated dynamically -->
+            </div>
         </div>
-    </div>
-    <div class="col-2">
-        <h2> Table Columns</h2>
-        <div class="btn-group-vertical" id="columnButton">
         </div>
-    </div>
-    <div class="col-7  mt-3">
-        <div class="container mt-3">
+        <div class="col-md-9 mt-3">
             <ul class="nav nav-tabs" role="tablist">
                 <li class="nav-item">
                     <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#Overview" type="button" role="tab" aria-controls="Overview" aria-selected="true">Overview</button>
@@ -24,8 +30,16 @@
                     <button class="nav-link" id="placeholder-tab" data-bs-toggle="tab" data-bs-target="#Placeholder" type="button" role="tab" aria-controls="Placeholder" aria-selected="false">Placeholder</button>
                 </li>
             </ul>
-            <div class="tab-content" id="profilerTabsContent">
+            <div class="tab-content mt-3" id="profilerTabsContent">
                 <div class="tab-pane fade show active" id="Overview" role="tabpanel" aria-labelledby="overview-tab">
+                    <div class="row">
+                        <div class="col-9" id="profilerOverviewContent">
+                            <!-- Content will be populated dynamically -->
+                        </div>
+                        <div class="col-3" id="ingestButtonDiv">
+                            <!-- Content will be populated dynamically -->
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="Placeholder" role="tabpanel" aria-labelledby="placeholder-tab">
                     <p>This is a Placeholder</p>
@@ -34,8 +48,8 @@
         </div>
     </div>
 </div>
-{%endblock%}
-{%block contentScripts%}
-<script src="{{url_for('static', filename='scripts/profilerPage.js')}}"></script>
+{% endblock %}
 
-{%endblock%}
+{% block contentScripts %}
+<script src="{{ url_for('static', filename='scripts/profilerPage.js') }}"></script>
+{% endblock %}
