@@ -12,28 +12,27 @@
  </head>
 
  <body>
-   <div class="container">
-      <div class="row">
-         <div class="col-9">
-            <h1> Data Profiler Tool</h1>
+   <div class="container-fluid">
+      <div class="row bg-secondary text-white py-3">
+         <div class="col-md-6">
+             <div class="btn-group">
+                 <a href="/home" role="button" class="btn btn-secondary">Home</a>
+                 <a href="/profiler" role="button" class="btn btn-secondary">Profiler</a>
+                 <a href="/connections" role="button" class="btn btn-secondary">Connections</a>
+                 <a href="/tables" role="button" class="btn btn-secondary">Tables</a>
+                 <a href="/settings" role="button" class="btn btn-secondary">Settings</a>
+             </div>
          </div>
+         <div class="col-md-6 text-end">
+             <h1>Data Profiler Tool</h1>
+         </div>
+     </div>
+      <div class="row">
+         {% block content %}
+         {% endblock %}
       </div>
-      <div class="row">
-         <div class="col-2">
-            <div class="btn-group-vertical">
-               <a href="/home" role="button"  class="btn btn-secondary"> Home </a>
-               <a href="/profiler" role="button" class="btn btn-secondary"> Profiler </a>
-               <a href="/connections" role="button" class="btn btn-secondary"> Connections </a>
-               <a href="/tables" role="button" class="btn btn-secondary"> Tables </a>
-               <a href="/settings" role="button"class="btn btn-secondary"> Settings </a>
-            </div>
-         </div>
-         <div class="col-9">
-            {% block content %}
-            {% endblock %}
-         </div>
-         {%block contentScripts%}
-         {%endblock%}
+      {%block contentScripts%}
+      {%endblock%}
          
  </body>
 </html>

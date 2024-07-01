@@ -9,5 +9,5 @@ function convertFormToJSON(form) {
 
 
   function getCsrfToken() {
-    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    return $('meta[name="csrf-token"]').attr('content');
 }

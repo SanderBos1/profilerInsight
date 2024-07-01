@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, session
 from ..userTables import userTable
 from ..userConnections import dbConncetions
 from ..userConnections import postgresqlConnection
+from .profiler import Profiler
 
 profilerBP = Blueprint(
     "profilerBP",
@@ -42,25 +43,25 @@ def getColumns(tableName):
         return jsonify(str(e)), 500
     
 
-
-@profilerBP.route('/getOverview/<columName>', methods=['GET'])
-def getOverview(columName):
+@profilerBP.route('/ingest/<columnName>', methods=['GET'])
+def ingest(columnName):
     try:
-        userTableValues = userTable.query.filter(userTable.uniqueTableName==session['tableName']).first()
-        connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
-        userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
-        rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
+        profilerInstance = Profiler(columnName)  
+        answer = profilerInstance.ingestData()
+        return jsonify(answer), 200
+    except Exception as e:
+        return jsonify(str(e)), 500
 
-        distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{columName}')FROM {userTableValues.schema}.{userTableValues.table}")
-        nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{columName}' IS NULL")
-        columnType = userDatabaseConnection.query(f"SELECT data_type FROM information_schema.columns where table_name = '{userTableValues.table}' AND column_name = '{columName}'")
-        print(columnType[0][0])
-        answer = {
-            "rowCount": rowCount[0][0],
-            "distinctValues": distinctValues[0][0], 
-            "nanValues": nanValues[0][0],
-            "columnType": columnType[0][0]
-        }
+
+@profilerBP.route('/getOverview/<columnName>', methods=['GET'])
+def getOverview(columnName):
+    try:
+        profilerInstance = Profiler(columnName)  
+        existing = profilerInstance.checkExisting()
+        if existing:
+            answer = profilerInstance.getOverviewLocal()
+        else:
+            answer = "No ingestion was done"
         return jsonify(answer), 200
     except Exception as e:
         return jsonify(str(e)), 500
