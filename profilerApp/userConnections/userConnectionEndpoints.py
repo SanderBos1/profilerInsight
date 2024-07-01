@@ -4,6 +4,7 @@ from .models import dbConncetions
 from profilerApp import db
 from .jsonSchemas import ConnectionSchema, deleteConnectionSchema
 from marshmallow import ValidationError
+from flask_wtf.csrf import validate_csrf
 
 databaseBP = Blueprint(
     "databaseBP",
@@ -72,7 +73,7 @@ def addConnection():
         500: an error occurred while adding the connection to the database
 
 """
-@databaseBP.route('/deleteConnection', methods=['POST'])
+@databaseBP.route('/deleteConnection', methods=['DELETE'])
 def deleteConnection():
     try:
         connection_schema = deleteConnectionSchema()

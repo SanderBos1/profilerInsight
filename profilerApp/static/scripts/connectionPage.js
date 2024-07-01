@@ -41,9 +41,13 @@ document.addEventListener("DOMContentLoaded", function() {
 $(document).ready(function() {
     $('#addConnectionForm').submit(function (e) {
         formData = convertFormToJSON($(this));
+        var csrfToken = getCsrfToken();
         $.ajax({
             type: "POST",
             url: "/addPostgresqlConnection",
+            headers: {
+                'X-CSRFToken': csrfToken
+            },
             contentType: 'application/json',
             data: formData, // serializes the form's elements.
             success: function (data) {
@@ -64,15 +68,6 @@ $(document).ready(function() {
         });
         e.preventDefault(); // block the traditional submission of the form.
     });
-
-    // Inject our CSRF token into our AJAX request.
-    $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-            if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", "{{ form.csrf_token._value() }}")
-            }
-        }
-    })
 });
 
 function deleteRow(button){
@@ -82,9 +77,13 @@ function deleteRow(button){
     connectionId = cells[0].innerHTML
     dataOBJ = {"connectionId": connectionId}
     connectionIdJson = JSON.stringify(dataOBJ)
+    var csrfToken = getCsrfToken();
     $.ajax({
-        url: '/deleteConnection',  // Replace with your server endpoint
-        type: 'POST',
+        url: '/deleteConnection', 
+        headers: {
+            'X-CSRFToken': csrfToken
+        },
+        type: 'DELETE',
         contentType: 'application/json',
 
         data: connectionIdJson,

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf.csrf import CSRFProtect 
 import os
 from cryptography.fernet import Fernet
 
@@ -26,6 +27,7 @@ def create_app():
     app.config["SESSION_TYPE"] = "filesystem"      
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY",)
 
+    CSRFProtect (app)
     db.init_app(app)
 
     from .userConnections import databaseBP

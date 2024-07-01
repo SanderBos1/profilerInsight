@@ -4,6 +4,10 @@ function convertFormToJSON(form) {
     $.each(array, function () {
       json[this.name] = this.value || "";
     });
-    jsonConverted = JSON.stringify(json);
-    return jsonConverted;
+    return JSON.stringify(json);
   }
+
+
+  function getCsrfToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}

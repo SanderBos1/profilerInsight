@@ -1,9 +1,7 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, jsonify, session
 from ..userTables import userTable
 from ..userConnections import dbConncetions
-from marshmallow import ValidationError
 from ..userConnections import postgresqlConnection
-from .jsonSchemas import getColumnsSchema, overviewSchema 
 
 profilerBP = Blueprint(
     "profilerBP",
@@ -22,16 +20,11 @@ profilerBP = Blueprint(
         500: an error occurred while adding the connection to the database
     
 """
-@profilerBP.route('/getColumns', methods=['POST'])
-def getColumns():
+@profilerBP.route('/getColumns/<tableName>', methods=['GET'])
+def getColumns(tableName):
     try:
-        overviewSchemaInstance = getColumnsSchema()
-        data = overviewSchemaInstance.load(request.get_json())
-    except ValidationError as e:
-        return jsonify(e.messages), 400
-    try:
-        session['tableName'] = data['tableName']
-        userTableValues = userTable.query.filter(userTable.uniqueTableName==data['tableName']).first()
+        session['tableName'] = tableName
+        userTableValues = userTable.query.filter(userTable.uniqueTableName==tableName).first()
         connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
         userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
         columns = userDatabaseConnection.query(f"SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = '{userTableValues.table}' ORDER BY table_name, ordinal_position;")
@@ -50,26 +43,23 @@ def getColumns():
     
 
 
-@profilerBP.route('/getOverview', methods=['POST'])
-def getOverview():
-    try:
-        overviewSchemaInstance = overviewSchema()
-        data = overviewSchemaInstance.load(request.get_json())
-    except ValidationError as e:
-        return jsonify(e.messages), 400
+@profilerBP.route('/getOverview/<columName>', methods=['GET'])
+def getOverview(columName):
     try:
         userTableValues = userTable.query.filter(userTable.uniqueTableName==session['tableName']).first()
         connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
         userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
         rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
 
-        distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{data['columName']}')FROM {userTableValues.schema}.{userTableValues.table}")
-        nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{data['columName']}' IS NULL")
-    
+        distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{columName}')FROM {userTableValues.schema}.{userTableValues.table}")
+        nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{columName}' IS NULL")
+        columnType = userDatabaseConnection.query(f"SELECT data_type FROM information_schema.columns where table_name = '{userTableValues.table}' AND column_name = '{columName}'")
+        print(columnType[0][0])
         answer = {
             "rowCount": rowCount[0][0],
             "distinctValues": distinctValues[0][0], 
             "nanValues": nanValues[0][0],
+            "columnType": columnType[0][0]
         }
         return jsonify(answer), 200
     except Exception as e:

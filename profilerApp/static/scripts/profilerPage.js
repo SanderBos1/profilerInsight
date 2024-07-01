@@ -1,14 +1,13 @@
 function getColumns(button){
-    var tableName = {
-        'tableName': button.value
-    }
-    var tableNameJson = JSON.stringify(tableName)
+    var tableName = button.value
+    console.log(tableName)
+    console.log(typeof(tableName))
     $.ajax({
-        url: 'getColumns',
-        type: 'POST',
-        contentType: 'application/json',
-        data: tableNameJson,
+        url: 'getColumns/' + tableName,
+        type: 'GET',
         success: function(response){
+            displayProfilerBasics = document.getElementById('Overview')
+            displayProfilerBasics.innerHTML = ''
             columnButtons = document.getElementById('columnButton')
             columnButtons.innerHTML = ''
             for (var i = 0; i < response['columnNames'].length; i++){
@@ -24,29 +23,26 @@ function getColumns(button){
 
 
 function getOverview(button){
-    var tableName = {
-        'columName': button.value
-    }
-    var tableNameJson = JSON.stringify(tableName)
     $.ajax({
-        url: '/getOverview',
-        type: 'POST',
-        contentType: 'application/json',
-        data: tableNameJson,
+        url: '/getOverview/' + button.value,
+        type: 'GET',
         success: function(response){
-            displayRowCount = document.getElementById('Overview')
-            displayRowCount.innerHTML = ''
+            displayProfilerBasics = document.getElementById('Overview')
+            displayProfilerBasics.innerHTML = ''
             rowCount = document.createElement("p")
             uniqueValuesCount = document.createElement("p")
             nanCount = document.createElement("p")
+            columType = document.createElement("p")
 
             rowCount.innerText = "Number of rows: " + response['rowCount']
             uniqueValuesCount.innerText = "Unique values: " + response['distinctValues']
             nanCount.innerText = "Total missing values: " + response['nanValues']
+            columType.innerText = "Column type: " + response['columnType']
 
-            displayRowCount.appendChild(rowCount)
-            displayRowCount.appendChild(uniqueValuesCount)
-            displayRowCount.appendChild(nanCount)
+            displayProfilerBasics.appendChild(rowCount)
+            displayProfilerBasics.appendChild(uniqueValuesCount)
+            displayProfilerBasics.appendChild(nanCount)
+            displayProfilerBasics.appendChild(columType)
 
         },
         error: function(error){
