@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  psql-db:
+    image: postgres:16
+    environment:
+      - POSTGRES_USER=${databaseUser:-postgres}
+      - POSTGRES_PASSWORD=${databasePassword:-admin}
+      - POSTGRES_DB=${databaseName:-profilerDB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+  profiler-insight:
+    image: sanderbos/profiler-insight:0.0.1
+    depends_on:
+      psql-db:
+        condition: service_healthy
+    environment:
+    # databse configuration
+      - databaseHost=psql-db
+      - databasePort=${databasePort:-5432}
+      - databaseName=${databaseName:-profilerDB}
+      - databaseUser=${databaseUser:-postgres}
+      - databasePassword=${databasePassword:-admin}
+    # flask configuration 
+      - SECRET_KEY=${SECRET_KEY:-mysecretkey}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-uzxnpF4cpPrhmz7BBkTwAevXlxWOFjdIMECIgD9Yk1M=}
+    ports:
+      - "5000:5000"
+
+volumes:
+  db-data:
+

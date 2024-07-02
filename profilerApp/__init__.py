@@ -15,11 +15,11 @@ def create_app():
 
     app = Flask(__name__)
 
-    databaseHost = os.getenv('databaseHost', 'localhost')  
-    databasePort = os.getenv('databasePort', '5432') 
-    databaseName= os.getenv('databaseName', 'test') 
-    databaseUser = os.getenv('databaseUser', 'test')
-    databasePassword = os.getenv('databasePassword', 'test')
+    databaseHost = os.getenv('databaseHost')  
+    databasePort = os.getenv('databasePort') 
+    databaseName= os.getenv('databaseName') 
+    databaseUser = os.getenv('databaseUser')
+    databasePassword = os.getenv('databasePassword')
 
     app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{databaseUser}:{databasePassword}@{databaseHost}:{databasePort}/{databaseName}'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

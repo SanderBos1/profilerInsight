@@ -10,7 +10,7 @@ htmlPagesBP = Blueprint(
     __name__,
 )
 
-@htmlPagesBP.route('/home', methods=['GET'])
+@htmlPagesBP.route('/', methods=['GET'])
 def home():
 
     return render_template('home.html')
