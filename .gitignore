@@ -3,3 +3,5 @@
 migrations
 generateEncryptionKey.py
 pushDockerhub.bat
+**/__pycache__/
+.pyc
