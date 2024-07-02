@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="col-md-3 mt-3">
+  <form id="csvForm" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      {{form.csvFile (accept=".csv")}}
+      {{form.submit (class="btn btn-primary") }}
+    </div>
+  </form>
+</div>
+<div class="row" id="csvProfilerData">
+</div>
+{% endblock%}
+{% block contentScripts %} 
+<script src="{{ url_for('static', filename='scripts/csvProfiler.js') }}"></script>
+
+{% endblock %}

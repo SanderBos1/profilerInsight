@@ -4,7 +4,6 @@ from .models import dbConncetions
 from profilerApp import db
 from .jsonSchemas import ConnectionSchema, deleteConnectionSchema
 from marshmallow import ValidationError
-from flask_wtf.csrf import validate_csrf
 
 databaseBP = Blueprint(
     "databaseBP",

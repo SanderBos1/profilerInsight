@@ -34,11 +34,13 @@ def create_app():
     from .pages import htmlPagesBP
     from .userTables import usertableBP
     from .profiler import profilerBP
+    from .csvProfiler import csvProfilerBP
 
     app.register_blueprint(databaseBP)
     app.register_blueprint(htmlPagesBP)
     app.register_blueprint(usertableBP)
     app.register_blueprint(profilerBP)
+    app.register_blueprint(csvProfilerBP)
 
     with app.app_context():
         # uncomment drop_all if you want to replace the database (when you have changed something)
