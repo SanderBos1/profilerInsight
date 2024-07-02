@@ -4,6 +4,7 @@ from flask import session
 from ..userConnections import postgresqlConnection
 from .models import ingestionOverview
 from profilerApp import db
+from sqlalchemy.sql import text
 
 class Profiler:
 
@@ -32,10 +33,10 @@ class Profiler:
         connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
         userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
 
-        rowCount = userDatabaseConnection.query(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}")
-        distinctValues = userDatabaseConnection.query(f"SELECT COUNT(DISTINCT '{self.columnName}')FROM {userTableValues.schema}.{userTableValues.table}")
-        nanValues = userDatabaseConnection.query(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{self.columnName}' IS NULL")
-        columnType = userDatabaseConnection.query(f"SELECT data_type FROM information_schema.columns where table_name = '{userTableValues.table}' AND column_name = '{self.columnName}'")
+        rowCount = userDatabaseConnection.query(text(f"select count(*) from {userTableValues.schema}.{ userTableValues.table}"))
+        distinctValues = userDatabaseConnection.query(text(f"SELECT COUNT(DISTINCT '{self.columnName}')FROM {userTableValues.schema}.{userTableValues.table}"))
+        nanValues = userDatabaseConnection.query(text(f"SELECT COUNT(*) FROM {userTableValues.schema}.{userTableValues.table} WHERE '{self.columnName}' IS NULL"))
+        columnType = userDatabaseConnection.query(text(f"SELECT data_type FROM information_schema.columns where table_name = '{userTableValues.table}' AND column_name = '{self.columnName}'"))
 
         existing_record = ingestionOverview.query.filter_by(Table=session['tableName'], Column=self.columnName).first()
 
