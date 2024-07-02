@@ -3,7 +3,7 @@ from ..userConnections import connectionForm
 from ..userTables import tableForm
 from ..userConnections import dbConncetions
 from ..userTables import userTable
-
+from ..csvProfiler import UploadForm
 
 htmlPagesBP = Blueprint(
     "htmlPagesBP",
@@ -12,8 +12,12 @@ htmlPagesBP = Blueprint(
 
 @htmlPagesBP.route('/', methods=['GET'])
 def home():
-
     return render_template('home.html')
+
+@htmlPagesBP.route('/csvProfiler', methods=['GET'])
+def csvProfiler():
+    form = UploadForm()
+    return render_template('csvProfiler.html', form=form)
 
 @htmlPagesBP.route('/profiler', methods=['GET'])
 def profiler():

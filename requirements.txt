@@ -8,6 +8,8 @@ SQLAlchemy
 Flask-SQLAlchemy
 Flask-Migrate
 flask-WTF
+Flask-Session
 marshmallow
 cryptography
- Flask-Session
+numpy
+pandas
