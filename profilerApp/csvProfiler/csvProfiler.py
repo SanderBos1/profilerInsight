@@ -19,7 +19,7 @@ class csvProfilerClass():
                 "distinctValues": self.df[column].nunique(),
                 "uniqueValues": uniqueValues,
                 "nanValues": nanValues,
-                "meanColumn": self.df[column].mean() if str(self.df[column].dtype) == 'float64' else "N/A",
+                "meanColumn": self.df[column].mean() if str(self.df[column].dtype) == 'float64' or str(self.df[column].dtype) == "int64" else "N/A",
                 "minColumn": float(minColumn) if str(self.df[column].dtype) == 'float64' else str(minColumn),
                 "maxColumn": float(maxColumn) if str(self.df[column].dtype) == 'float64' else str(maxColumn)  
             }

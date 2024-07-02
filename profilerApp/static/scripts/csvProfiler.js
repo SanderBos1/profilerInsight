@@ -18,8 +18,9 @@ $(document).ready(function() {
             cache: false,
             processData: false,
             success: function (response) {
-                displayCsvProfilerData(response, csvProfilerHolder);
-            },
+                response.forEach(function(column) {
+                    createColumnInfo(csvProfilerHolder, column)
+             })},
             error: function(error){
                 console.log(error);
                 alert('Failed to process the CSV file. Please try again.');
@@ -27,33 +28,24 @@ $(document).ready(function() {
         });
     });
 
-    function displayCsvProfilerData(data, container) {
-        data.forEach(function(column) {
-            var columnInfo = createColumnInfo(column);
-            container.append(columnInfo);
-        });
-    }
 
-    function createColumnInfo(column) {
+function createColumnInfo(csvProfilerHolder, column) {
 
-        var columnInfo = $('<div>').addClass('col-md-4 column-info');
-        var card = $('<div>').addClass('card');
-        var cardBody = $('<div>').addClass('card-body');
+    var template = $('#templateCsvColumn').contents().clone(true);
 
-        var columnName = $('<h3>').text(`Column Name: ${column.columnName}`);
-        var columnType = $('<p>').text(`Column Type: ${column.columnType}`);
-        var lenColumn = $('<p>').text(`Column Length: ${column.lenColumn}`);
-        var distinctValues  = $('<p>').text(`Distinct Values: ${column.distinctValues}`);
-        var uniqueValues  = $('<p>').text(`Unique Values: ${column.uniqueValues}`);
-        var nanValues = $('<p>').text(`NaN Values: ${column.nanValues} %`);
-        var mean = $('<p>').text(`Mean: ${column.meanColumn}`);
-        var min = $('<p>').text(`Min: ${column.minColumn}`);
-        var max = $('<p>').text(`Max: ${column.maxColumn}`);
+    // Populate template with column data
+    template.find('.columnName').text(column.columnName);
+    template.find('.columnType').text(column.columnType);
+    template.find('.columnLength').text(column.lenColumn);
+    template.find('.uniqueValues').text(column.uniqueValues);
+    template.find('.nanValues').text(column.nanValues);
+    template.find('.nanValues').attr('aria-valuenow', column.nanValues);
+    template.find('.progress-bar').css('width', column.nanValues + '%');
+    template.find('.averageValue').text('Mean: ' + column.meanColumn);
+    template.find('.minValue').text('Min: ' + column.minColumn);
+    template.find('.maxValue').text('Max: ' + column.maxColumn);
 
-        cardBody.append(columnName, columnType, lenColumn, distinctValues, uniqueValues, nanValues, mean, min, max);
-        card.append(cardBody);
-        columnInfo.append(card);
-
-        return columnInfo;
+    // Append template to csvProfilerHolder
+    csvProfilerHolder.append(template);
     }
 });
