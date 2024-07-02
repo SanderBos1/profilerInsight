@@ -1,27 +1,27 @@
 # Profiler Insight
 
-With the growth of data storage and creation it is increasingly important to know which data is stored where.
-In addition to this, quick checks on data quality or overall data composition can give you an advantaged when creating your data.
-This is why the Profiler Insight tool is made. It aims to help the user with data profiling. 
-Current functionality is limited to postgres databases and csv files but I aim to extend this to other kind of databases.
-The installation guide is defined below:
+In today's data-intensive environments, knowing the exact locations and quality of stored data is crucial. 
+Quick assessments of data quality and composition provide a competitive edge in data management. 
+This is where the Profiler Insight tool excels—it offers powerful data profiling capabilities.
 
-# Getting Started
+Currently, Profiler Insight supports PostgreSQL databases and CSV files, with plans to expand compatibility to other database types in the future.
 
-If you want to use Profiler Insight you have to go to the folowing steps:
+## Getting Started
 
-1. ### Install Docker
+To begin using Profiler Insight, follow these steps:
 
-2. ### install Docker Compose
+1. **Install Docker**
 
-3. ### Download the docker-compose file from the github page:
+    - **Windows**: Download Docker Desktop from [Docker website](https://docs.docker.com/desktop/windows/install/).
 
-Download the Docker Compose file from  [link](https://github.com/SanderBos1/Time_series_analyser/blob/main/docker-compose.yml)
-Save it in your created directory
+2. **Install Docker Compose**
 
+    - **Windows/Mac**: Docker Desktop includes Docker Compose. Install Docker Desktop from the [Docker website](https://docs.docker.com/desktop/).
 
-4. ### Start the Docker Containers:
+3. **Download the Docker Compose file** from the [GitHub page](https://github.com/SanderBos1/profilerInsight/blob/main/installation/docker-compose.yml). Save it to your preferred directory.
 
-Execute the following command in the created directory to start the Docker containers:
-docker compose -f docker-compose.yml up --detach
+4. **Start the Docker Containers:**
 
+   Navigate to the directory where you saved the Docker Compose file and execute the following command:
+   ```bash
+   docker compose -f docker-compose.yml up --detach
