@@ -10,6 +10,66 @@
 </div>
 <div class="row" id="csvProfilerData">
 </div>
+
+<template id="templateCsvColumn">
+  <div class="col-md-6">
+      <div class="card mb-4">
+          <div class="card-body">
+              <h3 class="card-title columnName text-center"></h3>
+              <div class="row">
+                  <div class="col-md-4">
+                      <div class="card mb-2 text-center" style="border-color: #fe5000;">
+                          <div class="card-body">
+                              <h5 class="card-title">Type</h5>
+                              <p class="card-text columnType"></p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="card mb-2 text-center" style="border-color: #fe5000;">
+                          <div class="card-body">
+                              <h5 class="card-title">Length</h5>
+                              <p class="card-text columnLength"></p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="card mb-2 text-center" style="border-color: #fe5000;">
+                          <div class="card-body">
+                              <h5 class="card-title">Unique Values</h5>
+                              <p class="card-text uniqueValues"></p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="row">
+                  <div class="col-md-6">
+                      <div class="card mb-2 text-center" style="border-color: #fe5000;">
+                          <div class="card-body">
+                              <h5 class="card-title">Statistics</h5>
+                              <p class="card-text averageValue"></p>
+                              <p class="card-text minValue"></p>
+                              <p class="card-text maxValue"></p>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="card mb-2 text-center" style="border-color: #fe5000;">
+                          <div class="card-body">
+                              <h5 class="card-title">NaN Values</h5>
+                              <div class="progress">
+                                  <div class="progress-bar bg-danger" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 5%;"></div>
+                              </div>
+                              <p class="card-text nanValues text-muted"></p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>
+
 {% endblock%}
 {% block contentScripts %} 
 <script src="{{ url_for('static', filename='scripts/csvProfiler.js') }}"></script>
