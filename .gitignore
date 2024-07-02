@@ -1,3 +1,5 @@
 .venv
 .env
 migrations
+generateEncryptionKey.py
+pushDockerhub.bat
