@@ -3,8 +3,14 @@
 <div class="col-md-3 mt-3">
   <form id="csvForm" method="post" enctype="multipart/form-data">
     <div class="form-group">
-      {{form.csvFile (accept=".csv")}}
-      {{form.submit (class="btn btn-primary") }}
+        <label for="csvSeperator"> Choose Delimiter</label>
+        {{form.csvSeperator (id="csvSeperator", class="form-control")}}
+        <label for="headerRow"> Choose header row</label>
+        {{form.headerRow (id="headerRow", class="form-control")}}
+        <label for="quoteChar"> Choose quote char</label>
+        {{form.quoteChar (id="quoteChar", class="form-control")}}
+        {{form.csvFile (accept=".csv", class="form-control mt-3", type="file")}}
+        {{form.submit (class="btn btn-primary form-control mt-3") }}
     </div>
   </form>
 </div>
