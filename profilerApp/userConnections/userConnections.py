@@ -31,7 +31,7 @@ class postgresqlConnection:
         self.connection = None
         self.cursor = None
 
-    def query(self, query):
+    def queryDB(self, query):
         if self.connection == None:
             self.getConnection()
         cursor = self.cursor

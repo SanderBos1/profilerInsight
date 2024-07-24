@@ -10,6 +10,16 @@ usertableBP = Blueprint(
     __name__,
 )
 
+@usertableBP.route('/getUniqueTableNames', methods=['GET'])
+def getConnectionIDs():
+    try:
+        uniqueTableNameList = userTable.query.with_entities(userTable.uniqueTableName).all()
+        uniqueTableNameList = [connection.uniqueTableName for connection in uniqueTableNameList]
+        answer = json.dumps(uniqueTableNameList)
+        return answer, 200
+    except Exception as e:
+        return jsonify(str(e)), 500
+
 @usertableBP.route('/getTables', methods=['GET'])
 def getConnections():
     try:

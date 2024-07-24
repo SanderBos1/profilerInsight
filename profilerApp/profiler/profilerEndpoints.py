@@ -24,39 +24,37 @@ profilerBP = Blueprint(
 @profilerBP.route('/getColumns/<tableName>', methods=['GET'])
 def getColumns(tableName):
     try:
-        session['tableName'] = tableName
         userTableValues = userTable.query.filter(userTable.uniqueTableName==tableName).first()
         connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
         userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
-        columns = userDatabaseConnection.query(f"SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = '{userTableValues.table}' ORDER BY table_name, ordinal_position;")
+        columns = userDatabaseConnection.queryDB(f"SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = '{userTableValues.table}' ORDER BY table_name, ordinal_position;")
         columnNames = []
         for tuple in columns:
             columnNames.append(tuple[1])
 
         answer = {
             "columnNames": columnNames,
-            "columnCount": len(columnNames)
-
         }
         return jsonify(answer), 200
     except Exception as e:
         return jsonify(str(e)), 500
     
 
-@profilerBP.route('/ingest/<columnName>', methods=['GET'])
-def ingest(columnName):
+@profilerBP.route('/ingest/<tableName>/<columnName>', methods=['GET'])
+def ingest(tableName, columnName):
     try:
-        profilerInstance = Profiler(columnName)  
+        print(tableName, columnName)
+        profilerInstance = Profiler(tableName, columnName)  
         answer = profilerInstance.ingestData()
         return jsonify(answer), 200
     except Exception as e:
         return jsonify(str(e)), 500
 
 
-@profilerBP.route('/getOverview/<columnName>', methods=['GET'])
-def getOverview(columnName):
+@profilerBP.route('/getOverview/<tableName>/<columnName>', methods=['GET'])
+def getOverview(tableName, columnName):
     try:
-        profilerInstance = Profiler(columnName)  
+        profilerInstance = Profiler(tableName, columnName)  
         existing = profilerInstance.checkExisting()
         if existing:
             answer = profilerInstance.getOverviewLocal()

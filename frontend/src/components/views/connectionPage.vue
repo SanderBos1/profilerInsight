@@ -1,0 +1,3 @@
+<template>
+    <connectionTable></connectionTable>
+</template>

@@ -1,0 +1,5 @@
+<template>
+    <csvProfilerComponent>
+    </csvProfilerComponent>
+
+</template>

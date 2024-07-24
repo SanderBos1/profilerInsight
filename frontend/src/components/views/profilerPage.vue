@@ -1,0 +1,5 @@
+<template>
+    <profilerComponent>
+    </profilerComponent>
+</template>
+
