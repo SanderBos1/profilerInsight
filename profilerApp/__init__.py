@@ -1,8 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf.csrf import CSRFProtect 
 import os
 from cryptography.fernet import Fernet
+from flask_cors import CORS
 
 db = SQLAlchemy()
 
@@ -14,6 +14,9 @@ def create_app():
 
 
     app = Flask(__name__)
+
+    #allow vue frontend to communicate with the backend
+    CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 
     databaseHost = os.getenv('databaseHost')  
     databasePort = os.getenv('databasePort') 
@@ -27,17 +30,14 @@ def create_app():
     app.config["SESSION_TYPE"] = "filesystem"      
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY",)
 
-    CSRFProtect (app)
     db.init_app(app)
 
     from .userConnections import databaseBP
-    from .pages import htmlPagesBP
     from .userTables import usertableBP
     from .profiler import profilerBP
     from .csvProfiler import csvProfilerBP
 
     app.register_blueprint(databaseBP)
-    app.register_blueprint(htmlPagesBP)
     app.register_blueprint(usertableBP)
     app.register_blueprint(profilerBP)
     app.register_blueprint(csvProfilerBP)

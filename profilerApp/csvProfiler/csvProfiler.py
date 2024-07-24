@@ -1,6 +1,5 @@
 import pandas as pd
 import csv
-from io import StringIO
 
 class csvProfilerClass():
     def __init__(self, file, seperator, header, quotechar):
@@ -10,7 +9,7 @@ class csvProfilerClass():
         self.quotechar = quotechar
 
     def convertToCsv(self):
-        self.df = pd.read_csv(self.file, delimiter=self.separator, header=self.header, quotechar=self.quotechar)
+        self.df = pd.read_csv(self.file, delimiter=self.separator, header=self.header, quotechar=self.quotechar, quoting=csv.QUOTE_NONE, on_bad_lines="skip")
         
 
     def csvStandardProfiler(self):

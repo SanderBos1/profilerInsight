@@ -10,6 +10,17 @@ databaseBP = Blueprint(
     __name__,
 )
 
+
+@databaseBP.route('/getConnectionIDs', methods=['GET'])
+def getConnectionIDs():
+    try:
+        conncetionIDList = dbConncetions.query.with_entities(dbConncetions.connectionId).all()
+        conncetionIDList = [connection.connectionId for connection in conncetionIDList]
+        answer = json.dumps(conncetionIDList)
+        return answer, 200
+    except Exception as e:
+        return jsonify(str(e)), 500
+    
 @databaseBP.route('/getConnections', methods=['GET'])
 def getConnections():
     try:
@@ -18,7 +29,7 @@ def getConnections():
         answer = json.dumps(connections_dict_list)
         return answer, 200
     except Exception as e:
-        return str(e), 500
+        return jsonify(str(e)), 500
 
 """
     input: A JSOn object with the following structure:

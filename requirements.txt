@@ -13,3 +13,9 @@ marshmallow
 cryptography
 numpy
 pandas
+flask_cors
+
+#vue-router
+#axios
+#bootstrap
+#bootstrap-vue

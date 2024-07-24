@@ -1,2 +1,2 @@
-from .forms import UploadForm
+from .jsonSchemas import csvUploadSchema
 from .csvProfilerEndpoints import csvProfilerBP
