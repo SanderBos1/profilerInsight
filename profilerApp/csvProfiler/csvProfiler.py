@@ -9,8 +9,20 @@ class csvProfilerClass():
         self.quotechar = quotechar
 
     def convertToCsv(self):
-        self.df = pd.read_csv(self.file, delimiter=self.separator, header=self.header, quotechar=self.quotechar, quoting=csv.QUOTE_NONE, on_bad_lines="skip")
-        
+        csvConverted = []
+        for line in self.file:
+            decodedLine = line.decode('utf-8')
+            cleanedDecodedLine = decodedLine.replace("\r", "").replace("\n", "").replace('"', '')
+            csvConverted.append(cleanedDecodedLine)
+
+        csv_file = 'cleaned.csv'
+        with open(csv_file, 'w', newline='', encoding='utf-8') as file:
+            writer = csv.writer(file, quoting=csv.QUOTE_ALL, delimiter=self.separator, quotechar=self.quotechar, escapechar='\\')
+            for line in csvConverted:
+                writer.writerow([line])
+
+        self.df = pd.read_csv(csv_file, delimiter=self.separator, header=self.header, quotechar=self.quotechar, quoting=csv.QUOTE_NONE, on_bad_lines="skip",  index_col=False)
+     
 
     def csvStandardProfiler(self):
         self.convertToCsv()
@@ -28,9 +40,9 @@ class csvProfilerClass():
                 "distinctValues": self.df[column].nunique(),
                 "uniqueValues": uniqueValues,
                 "nanValues": nanValues,
-                "meanColumn": meanColumn,
-                "minColumn": minColumn,
-                "maxColumn": maxColumn
+                "meanColumn": str(meanColumn),
+                "minColumn": str(minColumn),
+                "maxColumn": str(maxColumn)
             }
             columnValues.append(columnDict)
         return columnValues
