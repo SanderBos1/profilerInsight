@@ -1,4 +1,6 @@
 import pandas as pd
+from io import StringIO
+import re
 import csv
 
 class csvProfilerClass():
@@ -9,20 +11,24 @@ class csvProfilerClass():
         self.quotechar = quotechar
 
     def convertToCsv(self):
-        csvConverted = []
-        for line in self.file:
-            decodedLine = line.decode('utf-8')
-            cleanedDecodedLine = decodedLine.replace("\r", "").replace("\n", "").replace('"', '')
-            csvConverted.append(cleanedDecodedLine)
 
-        csv_file = 'cleaned.csv'
-        with open(csv_file, 'w', newline='', encoding='utf-8') as file:
-            writer = csv.writer(file, quoting=csv.QUOTE_ALL, delimiter=self.separator, quotechar=self.quotechar, escapechar='\\')
-            for line in csvConverted:
-                writer.writerow([line])
 
-        self.df = pd.read_csv(csv_file, delimiter=self.separator, header=self.header, quotechar=self.quotechar, quoting=csv.QUOTE_NONE, on_bad_lines="skip",  index_col=False)
-     
+
+        csvFile = StringIO(self.file.stream.read().decode("UTF8"), newline=None)
+        lines = csvFile.readlines()
+
+        csvConvertedData = []
+        pattern = rf'{self.separator}(?=(?:[^{self.quotechar}]*"[^{self.quotechar}]*{self.quotechar})*[^{self.quotechar}]*$)'
+        for rowNumber, row in enumerate(lines): 
+            row = row.strip('\n')
+            if rowNumber == self.header:
+                columnNames = row.split(self.separator)  #re.split(pattern, row)
+            elif rowNumber > self.header:
+                row = row[1:-1]
+                row = row.replace('""', f'{self.quotechar}')
+                csvConvertedData.append(re.split(pattern, row))
+
+        self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
 
     def csvStandardProfiler(self):
         self.convertToCsv()

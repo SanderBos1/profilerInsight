@@ -36,13 +36,13 @@ def csvProfiler():
         data = csvUploadForm.load(request.form)
     except ValidationError as e:
         return jsonify(e.messages), 400
-    try:
-        seperator = data.get('csvSeperator', ',')
-        file = request.files['csvFile']
-        header = data.get('headerRow', 0) 
-        quotechar = data.get('quoteChar', '"') 
-        newCsvProfiler = csvProfilerClass(file, seperator, header, quotechar)
-        columnValues = newCsvProfiler.csvStandardProfiler() 
-        return jsonify(columnValues), 200
-    except Exception as e:
-        return str(e), 500
+    # try:
+    seperator = data.get('csvSeperator', ',')
+    file = request.files['csvFile']
+    header = data.get('headerRow', 0) 
+    quotechar = data.get('quoteChar', '"') 
+    newCsvProfiler = csvProfilerClass(file, seperator, header, quotechar)
+    columnValues = newCsvProfiler.csvStandardProfiler() 
+    return jsonify(columnValues), 200
+    # except Exception as e:
+    #     return str(e), 500
