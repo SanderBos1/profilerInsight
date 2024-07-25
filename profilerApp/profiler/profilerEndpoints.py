@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, session
 from ..userTables import userTable
 from ..userConnections import dbConncetions
-from ..userConnections import postgresqlConnection
+from ..database_query_manager import DatabaseQueryManager
 from .profiler import Profiler
 
 profilerBP = Blueprint(
@@ -26,8 +26,10 @@ def getColumns(tableName):
     try:
         userTableValues = userTable.query.filter(userTable.uniqueTableName==tableName).first()
         connection = dbConncetions.query.filter_by(connectionId=userTableValues.connectionId).first()   
-        userDatabaseConnection = postgresqlConnection(connection.host, connection.port, connection.username, connection.password, connection.database)
-        columns = userDatabaseConnection.queryDB(f"SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = '{userTableValues.table}' ORDER BY table_name, ordinal_position;")
+        userDatabaseConnection = DatabaseQueryManager("postgresql", connection)
+        query = 'SELECT table_name, column_name, data_type FROM information_schema.columns where table_name = %s ORDER BY table_name, ordinal_position;'
+        params=(userTableValues.table,)
+        columns = userDatabaseConnection.executeQuery(query, params)
         columnNames = []
         for tuple in columns:
             columnNames.append(tuple[1])
@@ -43,7 +45,6 @@ def getColumns(tableName):
 @profilerBP.route('/ingest/<tableName>/<columnName>', methods=['GET'])
 def ingest(tableName, columnName):
     try:
-        print(tableName, columnName)
         profilerInstance = Profiler(tableName, columnName)  
         answer = profilerInstance.ingestData()
         return jsonify(answer), 200

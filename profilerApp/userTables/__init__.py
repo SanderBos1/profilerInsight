@@ -1,3 +1,2 @@
-from .userTablesLogic import usertableBP
-from .userTablesForm import tableForm
+from .userTablesEndpoints import usertableBP
 from .models import userTable

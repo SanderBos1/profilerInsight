@@ -12,6 +12,13 @@
                 <button v-for="column in columns" :key="column" class="btn btn-secondary" @click="getOverview(column)">{{ column }}</button>
             </div>
         </div>
+        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="csv Upload Error">
+            <template v-slot:dialogueBody>
+                <div class="mb-3">
+                    {{ profilerError }}
+                </div>
+            </template>
+    </basicDialogue>
         <div class="col-md-9 mt-3" v-if="overview">
             <div class="row">
                 <div class="col-md-9">
@@ -40,10 +47,17 @@
 </template>
 
 <script>
+import basicDialogue  from './basicDialogue.vue'
+
 export default{
+    components:{
+        basicDialogue
+    },
     name: 'profilerPage',
     data(){
         return{
+            profilerError: "",
+            errorVisible: false,
             uniqueTableNames: [],
             columns: [],
             selectedTable: null,
@@ -69,43 +83,59 @@ export default{
                 this.uniqueTableNames = data; 
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                this.errorVisible = true;
+                this.profilerError = error;
             });
         },
         getColumns(){
-            const apiEndpoint = 'http://127.0.0.1:5000//getColumns/' + this.selectedTable;
+            const apiEndpoint = 'http://127.0.0.1:5000/getColumns/' + this.selectedTable;
             fetch(apiEndpoint)
             .then(response => response.json())
             .then(data => {
                 this.columns = data['columnNames']; 
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                this.errorVisible = true;
+                this.profilerError = error;
             });
         },
         getOverview(column){
-            console.log(column)
             const apiEndpoint = 'http://127.0.0.1:5000/getOverview/' + this.selectedTable  + "/" + column;
             fetch(apiEndpoint)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) { 
+                    const error = new Error('Error fetching data');
+                    this.errorVisible = true;
+                    throw error;
+                }
+                return response.json();
+            })
             .then(data => {
                 this.overview = data
                 this.column = column
-                console.log(data)
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                this.errorVisible = true;
+                this.profilerError = error;
             });
     },
     ingestColumn(){
             const apiEndpoint = 'http://127.0.0.1:5000/ingest/' + this.selectedTable  + "/" + this.column;
             fetch(apiEndpoint)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) { 
+                    const error = new Error('Error fetching data, so no ingestion was done.');
+                    this.errorVisible = true;
+                    throw error;
+                }
+                return response.json();
+            })
             .then(data => {
                 this.overview = data
             })
             .catch(error => {
-                console.error('Error fetching data:', error);
+                this.errorVisible = true;
+                this.profilerError = error;
             });
         }
     }

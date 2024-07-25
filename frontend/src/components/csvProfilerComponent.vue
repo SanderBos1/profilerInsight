@@ -126,9 +126,9 @@ export default {
             this.columnsInfo = await response.json();
         }
         } 
-    catch (error) {
-        this.errorVisible = true;
-        this.csvUploadError = error;
+        catch (error) {
+            this.errorVisible = true;
+            this.csvUploadError = error;
         }    
     }
   }

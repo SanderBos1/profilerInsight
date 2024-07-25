@@ -27,6 +27,13 @@
             </table>
         </div>
     </div>
+    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="csv Upload Error">
+            <template v-slot:dialogueBody>
+                <div class="mb-3">
+                    {{tabelError }}
+                </div>
+            </template>
+    </basicDialogue>
     <basicDialogue :visible="showAddTable"  @update:visible="showAddTable = $event" dialogTitle="Postgres Connection">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
@@ -69,6 +76,8 @@ export default {
     data() {
         return {
         showAddTable: false,
+        errorVisible: false,
+        tabelError: "",
         dbTableConnections: [],
         connectionIDs: [],
         postgresConnectionForm:{
@@ -95,8 +104,9 @@ export default {
             this.connectionIDs = data; 
           })
           .catch(error => {
-            console.error('Error fetching data:', error);
-          });
+            this.errorVisible = true;
+            this.tabelError = error;
+        });
     },
     changeModals(){
         this.showAddTable = !this.showModal;
@@ -106,10 +116,11 @@ export default {
       fetch(apiEndpoint)
         .then(response => response.json())
         .then(data => {
-          this.dbTableConnections = data['columnNames']; // Set fetched data to connections array
+            this.dbTableConnections = data; 
         })
         .catch(error => {
-          console.error('Error fetching data:', error);
+            this.errorVisible = true;
+            this.tabelError = error;
         });
     },
     async submitPostgressForm() {
@@ -123,11 +134,13 @@ export default {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            this.errorVisible = true;
+            this.tabelError = response.statusText;
         }
         this.fetchConnections();
     } catch (error) {
-        console.error("Error adding connection:", error);
+        this.errorVisible = true;
+        this.tabelError = error;
     }
 },
     async deleteTable(uniqueTableName){
@@ -144,7 +157,8 @@ export default {
             }
 
         } catch (error){
-            console.error("Error deleting connection:", error);
+            this.errorVisible = true;
+            this.tabelError = error;
         }
     }
 }

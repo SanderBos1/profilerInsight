@@ -1,54 +1,92 @@
 import pandas as pd
 from io import StringIO
 import re
-import csv
 
-class csvProfilerClass():
-    def __init__(self, file, seperator, header, quotechar):
+class CSVProfile():
+    """
+    A class for profiling CSV data. It reads CSV data from a file-like object,
+    processes it, and provides profiling statistics for each column.
+    """
+    def __init__(self, file, separator, headerRow, quotechar):
+        """
+        Initializes the CSVProfiler with the given parameters.
+
+        Parameters:
+        - file (file-like object): A file-like object containing CSV data.
+        - separator (str): The character used to separate values in the CSV file.
+        - header_row (int): The row number (0-indexed) that contains the column names.
+        - quotechar (str): The character used to quote fields in the CSV file.
+        """
         self.file = file
-        self.separator = seperator
-        self.header = header
+        self.separator = separator
+        self.headerRow = headerRow
         self.quotechar = quotechar
+        self.df = None
 
     def convertToCsv(self):
-
-
-
-        csvFile = StringIO(self.file.stream.read().decode("UTF8"), newline=None)
+        """
+        Converts the CSV data from the file into a pandas DataFrame.
+        
+        Reads the CSV data from the provided file-like object, processes it
+        according to the specified separator and quote character, and 
+        creates a pandas DataFrame with the appropriate column names and data.
+        """
+        csvFile = StringIO(self.file.stream.read().decode("UTF-8"), newline=None)
         lines = csvFile.readlines()
-
         csvConvertedData = []
         pattern = rf'{self.separator}(?=(?:[^{self.quotechar}]*"[^{self.quotechar}]*{self.quotechar})*[^{self.quotechar}]*$)'
         for rowNumber, row in enumerate(lines): 
             row = row.strip('\n')
-            if rowNumber == self.header:
+            if rowNumber == self.headerRow:
                 columnNames = row.split(self.separator)  #re.split(pattern, row)
-            elif rowNumber > self.header:
+            elif rowNumber > self.headerRow:
                 row = row[1:-1]
-                row = row.replace('""', f'{self.quotechar}')
+                row = row.replace(f'{self.quotechar}{self.quotechar}', self.quotechar)
                 csvConvertedData.append(re.split(pattern, row))
 
         self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
 
     def csvStandardProfiler(self):
-        self.convertToCsv()
+        """
+        Profiles the DataFrame and returns statistics for each column.
+        
+        If the DataFrame has not been created yet, it calls `convert_to_csv()` 
+        to create it. It then calculates various statistics for each column, 
+        including the number of distinct values, percentage of NaN values, 
+        mean, minimum, and maximum values (where applicable).
+
+        Returns:
+        - List of dictionaries: Each dictionary contains statistics for one column
+        """
+        if self.df is None:
+            self.convertToCsv()
+
         columnValues = []
         for column in self.df.columns:
-            uniqueValues = len(self.df[column].value_counts()[self.df[column].value_counts() == 1].index.tolist())
-            nanValues = self.df[column].isna().sum()/len(self.df[column]) * 100
-            meanColumn = self.df[column].mean() if str(self.df[column].dtype) == 'float64' or str(self.df[column].dtype) == "int64" else "N/A"
-            minColumn = float(self.df[column].min()) if str(self.df[column].dtype) == 'float64' else min(self.df[column].astype(str))  
-            maxColumn = float(self.df[column].max()) if str(self.df[column].dtype) == 'float64' else max(self.df[column].astype(str))
-            columnDict = {
+            column_data = self.df[column]
+            unique_values_count = len(column_data.value_counts()[column_data.value_counts() == 1].index.tolist())
+            nan_percentage = column_data.isna().sum() / len(column_data) * 100
+            
+            column_type = str(column_data.dtype)
+            if column_type in ['float64', 'int64']:
+                mean_value = column_data.mean()
+                min_value = column_data.min()
+                max_value = column_data.max()
+            else:
+                mean_value = "N/A"
+                min_value = column_data.min()
+                max_value = column_data.max()
+            
+            column_dict = {
                 "columnName": column,
-                "columnType": str(self.df[column].dtype),
-                "lenColumn": len(self.df[column]),
-                "distinctValues": self.df[column].nunique(),
-                "uniqueValues": uniqueValues,
-                "nanValues": nanValues,
-                "meanColumn": str(meanColumn),
-                "minColumn": str(minColumn),
-                "maxColumn": str(maxColumn)
+                "columnType": column_type,
+                "lenColumn": len(column_data),
+                "distinctValues": column_data.nunique(),
+                "uniqueValues": unique_values_count,
+                "nanValues": nan_percentage,
+                "meanColumn": mean_value,
+                "minColumn": min_value,
+                "maxColumn": max_value
             }
-            columnValues.append(columnDict)
+            columnValues.append(column_dict)
         return columnValues

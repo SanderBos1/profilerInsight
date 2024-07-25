@@ -32,6 +32,13 @@
             </table>
         </div>
     </div>
+    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="csv Upload Error">
+            <template v-slot:dialogueBody>
+                <div class="mb-3">
+                    {{connectionError }}
+                </div>
+            </template>
+    </basicDialogue>
     <basicDialogue :visible="showModal" @update:visible="showModal = $event" dialogTitle="Choose Connection Type">
         <template v-slot:dialogueBody>
             <div class="row">
@@ -92,6 +99,8 @@ export default {
     },
     data() {
         return {
+        errorVisible: false,
+        connectionError: "",
         showModal: false,
         showPostgres: false,
         connections: [],
@@ -122,7 +131,8 @@ export default {
           this.connections = data; // Set fetched data to connections array
         })
         .catch(error => {
-          console.error('Error fetching data:', error);
+            this.errorVisible = true;
+            this.tabelError = error;
         });
     },
     async submitPostgressForm() {
@@ -136,13 +146,16 @@ export default {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            this.errorVisible = true;
+            this.tabelError = response.status;
         }
-        this.fetchConnections();
-
-        console.log('Form submitted successfully:', response);
+        else{
+            this.fetchConnections()
+            }
+        
     } catch (error) {
-        console.error("Error adding connection:", error);
+        this.errorVisible = true;
+        this.tabelError = error;
     }
 },
     async deleteConnection(connection){
@@ -154,12 +167,17 @@ export default {
                 },
                 body: JSON.stringify({"connectionId":connection.connectionId})
             });
-            if(response.ok){
+            if (!response.ok) {
+                this.errorVisible = true;
+                this.tabelError = response.status;
+            }
+            else{
                 this.fetchConnections()
             }
 
         } catch (error){
-            console.error("Error deleting connection:", error);
+            this.errorVisible = true;
+            this.tabelError = error;
         }
     }
 }
