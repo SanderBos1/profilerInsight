@@ -1,1 +1,2 @@
 .env
+./backend/profilerApp/data/csvfiles/*.csv

@@ -14,7 +14,6 @@ RUN pip install --no-cache-dir -r /profiler/requirements.txt
 
 COPY run.py /profiler/
 COPY profilerApp /profiler/profilerApp
-
 ENV FLASK_APP=run.py
 EXPOSE 5000
 CMD ["flask", "run", "--host=0.0.0.0"]

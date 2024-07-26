@@ -9,7 +9,7 @@ import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css';
 
 // Import your Vue components and App component
-import App from './homePage.vue';
+import App from './profilerInsight.vue';
 
 //components
 import dbTablesTable from './components/dbTablesTable.vue';
@@ -18,6 +18,7 @@ import profilerComponent from './components/profilerComponent.vue';
 import csvProfilerComponent from './components/csvProfilerComponent.vue';
 
 //views
+import homePage from './components/views/homePage.vue';
 import csvProfiler from './components/views/csvProfiler.vue';
 import connectionPage from './components/views/connectionPage.vue';
 import profilerPage from './components/views/profilerPage.vue';
@@ -32,7 +33,7 @@ const app = createApp(App);
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: csvProfiler },
+    { path: '/', component: homePage },
     { path: '/csvProfiler', component: csvProfiler },
     { path: '/connectionPage', component: connectionPage },
     { path: '/profilerPage', component: profilerPage },

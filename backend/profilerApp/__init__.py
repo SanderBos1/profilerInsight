@@ -6,9 +6,10 @@ from flask_cors import CORS
 
 db = SQLAlchemy()
 
-#define the encrpyion keys:
+#define the ecryption keys:
 key = os.getenv('ENCRYPTION_KEY')
 cipher_suite = Fernet(key)
+
 
 def create_app():
 
@@ -29,6 +30,9 @@ def create_app():
     app.config["SESSION_PERMANENT"] = False
     app.config["SESSION_TYPE"] = "filesystem"      
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY",)
+
+    #CSV are uploaded here
+    app.config['csvFolder'] = "C:/Users/SanderBos/OneDrive - Syngroup/Documenten/dataProfilerTool/backend/profilerApp/data/csvFiles/"
 
     db.init_app(app)
 

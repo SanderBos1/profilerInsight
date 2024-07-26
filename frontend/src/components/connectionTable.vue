@@ -90,7 +90,7 @@
 </template>
 
 <script>
-import basicDialogue  from './basicDialogue.vue'
+import basicDialogue  from './baseDialogue.vue'
 
 export default {
     name: 'connectionTable',
