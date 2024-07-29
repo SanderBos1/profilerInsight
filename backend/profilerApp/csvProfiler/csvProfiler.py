@@ -51,10 +51,11 @@ class CSVProfiler():
 
 
         self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
-        self.df.to_csv(current_app.config['csvFolder'] + self.fileName + ".csv", index=False)
+        
+        self.df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False)
 
         propertiesJson = json.dumps(self.properties, indent=4)
-        propertiesFilePath = current_app.config['csvFolder'] + self.fileName + ".json"
+        propertiesFilePath = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.json")
 
         with open(propertiesFilePath, 'w') as jsonFile:
             jsonFile.write(propertiesJson)

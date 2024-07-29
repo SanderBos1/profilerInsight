@@ -32,8 +32,9 @@ def create_app():
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY",)
 
     #CSV are uploaded here
-    app.config['csvFolder'] = "C:/Users/SanderBos/OneDrive - Syngroup/Documenten/dataProfilerTool/backend/profilerApp/data/csvFiles/"
-
+    base_dir =  os.path.dirname(os.path.abspath(__file__))
+    app.config['csvFolder'] = os.path.join(base_dir, 'data', 'csvFiles')
+    
     db.init_app(app)
 
     from .userConnections import databaseBP

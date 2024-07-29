@@ -13,7 +13,11 @@ COPY requirements.txt /profiler/
 RUN pip install --no-cache-dir -r /profiler/requirements.txt
 
 COPY run.py /profiler/
-COPY profilerApp /profiler/profilerApp
+COPY profilerApp ./profilerApp
+RUN ls -R /profiler/profilerApp/data
+RUN ls -R /profiler/profilerApp/csvProfiler
+
 ENV FLASK_APP=run.py
 EXPOSE 5000
 CMD ["flask", "run", "--host=0.0.0.0"]
+

@@ -1,8 +1,7 @@
-version: '3.8'
-
 services:
   psql-db:
     image: postgres:16
+    container_name: profiler-insight-psql-db
     environment:
       - POSTGRES_USER=${databaseUser:-postgres}
       - POSTGRES_PASSWORD=${databasePassword:-admin}
@@ -17,8 +16,15 @@ services:
       timeout: 20s
       retries: 5
 
+  profiler-insight-frontend:
+    image: sanderbos/profiler-insight-frontend:0.0.1
+    container_name: profiler-insight-frontend
+    ports:
+      - "8080:80"
+
   profiler-insight:
     image: sanderbos/profiler-insight:0.0.1
+    container_name: profiler-insight-backend
     depends_on:
       psql-db:
         condition: service_healthy
@@ -34,7 +40,6 @@ services:
       - ENCRYPTION_KEY=${ENCRYPTION_KEY:-uzxnpF4cpPrhmz7BBkTwAevXlxWOFjdIMECIgD9Yk1M=}
     ports:
       - "5000:5000"
-
 volumes:
   db-data:
 
