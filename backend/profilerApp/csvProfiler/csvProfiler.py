@@ -1,4 +1,6 @@
 import pandas as pd
+import json
+from flask import current_app
 from io import StringIO
 import re
 
@@ -7,66 +9,103 @@ class CSVProfiler():
     A class for profiling CSV data. It reads CSV data from a file-like object,
     processes it, and provides profiling statistics for each column.
     """
-    def __init__(self, file, properties):
+    def __init__(self, fileName:str, properties:dict):
         """
         Initializes the CSVProfiler with the given parameters.
 
         Parameters:
-        - file (file-like object): A file-like object containing CSV data.
-        - separator (str): The character used to separate values in the CSV file.
-        - header_row (int): The row number (0-indexed) that contains the column names.
-        - quotechar (str): The character used to quote fields in the CSV file.
+        - fileName (str): The name of the CSV file (without extension).
+        - properties (dict): Dictionary containing CSV file properties like separator, header row, and quote character.
         """
-        self.file = file
-        self.separator = properties['separator']
-        self.headerRow = properties['headerRow']
-        self.quotechar = properties['quotechar']
-        self.columnNames = []   
+        self.fileName = fileName
+        self.properties = properties
         self.df = None
 
-    def convertToCsv(self):
+    def convertToCsv(self, file) -> None:
         """
-        Converts the CSV data from the file into a pandas DataFrame.
-        
+        Converts the CSV data from the file into a pandas DataFrame and saves it.
+
         Reads the CSV data from the provided file-like object, processes it
         according to the specified separator and quote character, and 
         creates a pandas DataFrame with the appropriate column names and data.
+
+        Parameters:
+        - file (File-like object): The file-like object containing the CSV data.
         """
-        csvFile = StringIO(self.file, newline=None)
+        csvFile = StringIO(file.stream.read().decode("UTF-8"), newline=None)
+        csvLines = csvFile.readlines()
+
         csvConvertedData = []
-        pattern = rf'{self.separator}(?=(?:[^{self.quotechar}]*"[^{self.quotechar}]*{self.quotechar})*[^{self.quotechar}]*$)'
-        for rowNumber, row in enumerate(csvFile): 
+        quotechar = self.properties['quotechar']
+        headerRow = self.properties['headerRow']
+        separator = self.properties['separator']
+        pattern = rf'{separator}(?=(?:[^{quotechar}]*"[^{quotechar}]*{quotechar})*[^{quotechar}]*$)'
+        for rowNumber, row in enumerate(csvLines): 
             row = row.strip('\n')
-            if rowNumber == self.headerRow:
-                self.columnNames = row.split(self.separator)  #re.split(pattern, row)
-            elif rowNumber > self.headerRow:
-                row = row[1:-1]
-                row = row.replace(f'{self.quotechar}{self.quotechar}', self.quotechar)
+            print(row)
+            if rowNumber == headerRow:
+                columnNames = row.split(separator) 
+            elif rowNumber > headerRow:
+                print(row)
+                row = row.replace(f'{quotechar}{quotechar}', quotechar).strip()
                 csvConvertedData.append(re.split(pattern, row))
 
-        self.df = pd.DataFrame(csvConvertedData, columns=self.columnNames)
+        print(len(csvConvertedData))
 
-    def getColumns(self):
-        return self.columnNames
+        self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
+        print(self.df)
+        self.df.to_csv(current_app.config['csvFolder'] + self.fileName + ".csv", index=False)
 
-    def csvStandardProfiler(self, column):
+        propertiesJson = json.dumps(self.properties, indent=4)
+        propertiesFilePath = current_app.config['csvFolder'] + self.fileName + ".json"
+
+        with open(propertiesFilePath, 'w') as jsonFile:
+            jsonFile.write(propertiesJson)
+
+    def loadCsv(self) -> None:
         """
-        Profiles the DataFrame and returns statistics for chosen column
+        Loads the CSV data from the file into a pandas DataFrame.
+
+        Reads the CSV data from the file, processes it according to the specified 
+        separator and quote character, and creates a pandas DataFrame with the 
+        appropriate column names and data.
+        """
+        fileName = f"{current_app.config['csvFolder']}/{self.fileName}.csv"
+        self.df = pd.read_csv(fileName, sep=self.properties['separator'], quotechar=self.properties['quotechar'], header=self.properties['headerRow'])
+
+    def getColumns(self) -> list:
+        """
+        Returns the columns in the DataFrame as a list of strings.
+
+        If the DataFrame is not present, it should be created by calling `loadCsv()`.
         
-        If the DataFrame has not been created yet, it calls `convert_to_csv()` 
-        to create it. It then calculates various statistics for each column, 
+        Returns:
+        - list: List of column names.
+        """
+        if self.df is None:
+            self.loadCsv()
+        return self.df.columns.tolist()
+
+    def csvStandardProfiler(self, column:str) -> dict:
+        """
+        Profiles the DataFrame and returns statistics for the specified column.
+
+        If the DataFrame has not been created yet, it calls `convertToCsv()` 
+        to create it. It then calculates various statistics for the specified column, 
         including the number of distinct values, percentage of NaN values, 
         mean, minimum, and maximum values (where applicable).
 
+        Parameters:
+        - column (str): The name of the column to profile.
+
         Returns:
-        - Dictionary: a dictionary contains statistics for one column
+        - dict: A dictionary containing statistics for the specified column.
         """
         if self.df is None:
             self.convertToCsv()
 
-       
         column_data = self.df[column]
-        unique_values_count = len(column_data.value_counts()[column_data.value_counts() == 1].index.tolist())
+        unique_values_count = len(column_data[column_data.duplicated(keep=False) == False])
         nan_percentage = column_data.isna().sum() / len(column_data) * 100
             
         column_type = str(column_data.dtype)
@@ -75,6 +114,7 @@ class CSVProfiler():
             min_value = column_data.min()
             max_value = column_data.max()
         else:
+            column_data = column_data.astype(str)
             mean_value = "N/A"
             min_value = column_data.min()
             max_value = column_data.max()
@@ -86,8 +126,8 @@ class CSVProfiler():
             "distinctValues": column_data.nunique(),
             "uniqueValues": unique_values_count,
             "nanValues": nan_percentage,
-            "meanColumn": mean_value,
-            "minColumn": min_value,
-            "maxColumn": max_value
+            "meanColumn":str(mean_value),
+            "minColumn": str(min_value),
+            "maxColumn": str(max_value)
         }
         return column_dict

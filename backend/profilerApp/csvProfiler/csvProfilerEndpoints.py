@@ -12,79 +12,145 @@ csvProfilerBP = Blueprint(
 )
 
 @csvProfilerBP.route('/getColumnOverview/<filename>/<column>', methods=['GET'])
-def getColumnOverview(filename, column):
+def getColumnOverview(filename:str, column:str):
+    """
+    Retrieve the overview of a specific column in a CSV file.
+
+    This endpoint loads a CSV file and its properties, processes the specified column,
+    and returns the profiling information.
+
+    Parameters:
+    filename (str): The name of the CSV file (without extension).
+    column (str): The name of the column to profile.
+
+    Returns:
+        Tuple[dict, int]: A JSON response containing the column profiling information and the HTTP status code.
+
+    Status Codes:
+        200: Successful retrieval of column profiling information.
+        404: File not found (either CSV or properties file).
+        400: Error decoding JSON properties file.
+        500: General server error (any other exceptions).
+
+
+    """
     filename = secure_filename(filename)
     try:
-        fullFilename = os.path.join(current_app.config['csvFolder'], f"{filename}.csv")
-        with open(fullFilename, 'r', encoding='utf-8') as file:
-            file = file.read()
-
+   
         propertiesFileName = os.path.join(current_app.config['csvFolder'], f"{filename}.json")
         with open(propertiesFileName, 'rb') as properties:
             properties = json.load(properties)
 
-        newcsv = CSVProfiler(file, properties)
-        columns = newcsv.csvStandardProfiler(column)
-
+        newCSVProfiler = CSVProfiler(filename, properties)
+        newCSVProfiler.loadCsv()
+        columns = newCSVProfiler.csvStandardProfiler(column)
         return jsonify(columns), 200
+    
+    except FileNotFoundError:
+        error_message = f"File {filename}.json not found."
+        current_app.logger.error(error_message)
+        return jsonify({"error": error_message}), 404
+    
+    except json.JSONDecodeError:
+        error_message = f"Error decoding JSON in file {filename}.json."
+        current_app.logger.error(error_message)
+        return jsonify({"error": error_message}), 400
+    
     except Exception as e:
-        return jsonify(str(e)), 500
-
+        current_app.logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @csvProfilerBP.route('/getCSVFiles', methods=['GET'])
 def getCSVFiles():
-    files = os.listdir(current_app.config['csvFolder'])
-    filenames = []
-    for file in files:
-        filename = file.split(".")
-        if filename[1] == "csv":
-            filenames.append(filename[0])
-    return jsonify(filenames), 200
+    """
+    Retrieve a list of all CSV files in the configured directory.
+
+    This endpoint scans the configured directory for CSV files and returns their filenames without extensions.
+
+    Returns:
+    Tuple[dict, int]: A JSON response containing a list of CSV filenames and the HTTP status code.
+
+    Status Codes:
+    200: Successful retrieval of CSV filenames.
+    500: General server error (any other exceptions).
+
+    """
+    try: 
+        files = os.listdir(current_app.config['csvFolder'])
+        filenames = []
+        for file in files:
+            filename = file.split(".")
+            if filename[1] == "csv":
+                filenames.append(filename[0])
+        return jsonify(filenames), 200
+    except Exception as e:
+        current_app.logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
 @csvProfilerBP.route('/getCSVColumns/<filename>', methods=['GET'])
-def getCSVColumns(filename):
+def getCSVColumns(filename:str):
+    """
+    Retrieve the list of columns in a specified CSV file.
+
+    This endpoint loads a CSV file and its properties, retrieves the column names,
+    and returns them.
+
+    Parameters:
+    filename (str): The name of the CSV file (without extension).
+
+    Returns:
+    Tuple[dict, int]: A JSON response containing the list of column names and the HTTP status code.
+
+    Status Codes:
+    200: Successful retrieval of column names.
+    404: File not found (either CSV or properties file).
+    400: Error decoding JSON properties file.
+    500: General server error (any other exceptions).
+
+    """
     filename = secure_filename(filename)
     try:
-        fullFilename = os.path.join(current_app.config['csvFolder'], f"{filename}.csv")
-        with open(fullFilename, 'r', encoding='utf-8') as file:
-            file = file.read()
-
         propertiesFileName = os.path.join(current_app.config['csvFolder'], f"{filename}.json")
         with open(propertiesFileName, 'rb') as properties:
             properties = json.load(properties)
 
-        newcsv = CSVProfiler(file, properties)
-        newcsv.convertToCsv()
-        columns = newcsv.getColumns()
-
+        newCSVProfiler = CSVProfiler(filename, properties)
+        newCSVProfiler.loadCsv()
+        columns = newCSVProfiler.getColumns()
         return jsonify(columns), 200
-    except Exception as e:
-        return jsonify(str(e)), 500
-
-
-"""
-Input:
-    Content Type: multipart/form-data
-    Required Fields:
-        csvFile: The CSV file to be processed (type: file).
-    Optional Fields:
-    csvSeperator: (str) The delimiter used in the CSV file. Default is ','.
-    headerRow: (int) The index of the header row in the CSV file. Default is 0.
-    quoteChar: (str) The character used to quote fields in the CSV file. Default is '"'.
+    except FileNotFoundError:
+        error_message = f"File {filename}.json not found."
+        current_app.logger.error(error_message)
+        return jsonify({"error": error_message}), 404
     
-    Goal: read the basic information of the csv file and return the column names and their basic statistics
+    except json.JSONDecodeError:
+        error_message = f"Error decoding JSON in file {filename}.json."
+        current_app.logger.error(error_message)
+        return jsonify({"error": error_message}), 400
+    
+    except Exception as e:
+        current_app.logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
 
-    output: a JSON object with a list of column names and their corresponding statistics
-
-    status codes:
-        200:  The file was read and processed successfully.
-        400: The input JSON object is invalid. This includes missing required fields or invalid data types.
-        500: An error occurred while reading the CSV file. This could be due to file reading issues, parsing errors, or other unexpected conditions.
-
-"""
 
 @csvProfilerBP.route('/uploadCSV', methods=['POST'])
 def csvProfiler():
+    
+    """
+    Upload a CSV file and process it with specified properties.
+
+    This endpoint handles CSV file uploads, validates the form data, and processes the uploaded file
+    using the specified properties.
+
+    Returns:
+    Tuple[dict, int]: A JSON response containing a success message and the HTTP status code.
+
+    Status Codes:
+    200: Successful processing of the CSV file.
+    400: Validation error (form data does not meet validation criteria).
+    500: General server error (any other exceptions).
+
+    """
     try:
         csvUploadForm = csvUploadSchema()
         data = csvUploadForm.load(request.form)
@@ -92,23 +158,23 @@ def csvProfiler():
         return jsonify(e.messages), 400
     try:
 
-        separator = data.get('csvSeperator', ',')
         file = request.files['csvFile']
         filename, ext = os.path.splitext(file.filename)
-        csvFileName = current_app.config['csvFolder'] + filename + ".csv"
+
+        separator = data.get('csvSeperator', ',')
         headerRow = data.get('headerRow', 0) 
         quotechar = data.get('quoteChar', '"') 
 
-        file.save(csvFileName)
         properties = {
             'separator': separator,
             'headerRow': headerRow,
             'quotechar': quotechar
         }
-        propertiesJson = json.dumps(properties)
-        propertiesFilePath = current_app.config['csvFolder'] + filename + ".json"
-        with open(propertiesFilePath, 'w') as jsonFile:
-            jsonFile.write(propertiesJson)
+
+        newCSVProfiler = CSVProfiler(filename, properties)
+        newCSVProfiler.convertToCsv(file)
+
         return jsonify(message="Success"), 200
     except Exception as e:
-        return str(e), 500
+        current_app.logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
