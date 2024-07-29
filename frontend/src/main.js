@@ -11,11 +11,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 // Import your Vue components and App component
 import App from './profilerInsight.vue';
 
-//components
-import dbTablesTable from './components/dbTablesTable.vue';
-import connectionTable from './components/connectionTable.vue';
-import profilerComponent from './components/profilerComponent.vue';
-import csvProfilerComponent from './components/csvProfilerComponent.vue';
+
 
 //views
 import homePage from './components/views/homePage.vue';
@@ -45,11 +41,7 @@ const router = createRouter({
 // Use the router instance in the app
 app.use(router);
 
-// Register components globally (if needed)
-app.component('connectionTable', connectionTable);
-app.component('dbTablesTable', dbTablesTable);
-app.component('profilerComponent', profilerComponent);	
-app.component('csvProfilerComponent', csvProfilerComponent);	
+
 
 // Mount the app
 app.mount('#app');

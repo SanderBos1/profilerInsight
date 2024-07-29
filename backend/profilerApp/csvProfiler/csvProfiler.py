@@ -3,6 +3,7 @@ import json
 from flask import current_app
 from io import StringIO
 import re
+import os
 
 class CSVProfiler():
     """
@@ -42,18 +43,14 @@ class CSVProfiler():
         pattern = rf'{separator}(?=(?:[^{quotechar}]*"[^{quotechar}]*{quotechar})*[^{quotechar}]*$)'
         for rowNumber, row in enumerate(csvLines): 
             row = row.strip('\n')
-            print(row)
             if rowNumber == headerRow:
                 columnNames = row.split(separator) 
             elif rowNumber > headerRow:
-                print(row)
                 row = row.replace(f'{quotechar}{quotechar}', quotechar).strip()
                 csvConvertedData.append(re.split(pattern, row))
 
-        print(len(csvConvertedData))
 
         self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
-        print(self.df)
         self.df.to_csv(current_app.config['csvFolder'] + self.fileName + ".csv", index=False)
 
         propertiesJson = json.dumps(self.properties, indent=4)
@@ -70,7 +67,7 @@ class CSVProfiler():
         separator and quote character, and creates a pandas DataFrame with the 
         appropriate column names and data.
         """
-        fileName = f"{current_app.config['csvFolder']}/{self.fileName}.csv"
+        fileName = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv")
         self.df = pd.read_csv(fileName, sep=self.properties['separator'], quotechar=self.properties['quotechar'], header=self.properties['headerRow'])
 
     def getColumns(self) -> list:

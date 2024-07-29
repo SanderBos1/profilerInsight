@@ -36,7 +36,6 @@ def getColumnOverview(filename:str, column:str):
     """
     filename = secure_filename(filename)
     try:
-   
         propertiesFileName = os.path.join(current_app.config['csvFolder'], f"{filename}.json")
         with open(propertiesFileName, 'rb') as properties:
             properties = json.load(properties)
@@ -86,6 +85,36 @@ def getCSVFiles():
     except Exception as e:
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
+    
+@csvProfilerBP.route('/deleteCSVFile/<filename>', methods=['DELETE'])
+def deleteCSV(filename):
+    """
+    Delete a specified CSV file and its properties file.
+
+    Returns:
+    Tuple[dict, int]: A JSON response containing a success message and the HTTP status code.
+
+    Status Codes:
+        200: Successful deletion of the CSV file and properties file.
+        404: File not found (either CSV or properties file).
+        500: General server error (any other exceptions
+    """
+    try: 
+        secureFilename =secure_filename(filename)
+        filename = os.path.join(current_app.config['csvFolder'], f"{secureFilename}.csv")
+        propertiesFileName = os.path.join(current_app.config['csvFolder'], f"{secureFilename}.json")
+
+        os.remove(filename)
+        os.remove(propertiesFileName)
+        return jsonify(message="Success"), 200
+    except FileNotFoundError as e:
+        error_message = f"File {filename}.json not found."
+        current_app.logger.error(error_message)
+        return jsonify({"error": error_message}), 404
+    except Exception as e:
+        current_app.logger.error(f"An error occurred: {e}")
+        return jsonify({"error": str(e)}), 500
+
 
 @csvProfilerBP.route('/getCSVColumns/<filename>', methods=['GET'])
 def getCSVColumns(filename:str):
@@ -122,7 +151,6 @@ def getCSVColumns(filename:str):
         error_message = f"File {filename}.json not found."
         current_app.logger.error(error_message)
         return jsonify({"error": error_message}), 404
-    
     except json.JSONDecodeError:
         error_message = f"Error decoding JSON in file {filename}.json."
         current_app.logger.error(error_message)

@@ -5,14 +5,18 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title">{{ dialogTitle }}</h5>
+            <div class="col-md-10">
+              <h5 class="modal-title">{{ dialogTitle }}</h5>
+            </div>
+            <div class="col-md-2">
+              <button type="button"  @click="OpenCloseFun()" :class="'btn btn-'+variant" >close</button>
+            </div>
         </div>
         <div class="modal-body">
          <slot name="dialogueBody"></slot>
         </div>
         <div class="modal-footer">
           <slot name="dialogueFooter"></slot>
-          <button type="button"  @click="OpenCloseFun()" :class="'btn btn-'+variant" >close</button>
         </div>
       </div>
     </div>
