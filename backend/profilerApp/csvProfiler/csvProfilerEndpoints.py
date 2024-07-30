@@ -188,6 +188,7 @@ def csvProfiler():
 
         file = request.files['csvFile']
         filename, ext = os.path.splitext(file.filename)
+        filename = secure_filename(filename)
 
         separator = data.get('csvSeperator', ',')
         headerRow = data.get('headerRow', 0) 

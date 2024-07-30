@@ -4,7 +4,7 @@
   </div>
   <div class="row h-100">
     <baseSideHeader></baseSideHeader>
-    <div class="col-9 p-3">
+    <div class="col-10 p-3">
       <router-view />
     </div> 
 </div>
@@ -25,6 +25,11 @@
   </script>
 
   <style>
-
+    .grey{
+        background-color: #5b5d62;
+    }
+    .orange{
+        background-color: #fe5000;
+    }
   </style>
   

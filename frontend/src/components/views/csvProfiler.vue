@@ -1,86 +1,84 @@
 <template>
     <div class="row">
         <div class="col-md-3">
-            <h1> CSV Profiler</h1>
+            <h1 align="center"> CSV Profiler</h1>
         </div>
-        <div class="offset-md-4 col-md-2">
-            <button @click="uploadCSV = true"> Upload csv </button>
-        </div>
-        <div class="col-md-2">
-            <button  @click="deleteCSVDialogue = true"> Delete CSV </button>
+        <div class="offset-md-6 col-md-3">
+            <button class="orange  btn btn-secondary" @click="uploadCSV = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can upload a CSV file to profile."> Upload</button>
+            <button  class="orange  btn btn-secondary ms-3" @click="deleteCSVDialogue = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can Delete one of your uploaded CSV files"> Delete</button>
         </div>
     </div>
-        <div class="row">
-            <div class="col-md-3">
-                <select v-model="selectCSVFile" id="selectCSV" class="form-control">
-                    <option v-for="csvfile in csvFiles" :key="csvfile">
-                        {{ csvfile}} 
-                    </option>
-                </select> 
-                <h2 class="w-100 text-center">Columns</h2>
-                <div class="btn-group-vertical w-100" id="columnButton">
-                    <button v-for="csvColumn in csvColumns" :key="csvColumn" class="btn btn-secondary" @click="getOverview(csvColumn)">{{ csvColumn }}</button>
-                </div>
-            </div>
-            <div class="col-md-9">
-                <baseIngestionOverview :columnInfo=columnInfo>
-                </baseIngestionOverview>
+    <div class="row">
+        <div class="col-md-3">
+            <select v-model="selectCSVFile" id="selectCSV" class="form-select" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose which CSV file you want to profile.">
+                <option disabled selected value="" >Choose a CSV File to Profile.</option>
+                <option v-for="csvfile in csvFiles" :key="csvfile">
+                    {{ csvfile}} 
+                </option>
+            </select> 
+            <h2 class="w-100 text-center">Columns</h2>
+            <div class="btn-group-vertical w-100" id="columnButton">
+                <button v-for="csvColumn in csvColumns" :key="csvColumn" class="orange btn btn-secondary" @click="getOverview(csvColumn)" data-bs-toggle="tooltip" data-bs-placement="right" title="Click this button to Profile the data in this column">{{ csvColumn }}</button>
             </div>
         </div>
-            <basicDialogue :visible="deleteCSVDialogue"  @update:visible="deleteCSVDialogue = $event" dialogTitle="Delete CSV">
-                <template v-slot:dialogueBody>
-                    <select v-model="toBeDeleteCSV" id="deleteCSV" class="form-control">
-                        <option v-for="csvfile in csvFiles" :key="csvfile">
-                            {{ csvfile}} 
-                        </option>
-                    </select> 
-                </template>
-                <template v-slot:dialogueFooter>
-                    <button class="btn btn-primary" @click="deleteCSV()">Delete</button>
-                </template>
-            </basicDialogue>
-            <basicDialogue :visible="uploadCSV"  @update:visible="uploadCSV = $event" dialogTitle="Upload CSV">
-                <template v-slot:dialogueBody>
-                    <div class="col-md-3 mt-3">
-                        <form id="csvForm" v-on:submit.prevent="submitCSV" method="post" enctype="multipart/form-data">
-                            <div class="form-group">
-                                <div class="mb-3">
-                                    <label for="csvSeperator" class="form-label">Seperator</label>
-                                    <select id="csvSeperator" class="form-control" v-model="csvProfilerForm.csvSeperator">
-                                        <option value=','>,</option>
-                                        <option value=';'>;</option>
-                                        <option value='\t'>\t</option>
-                                    </select>                  
-                                </div>
-                                <div class="mb-3">
-                                    <label for="headerRow" class="form-label">headerRow</label>
-                                    <input type="number" min="0" value="0" id="headerRow" v-model="csvProfilerForm.headerRow" class="form-control">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="quoteChar" class="form-label">quoteChar</label>
-                                    <input type="text" id="quoteChar"  v-model="csvProfilerForm.quoteChar" class="form-control">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="csvFile" class="form-label">csv File</label>
-                                    <input type="file" id="csvFile" v-on:change="handleFileUpload" class="form-control" accept=".csv">
-                                </div>
-                                <button class="btn btn-primary" type="submit">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-                </template>
-            </basicDialogue>
-<div class="row">
-    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="CSV Profiler Error">
+        <div class="col-md-9">
+            <baseIngestionOverview :columnInfo=columnInfo>
+            </baseIngestionOverview>
+        </div>
+    </div>
+    <basicDialogue :visible="deleteCSVDialogue"  @update:visible="deleteCSVDialogue = $event" dialogTitle="Delete CSV">
+        <template v-slot:dialogueBody>
+            <select v-model="toBeDeleteCSV" id="deleteCSV" class="form-control">
+                <option disabled selected value="" >Choose a CSV File to Delete.</option>
+                <option v-for="csvfile in csvFiles" :key="csvfile">
+                    {{ csvfile}} 
+                </option>
+            </select> 
+        </template>
+        <template v-slot:dialogueFooter>
+            <button class="btn btn-primary" @click="deleteCSV()">Delete</button>
+        </template>
+    </basicDialogue>
+    <basicDialogue :visible="uploadCSV"  @update:visible="uploadCSV = $event" dialogTitle="Upload CSV">
+        <template v-slot:dialogueBody>
+            <div class="col-md-3 mt-3">
+                <form id="csvForm" v-on:submit.prevent="submitCSV" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="mb-3">
+                            <label for="csvSeperator" class="form-label">Seperator</label>
+                            <select id="csvSeperator" class="form-control" v-model="csvProfilerForm.csvSeperator">
+                                <option value=','>,</option>
+                                <option value=';'>;</option>
+                                <option value='\t'>\t</option>
+                            </select>                  
+                        </div>
+                        <div class="mb-3">
+                            <label for="headerRow" class="form-label">headerRow</label>
+                            <input type="number" min="0" value="0" id="headerRow" v-model="csvProfilerForm.headerRow" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteChar" class="form-label">quoteChar</label>
+                            <input type="text" id="quoteChar"  v-model="csvProfilerForm.quoteChar" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label for="csvFile" class="form-label">csv File</label>
+                            <input type="file" id="csvFile" v-on:change="handleFileUpload" class="form-control" accept=".csv">
+                        </div>
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+        </template>
+    </basicDialogue>
+    <div class="row">
+        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="CSV Profiler Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
                     {{csvUploadError }}
                 </div>
             </template>
-    </basicDialogue>
-</div>
-
-
+        </basicDialogue>
+    </div>
 </template>
 
 <script>
@@ -103,8 +101,8 @@ export default {
     },
     data() {
         return {
-        toBeDeleteCSV: null,
-        selectCSVFile: null,
+        toBeDeleteCSV: '',
+        selectCSVFile: '',
         deleteCSVDialogue: false,
         uploadCSV: false,
         errorVisible: false,
@@ -168,7 +166,8 @@ export default {
         if (!this.selectCSVFile) return;
         const apiEndpoint = API_ENDPOINTS.GET_CSV_COLUMNS(this.selectCSVFile);
         this.csvColumns = await this.fetchData(apiEndpoint, 'GET');
-        
+        this.columnInfo = null;
+    
     },
     handleFileUpload(event) {
             const file = event.target.files[0]

@@ -5,11 +5,11 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-            <div class="col-md-10">
+            <div class="col-md-11">
               <h5 class="modal-title">{{ dialogTitle }}</h5>
             </div>
-            <div class="col-md-2">
-              <button type="button"  @click="OpenCloseFun()" :class="'btn btn-'+variant" >close</button>
+            <div class="col-md-1">
+              <button type="button"  @click="OpenCloseFun()" :class='"closeDialogue btn btn-danger"' >X</button>
             </div>
         </div>
         <div class="modal-body">
@@ -28,7 +28,6 @@ export default {
   name: 'basicDialogue',
   props: {
     visible: Boolean,
-    variant:String,
     dialogTitle:String
   },
   data(){
@@ -50,3 +49,7 @@ export default {
 
 }
 </script>
+
+<style>
+
+</style>

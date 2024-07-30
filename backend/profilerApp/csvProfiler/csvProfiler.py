@@ -1,7 +1,6 @@
 import pandas as pd
 import json
 from flask import current_app
-from io import StringIO
 import re
 import os
 
@@ -33,25 +32,28 @@ class CSVProfiler():
         Parameters:
         - file (File-like object): The file-like object containing the CSV data.
         """
-        csvFile = StringIO(file.stream.read().decode("UTF-8"), newline=None)
-        csvLines = csvFile.readlines()
-
+        csvContent = file.read().decode('utf-8')
+        csvLines = csvContent.split('\r\n')
         csvConvertedData = []
         quotechar = self.properties['quotechar']
         headerRow = self.properties['headerRow']
         separator = self.properties['separator']
-        pattern = rf'{separator}(?=(?:[^{quotechar}]*"[^{quotechar}]*{quotechar})*[^{quotechar}]*$)'
         for rowNumber, row in enumerate(csvLines): 
             row = row.strip('\n')
+            if row.startswith(quotechar) and row.endswith(quotechar):   
+                row = row[1:-1]
+                row=row.replace(quotechar+quotechar,quotechar)
+            
+            pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
+            row = pattern.split(row)
+
             if rowNumber == headerRow:
-                columnNames = row.split(separator) 
+                columnNames = row
             elif rowNumber > headerRow:
-                row = row.replace(f'{quotechar}{quotechar}', quotechar).strip()
-                csvConvertedData.append(re.split(pattern, row))
+                csvConvertedData.append(row)
 
 
         self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
-        
         self.df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False)
 
         propertiesJson = json.dumps(self.properties, indent=4)
@@ -68,6 +70,7 @@ class CSVProfiler():
         separator and quote character, and creates a pandas DataFrame with the 
         appropriate column names and data.
         """
+    
         fileName = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv")
         self.df = pd.read_csv(fileName, sep=self.properties['separator'], quotechar=self.properties['quotechar'], header=self.properties['headerRow'])
 
@@ -108,14 +111,16 @@ class CSVProfiler():
             
         column_type = str(column_data.dtype)
         if column_type in ['float64', 'int64']:
-            mean_value = column_data.mean()
-            min_value = column_data.min()
-            max_value = column_data.max()
+            median_value = round(column_data.median(), 3)
+            mean_value = round(column_data.mean(), 3)
+            min_value = round(column_data.min(), 3)
+            max_value = round(column_data.max(), 3)
         else:
-            column_data = column_data.astype(str)
+            column_data = round(column_data.astype(str), 3)
             mean_value = "N/A"
-            min_value = column_data.min()
-            max_value = column_data.max()
+            median_value = "N/A"
+            min_value = round(column_data.min(), 3)
+            max_value = round(column_data.max(), 3)
             
         column_dict = {
             "columnName": column,
@@ -125,6 +130,7 @@ class CSVProfiler():
             "uniqueValues": unique_values_count,
             "nanValues": nan_percentage,
             "meanColumn":str(mean_value),
+            "medianColumn": str(median_value),
             "minColumn": str(min_value),
             "maxColumn": str(max_value)
         }

@@ -8,6 +8,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.css';
 
+
 // Import your Vue components and App component
 import App from './profilerInsight.vue';
 
