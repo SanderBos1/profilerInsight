@@ -3,6 +3,7 @@ import json
 from flask import current_app
 import re
 import os
+from ..plotCreator import plotCreator
 
 class CSVProfiler():
     """
@@ -39,18 +40,19 @@ class CSVProfiler():
         headerRow = self.properties['headerRow']
         separator = self.properties['separator']
         for rowNumber, row in enumerate(csvLines): 
-            row = row.strip('\n')
-            if row.startswith(quotechar) and row.endswith(quotechar):   
-                row = row[1:-1]
-                row=row.replace(quotechar+quotechar,quotechar)
+            if row.strip():
+                row = row.strip('\n')
+                if row.startswith(quotechar) and row.endswith(quotechar):   
+                    row = row[1:-1]
+                    row=row.replace(quotechar+quotechar,quotechar)
             
-            pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
-            row = pattern.split(row)
+                pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
+                row = pattern.split(row)
 
-            if rowNumber == headerRow:
-                columnNames = row
-            elif rowNumber > headerRow:
-                csvConvertedData.append(row)
+                if rowNumber == headerRow:
+                    columnNames = row
+                elif rowNumber > headerRow:
+                    csvConvertedData.append(row)
 
 
         self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
@@ -108,6 +110,8 @@ class CSVProfiler():
         column_data = self.df[column]
         unique_values_count = len(column_data[column_data.duplicated(keep=False) == False])
         nan_percentage = column_data.isna().sum() / len(column_data) * 100
+
+        newPlotCreator = plotCreator(column_data, column)
             
         column_type = str(column_data.dtype)
         if column_type in ['float64', 'int64']:
@@ -115,23 +119,41 @@ class CSVProfiler():
             mean_value = round(column_data.mean(), 3)
             min_value = round(column_data.min(), 3)
             max_value = round(column_data.max(), 3)
+            boxplotImage = newPlotCreator.getImage("boxplot")
+            columnImage = newPlotCreator.getImage("histogram")
+
+            column_dict = {
+                "columnName": column,
+                "columnType": column_type,
+                "lenColumn": len(column_data),
+                "distinctValues": column_data.nunique(),
+                "uniqueValues": unique_values_count,
+                "nanValues": nan_percentage,
+                'baseStats': {
+                    "meanColumn":str(mean_value),
+                    "medianColumn": str(median_value),
+                    "minColumn": str(min_value),
+                    "maxColumn": str(max_value),
+
+                },
+                "numericImages": {
+                    "histogram": columnImage,
+                    "boxplot": boxplotImage
+                }
+            }
         else:
-            column_data = round(column_data.astype(str), 3)
+            column_data = column_data.astype(str)
             mean_value = "N/A"
             median_value = "N/A"
-            min_value = round(column_data.min(), 3)
-            max_value = round(column_data.max(), 3)
+            min_value = column_data.min()
+            max_value = column_data.max()
             
-        column_dict = {
-            "columnName": column,
-            "columnType": column_type,
-            "lenColumn": len(column_data),
-            "distinctValues": column_data.nunique(),
-            "uniqueValues": unique_values_count,
-            "nanValues": nan_percentage,
-            "meanColumn":str(mean_value),
-            "medianColumn": str(median_value),
-            "minColumn": str(min_value),
-            "maxColumn": str(max_value)
-        }
+            column_dict = {
+                "columnName": column,
+                "columnType": column_type,
+                "lenColumn": len(column_data),
+                "distinctValues": column_data.nunique(),
+                "uniqueValues": unique_values_count,
+                "nanValues": nan_percentage,
+            }
         return column_dict

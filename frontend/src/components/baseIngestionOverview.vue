@@ -1,5 +1,5 @@
 <template>
-    <div v-if="columnInfo">
+    <div v-if="columnInfo" class="row">
       <h2 align="center">{{ columnInfo.columnName }}</h2>
       <div class="row">
         <div class="col-md-4   h-100">
@@ -36,58 +36,73 @@
             <dd  align="center">{{ columnInfo.nanValues }}</dd>
           </div>
         </div>
-        <div class="col-md-4   h-100">
-          <h5 align="center"> Base statistics</h5>
-          <div class="card">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-md-6">
-                  <dt >Mean:</dt>
-                  <dd >{{ columnInfo.meanColumn }}</dd>
+        <div v-if="'baseStats' in columnInfo"  class="col-md-4   h-100">
+            <h5 align="center"> Base statistics</h5>
+            <div class="card">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <dt >Mean:</dt>
+                    <dd >{{ columnInfo.baseStats.meanColumn }}</dd>
+                  </div>
+                  <div class="col-md-6">
+                    <dt >Median:</dt>
+                    <dd >{{ columnInfo.baseStats.medianColumn }}</dd>
+                  </div>
                 </div>
-                <div class="col-md-6">
-                  <dt >Median:</dt>
-                  <dd >{{ columnInfo.medianColumn }}</dd>
-                </div>
+                <div class="row">
+                  <div class="col-md-6">
+                    <dt >Min:</dt>
+                    <dd >{{ columnInfo.baseStats.minColumn }}</dd>
+                  </div>
+                  <div class="col-md-6">
+                    <dt >Max:</dt>
+                    <dd >{{ columnInfo.baseStats.maxColumn }}</dd>
+                  </div>
               </div>
-              <div class="row">
-                <div class="col-md-6">
-                  <dt >Min:</dt>
-                  <dd >{{ columnInfo.minColumn }}</dd>
-                </div>
-                <div class="col-md-6">
-                  <dt >Max:</dt>
-                  <dd >{{ columnInfo.maxColumn }}</dd>
-                </div>
-              </div>  
             </div>
-         </div>
+          </div>
         </div>
       </div>
-      <div class="row pt-3">
-        <div class="col-md-12">
-          <h5 align="center"> Distribution</h5>
+      <div v-if="'numericImages' in columnInfo">
+        <div class="row pt-3">
+        <h5 align="center"> Distribution</h5>
+        <div class="col-md-6">
           <div class="card">
             <div class="card-body">
-                <dd >{{ columnInfo.meanColumn }}</dd>
+              <dd align="center">
+                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.histogram" alt="histogramImage" class=img-fluid/>
+              </dd>
             </div>
-         </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-body">
+              <dd align="center">
+                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.boxplot" alt="boxplot"  class=img-fluid/>
+              </dd>
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <script>
 import basePieChart from './basePieChart.vue';
 
 export default {
-    name: 'baseIngestionOverview',
-    props: {
-        columnInfo: Object
-    },
-    components:{
-        basePieChart
-    }
+  name: 'baseIngestionOverview',
+  props: {
+      columnInfo: Object
+  },
+
+  components:{
+    basePieChart
+  },
+
 }       
     
 </script>

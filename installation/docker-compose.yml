@@ -17,13 +17,13 @@ services:
       retries: 5
 
   profiler-insight-frontend:
-    image: sanderbos/profiler-insight-frontend:0.0.1
+    image: sanderbos/profiler-insight-frontend:0.0.2
     container_name: profiler-insight-frontend
     ports:
       - "8080:80"
 
   profiler-insight:
-    image: sanderbos/profiler-insight:0.0.1
+    image: sanderbos/profiler-insight:0.0.2
     container_name: profiler-insight-backend
     depends_on:
       psql-db:
