@@ -39,14 +39,17 @@ class CSVProfiler():
         quotechar = self.properties['quotechar']
         headerRow = self.properties['headerRow']
         separator = self.properties['separator']
+
+        pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
+
         for rowNumber, row in enumerate(csvLines): 
-            if row.strip():
-                row = row.strip('\n')
+            row = row.strip()
+
+            if row:
                 if row.startswith(quotechar) and row.endswith(quotechar):   
                     row = row[1:-1]
                     row=row.replace(quotechar+quotechar,quotechar)
             
-                pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
                 row = pattern.split(row)
 
                 if rowNumber == headerRow:
@@ -143,11 +146,11 @@ class CSVProfiler():
             }
         else:
             column_data = column_data.astype(str)
+            numericCount = 0
             mean_value = "N/A"
             median_value = "N/A"
             min_value = column_data.min()
             max_value = column_data.max()
-            
             column_dict = {
                 "columnName": column,
                 "columnType": column_type,
@@ -155,5 +158,12 @@ class CSVProfiler():
                 "distinctValues": column_data.nunique(),
                 "uniqueValues": unique_values_count,
                 "nanValues": nan_percentage,
+                'baseStats': {
+                    "meanColumn": "N/A",
+                    "medianColumn": "N/A",
+                    "minColumn": str(min_value),
+                    "maxColumn": str(max_value)
+
+                },
             }
         return column_dict

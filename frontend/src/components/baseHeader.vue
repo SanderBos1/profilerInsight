@@ -1,6 +1,6 @@
 <template>
     <div class="col-12 header text-end">
-        <h1> Profiler Insight</h1>>
+        <h1> Profiler Insight</h1>
     </div>  
 </template>
 
