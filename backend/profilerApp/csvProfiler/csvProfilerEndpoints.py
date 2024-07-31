@@ -187,21 +187,22 @@ def csvProfiler():
     try:
 
         file = request.files['csvFile']
+        file_content = file.read().decode('utf-8')
         filename, ext = os.path.splitext(file.filename)
         filename = secure_filename(filename)
-
-        separator = data.get('csvSeperator', ',')
+    
+        delimiter = data.get('csvSeperator', ',')
         headerRow = data.get('headerRow', 0) 
         quotechar = data.get('quoteChar', '"') 
 
         properties = {
-            'separator': separator,
+            'delimiter': delimiter,
             'headerRow': headerRow,
             'quotechar': quotechar
         }
 
         newCSVProfiler = CSVProfiler(filename, properties)
-        newCSVProfiler.convertToCsv(file)
+        newCSVProfiler.convertToCsv(file_content)
 
         return jsonify(message="Success"), 200
     except Exception as e:

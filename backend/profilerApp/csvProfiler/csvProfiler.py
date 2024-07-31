@@ -4,6 +4,7 @@ from flask import current_app
 import re
 import os
 from ..plotCreator import plotCreator
+import csv
 
 class CSVProfiler():
     """
@@ -33,32 +34,25 @@ class CSVProfiler():
         Parameters:
         - file (File-like object): The file-like object containing the CSV data.
         """
-        csvContent = file.read().decode('utf-8')
-        csvLines = csvContent.split('\r\n')
-        csvConvertedData = []
+
         quotechar = self.properties['quotechar']
         headerRow = self.properties['headerRow']
-        separator = self.properties['separator']
+        delimiter = self.properties['delimiter']
 
-        pattern = re.compile(rf'''{separator}(?=(?:[^{quotechar}]*{quotechar}[^{quotechar}]*{quotechar})*[^{quotechar}]*$)''')
-
-        for rowNumber, row in enumerate(csvLines): 
-            row = row.strip()
-
+        csvLines = file.split('\r\n')
+        cleanedLines = []
+        for row in csvLines:
             if row:
                 if row.startswith(quotechar) and row.endswith(quotechar):   
                     row = row[1:-1]
                     row=row.replace(quotechar+quotechar,quotechar)
-            
-                row = pattern.split(row)
+                cleanedLines.append(row)
+        data = []
+        csvReader = csv.reader(cleanedLines, quotechar=quotechar, delimiter=delimiter, escapechar='\\')
+        for row in csvReader:
+            data.append(row)
 
-                if rowNumber == headerRow:
-                    columnNames = row
-                elif rowNumber > headerRow:
-                    csvConvertedData.append(row)
-
-
-        self.df = pd.DataFrame(csvConvertedData, columns=columnNames)
+        self.df = pd.DataFrame(columns=data[headerRow], data=data[headerRow+1:])
         self.df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False)
 
         propertiesJson = json.dumps(self.properties, indent=4)
@@ -75,9 +69,16 @@ class CSVProfiler():
         separator and quote character, and creates a pandas DataFrame with the 
         appropriate column names and data.
         """
-    
+
         fileName = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv")
-        self.df = pd.read_csv(fileName, sep=self.properties['separator'], quotechar=self.properties['quotechar'], header=self.properties['headerRow'])
+        data=[]
+        with open(fileName, mode='r', encoding='utf-8') as file:
+            csvReader = csv.reader(file, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'], escapechar='\\')
+
+            for row in csvReader:
+                    data.append(row)
+    
+        self.df = pd.DataFrame(columns=data[self.properties['headerRow']], data=data[self.properties['headerRow']+1:])
 
     def getColumns(self) -> list:
         """
