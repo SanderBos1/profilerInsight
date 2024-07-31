@@ -146,7 +146,6 @@ class CSVProfiler():
             }
         else:
             column_data = column_data.astype(str)
-            numericCount = 0
             mean_value = "N/A"
             median_value = "N/A"
             min_value = column_data.min()

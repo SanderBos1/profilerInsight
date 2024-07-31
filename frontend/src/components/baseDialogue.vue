@@ -5,10 +5,10 @@
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-            <div class="col-md-11">
+            <div class="col-md-11 col-sm-11">
               <h5 class="modal-title">{{ dialogTitle }}</h5>
             </div>
-            <div class="col-md-1">
+            <div class="col-md-1 col-sm-1">
               <button type="button"  @click="OpenCloseFun()" :class='"closeDialogue btn btn-danger"' >X</button>
             </div>
         </div>

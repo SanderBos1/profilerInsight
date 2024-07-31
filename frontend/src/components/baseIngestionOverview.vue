@@ -2,7 +2,7 @@
     <div v-if="columnInfo" class="row">
       <h2 align="center">{{ columnInfo.columnName }}</h2>
       <div class="row">
-        <div class="col-md-4   h-100">
+        <div class="col-sm-12 col-md-4">
             <h5 align="center" >Base overview</h5>
             <div class="card">
               <div class="card-body">
@@ -29,14 +29,14 @@
             </div>
           </div>
         </div>
-        <div class="col-md-3 ">
+        <div class="col-sm-12 col-md-3 ">
           <div class=" h-100">
             <basePieChart :values="[columnInfo.nanValues, 100-columnInfo.nanValues]"  :labels = "['NanValues', 'Values']" :backgroundColor="['#5b5d62', '#fe5000']"></basePieChart>
             <dt  align="center">NaN Values:</dt>
             <dd  align="center">{{ columnInfo.nanValues }}</dd>
           </div>
         </div>
-        <div v-if="'baseStats' in columnInfo"  class="col-md-4   h-100">
+        <div v-if="'baseStats' in columnInfo"  class="col-sm-12 col-md-4">
             <h5 align="center"> Base statistics</h5>
             <div class="card">
               <div class="card-body">
@@ -71,7 +71,7 @@
           <div class="card">
             <div class="card-body">
               <dd align="center">
-                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.histogram" alt="histogramImage" class=img-fluid/>
+                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.histogram" alt="histogramImage" class=img-fluid>
               </dd>
             </div>
           </div>
@@ -80,7 +80,7 @@
           <div class="card">
             <div class="card-body">
               <dd align="center">
-                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.boxplot" alt="boxplot"  class=img-fluid/>
+                <img v-bind:src="'data:image/jpeg;base64,'+columnInfo.numericImages.boxplot" alt="boxplot" class=img-fluid>
               </dd>
             </div>
           </div>

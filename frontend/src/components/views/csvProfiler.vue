@@ -1,15 +1,15 @@
 <template>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-sm-12 col-md-3">
             <h1 align="center"> CSV Profiler</h1>
         </div>
-        <div class="offset-md-6 col-md-3">
+        <div class="col-sm-12 offset-md-6 col-md-3 text-sm-center text-center">
             <button class="orange  btn btn-secondary" @click="uploadCSV = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can upload a CSV file to profile."> Upload</button>
             <button  class="orange  btn btn-secondary ms-3" @click="deleteCSVDialogue = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can Delete one of your uploaded CSV files"> Delete</button>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-sm-12 col-md-3">
             <select v-model="selectCSVFile" id="selectCSV" class="form-select" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose which CSV file you want to profile.">
                 <option disabled selected value="" >Choose a CSV File to Profile.</option>
                 <option v-for="csvfile in csvFiles" :key="csvfile">
@@ -41,28 +41,29 @@
     </basicDialogue>
     <basicDialogue :visible="uploadCSV"  @update:visible="uploadCSV = $event" dialogTitle="Upload CSV">
         <template v-slot:dialogueBody>
-            <div class="col-md-3 mt-3">
+            <div class="col-md-12 mt-3">
                 <form id="csvForm" v-on:submit.prevent="submitCSV" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <div class="mb-3">
-                            <label for="csvSeperator" class="form-label">Seperator</label>
-                            <select id="csvSeperator" class="form-control" v-model="csvProfilerForm.csvSeperator">
-                                <option value=','>,</option>
-                                <option value=';'>;</option>
-                                <option value='\t'>\t</option>
+                            <label for="CSVProperties" class="form-label">Seperator</label>
+                            <select id="CSVProperties" class="form-control" v-model="CSVProperties.csvSeperator" data-bs-toggle="tooltip" title="Choose which value seperates your values and columns in your CSV.">
+                                <option disabled selected value="" >Choose a CSV Seperator , is the default option</option>
+                                <option value=",">,</option>
+                                <option value=";">;</option>
+                                <option value="\t">\t</option>
                             </select>                  
                         </div>
                         <div class="mb-3">
                             <label for="headerRow" class="form-label">headerRow</label>
-                            <input type="number" min="0" value="0" id="headerRow" v-model="csvProfilerForm.headerRow" class="form-control">
+                            <input type="number" min="0" placeholder="0" id="headerRow" v-model="CSVProperties.headerRow" class="form-control" data-bs-toggle="tooltip" title="Choose which row defines the columns in your CSV file.">
                         </div>
                         <div class="mb-3">
                             <label for="quoteChar" class="form-label">quoteChar</label>
-                            <input type="text" id="quoteChar"  v-model="csvProfilerForm.quoteChar" class="form-control">
+                            <input type="text" id="quoteChar" placeholder='"' v-model="CSVProperties.quoteChar" class="form-control" data-bs-toggle="tooltip" title="Define which characters enclose your values so that the seperator is ignored in your CSV Files.">
                         </div>
                         <div class="mb-3">
                             <label for="csvFile" class="form-label">csv File</label>
-                            <input type="file" id="csvFile" v-on:change="handleFileUpload" class="form-control" accept=".csv">
+                            <input type="file" id="csvFile" v-on:change="handleFileUpload" class="form-control" accept=".csv" data-bs-toggle="tooltip" title="Choose which csv file to upload.">
                         </div>
                             <button class="btn btn-primary" type="submit">Submit</button>
                         </div>
@@ -110,7 +111,7 @@ export default {
         csvColumns: [],
         csvFiles: [],
         columnInfo: null,
-        csvProfilerForm:{
+        CSVProperties:{
             csvSeperator: "",
             headerRow: "",
             quoteChar: "",
@@ -171,7 +172,7 @@ export default {
     },
     handleFileUpload(event) {
             const file = event.target.files[0]
-            this.csvProfilerForm.csvFile = file;
+            this.CSVProperties.csvFile = file;
         },
     async getOverview(csvColumn) {
         const apiEndpoint = API_ENDPOINTS.GET_COLUMN_OVERRVIEW(this.selectCSVFile, csvColumn);
@@ -179,7 +180,7 @@ export default {
     },
     async submitCSV() {
         const formData = new FormData();
-        const { csvSeperator, headerRow, quoteChar, csvFile } = this.csvProfilerForm;
+        const { csvSeperator, headerRow, quoteChar, csvFile } = this.CSVProperties;
 
         if (csvSeperator) formData.append('csvSeperator', csvSeperator);
         if (headerRow) formData.append('headerRow', headerRow);
