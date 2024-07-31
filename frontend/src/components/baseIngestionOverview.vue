@@ -87,6 +87,14 @@
         </div>
       </div>
     </div>
+    <div v-if="'extaInfoObject' in columnInfo">
+      <div class="col-md-6">
+        <div class="card">
+          <dt > Number of numerical rows in column:</dt>
+          <dd >{{ columnInfo.extaInfoObject.numberNumeric }}</dd>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

@@ -41,8 +41,8 @@ def getColumnOverview(filename:str, column:str):
             properties = json.load(properties)
 
         newCSVProfiler = CSVProfiler(filename, properties)
-        newCSVProfiler.loadCsv()
-        columns = newCSVProfiler.csvStandardProfiler(column)
+        newCSVProfiler.loadCSV()
+        columns = newCSVProfiler.csvProfiler(column)
         return jsonify(columns), 200
     
     except FileNotFoundError:
@@ -144,7 +144,7 @@ def getCSVColumns(filename:str):
             properties = json.load(properties)
 
         newCSVProfiler = CSVProfiler(filename, properties)
-        newCSVProfiler.loadCsv()
+        newCSVProfiler.loadCSV()
         columns = newCSVProfiler.getColumns()
         return jsonify(columns), 200
     except FileNotFoundError:

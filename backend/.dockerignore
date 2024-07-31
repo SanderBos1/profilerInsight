@@ -1,1 +1,4 @@
 profilerApp/data/csvFiles/*
+**/__pycache__/
+.pyc
+migrations
