@@ -23,13 +23,3 @@
     }
   };
   </script>
-
-  <style>
-    .grey{
-        background-color: #5b5d62;
-    }
-    .orange{
-        background-color: #fe5000;
-    }
-  </style>
-  

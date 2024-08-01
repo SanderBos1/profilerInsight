@@ -166,7 +166,7 @@ class CSVProfiler():
         nanPercentage = missing_or_empty_count / len(columnData) * 100
 
         dataPReview = self.df.head(10)
-        dataPreview =  dataPReview.to_html(index=False, classes=["table-bordered", "table-striped", "table-hover"])
+        dataPreview =  dataPReview.to_html(index=False, classes=["table table-bordered", "table-striped", "table-hover"])
 
         numberNumeric = 0
         for item in columnData:

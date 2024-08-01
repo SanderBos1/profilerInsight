@@ -1,31 +1,27 @@
 <template>
-    <div class="row">
-        <div class="col-sm-12 col-md-3">
-            <h1 align="center"> CSV Profiler</h1>
+<div class="row">
+    <div class="col-sm-12 col-md-2 order-sm-1 order-md-2 text-sm-center text-center">
+        <div class="row">
+            <button class="col-md-6 col-sm-6  orange btn btn-secondary" @click="uploadCSV = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can upload a CSV file to profile."> Upload</button>
+            <button class="col-md-6 col-sm-6 orange btn btn-secondary" @click="deleteCSVDialogue = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can Delete one of your uploaded CSV files"> Delete</button>
         </div>
-        <div class="col-sm-12 offset-md-6 col-md-3 text-sm-center text-center">
-            <button class="orange  btn btn-secondary" @click="uploadCSV = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can upload a CSV file to profile."> Upload</button>
-            <button  class="orange  btn btn-secondary ms-3" @click="deleteCSVDialogue = true" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Here you can Delete one of your uploaded CSV files"> Delete</button>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-12 col-md-3">
-            <select v-model="selectCSVFile" id="selectCSV" class="form-select" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose which CSV file you want to profile.">
-                <option disabled selected value="" >Choose a CSV File to Profile.</option>
-                <option v-for="csvfile in csvFiles" :key="csvfile">
-                    {{ csvfile}} 
-                </option>
-            </select> 
-            <h2 class="w-100 text-center">Columns</h2>
-            <div class="btn-group-vertical w-100" id="columnButton">
-                <button v-for="csvColumn in csvColumns" :key="csvColumn" class="orange btn btn-secondary" @click="getOverview(csvColumn)" data-bs-toggle="tooltip" data-bs-placement="right" title="Click this button to Profile the data in this column">{{ csvColumn }}</button>
-            </div>
-        </div>
-        <div class="col-md-9">
-            <baseIngestionOverview :columnInfo=columnInfo>
-            </baseIngestionOverview>
+        <h1 align="center mt-3" > CSV Profiler</h1>
+        <select v-model="selectCSVFile" id="selectCSV" class="form-select" data-bs-toggle="tooltip" data-bs-placement="right" title="Choose which CSV file you want to profile.">
+            <option disabled selected value="">Choose a CSV File to Profile.</option>
+            <option v-for="csvfile in csvFiles" :key="csvfile">
+                {{ csvfile }} 
+            </option>
+        </select> 
+        <h2 class="w-100 text-center mt-3">Columns</h2>
+        <div class="btn-group-vertical w-100" id="columnButton">
+            <button v-for="csvColumn in csvColumns" :key="csvColumn" class="orange btn btn-secondary" @click="getOverview(csvColumn)" data-bs-toggle="tooltip" data-bs-placement="right" title="Click this button to Profile the data in this column">{{ csvColumn }}</button>
         </div>
     </div>
+    <div class="col-md-10 order-sm-2 order-md-1">
+        <baseIngestionOverview :columnInfo=columnInfo></baseIngestionOverview>
+    </div>
+</div>
+   
     <basicDialogue :visible="deleteCSVDialogue"  @update:visible="deleteCSVDialogue = $event" dialogTitle="Delete CSV">
         <template v-slot:dialogueBody>
             <select v-model="toBeDeleteCSV" id="deleteCSV" class="form-control">

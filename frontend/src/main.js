@@ -12,7 +12,8 @@ import 'bootstrap/dist/css/bootstrap.css';
 // Import your Vue components and App component
 import App from './profilerInsight.vue';
 
-
+//css
+import './assets/css/main.css'; 
 
 //views
 import homePage from './components/views/homePage.vue';
