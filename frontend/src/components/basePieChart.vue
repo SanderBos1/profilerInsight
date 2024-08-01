@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="chart-container">
     <Pie :data="chartData" :options="chartOptions" />
   </div>
 </template>
@@ -8,22 +8,31 @@
 import { Pie } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 
-// Register the components you need from Chart.js
+// Register the necessary components from Chart.js
 ChartJS.register(Title, Tooltip, Legend, ArcElement);
 
 export default {
-  name: 'basePieChart',
-  props:{
-    values: Array,
-    labels: Array,
-    backgroundColor: Array
+  name: 'BasePieChart',
+  props: {
+    values: {
+      type: Array,
+      default: () => []
+    },
+    labels: {
+      type: Array,
+      default: () => []
+    },
+    backgroundColor: {
+      type: Array,
+      default: () => []
+    }
   },
   components: {
     Pie
   },
-  data() {
-    return {
-      chartData: {  
+  computed: {
+    chartData() {
+      return {
         labels: this.labels,
         datasets: [
           {
@@ -32,8 +41,10 @@ export default {
             data: this.values
           }
         ]
-      },
-      chartOptions: {
+      };
+    },
+    chartOptions() {
+      return {
         responsive: true,
         plugins: {
           legend: {
@@ -41,7 +52,7 @@ export default {
           },
           tooltip: {
             callbacks: {
-              label: function(context) {
+              label: function (context) {
                 let label = context.label || '';
                 if (context.parsed) {
                   label += `: ${context.parsed}`;
@@ -51,12 +62,18 @@ export default {
             }
           }
         }
-      }
-    };
+      };
+    }
   }
 };
 </script>
 
 <style scoped>
-/* Add any styles you need here */
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 500px; /* Set your desired maximum width here */
+  height: auto; /* Let the height adjust based on width */
+  margin: 0 auto; /* Center the chart horizontally */
+}
 </style>

@@ -187,7 +187,6 @@ def csvProfiler():
     try:
 
         file = request.files['csvFile']
-        file_content = file.read().decode('utf-8')
         filename, ext = os.path.splitext(file.filename)
         filename = secure_filename(filename)
     
@@ -202,7 +201,7 @@ def csvProfiler():
         }
 
         newCSVProfiler = CSVProfiler(filename, properties)
-        newCSVProfiler.convertToCsv(file_content)
+        newCSVProfiler.convertToCsv(file)
 
         return jsonify(message="Success"), 200
     except Exception as e:

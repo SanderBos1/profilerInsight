@@ -1,8 +1,9 @@
 import pandas as pd
 import json
 from flask import current_app
-import re
+from io import StringIO
 import os
+from ..patternFinder import patternFinder
 from ..plotCreator import plotCreator
 import csv
 
@@ -39,20 +40,19 @@ class CSVProfiler():
         headerRow = self.properties['headerRow']
         delimiter = self.properties['delimiter']
 
-        csvLines = file.split('\r\n')
+        fileContent =  file.read().decode('utf-8').split('\r\n')
         cleanedLines = []
-        for row in csvLines:
+        for row in fileContent:
             if row:
                 if row.startswith(quotechar) and row.endswith(quotechar):   
                     row = row[1:-1]
                     row=row.replace(quotechar+quotechar,quotechar)
                 cleanedLines.append(row)
-        data = []
-        csvReader = csv.reader(cleanedLines, quotechar=quotechar, delimiter=delimiter, escapechar='\\')
-        for row in csvReader:
-            data.append(row)
+        
+        cleaned_content = '\r\n'.join(cleanedLines)
 
-        self.df = pd.DataFrame(columns=data[headerRow], data=data[headerRow+1:])
+        csv_file_like = StringIO(cleaned_content)
+        self.df = pd.read_csv(csv_file_like, quotechar=quotechar, delimiter=delimiter, escapechar='\\', engine='python', header=headerRow)
         self.df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False)
 
         propertiesJson = json.dumps(self.properties, indent=4)
@@ -73,15 +73,15 @@ class CSVProfiler():
         fileName = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv")
         data=[]
         with open(fileName, mode='r', encoding='utf-8') as file:
-            csvReader = csv.reader(file, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'], escapechar='\\')
+            csvReader = csv.reader(file, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
 
             for row in csvReader:
                     data.append(row)
     
-        df = pd.DataFrame(columns=data[self.properties['headerRow']], data=data[self.properties['headerRow']+1:])
+        df = pd.DataFrame(columns=data[self.properties['headerRow']], data=data[self.properties['headerRow']+1:], dtype=str)
         for column in df.columns:
             test_conversion = pd.to_numeric(df[column], errors='coerce')
-            if test_conversion.notna().any():
+            if test_conversion.notna().all():
                 df[column] = test_conversion
         self.df = df
 
@@ -111,7 +111,10 @@ class CSVProfiler():
         """
         
         unique_values_count = len(columnData[columnData.duplicated(keep=False) == False])
-        nan_percentage = columnData.isna().sum() / len(columnData) * 100
+        missing_or_empty_count = columnData.isna().sum() + (columnData == '').sum()
+        nan_percentage = missing_or_empty_count / len(columnData) * 100
+        dataPReview = self.df.head(10)
+        dataPreview =  dataPReview.to_html(index=False, classes=["table table-bordered", "table-striped", "table-hover"])
 
         newPlotCreator = plotCreator(columnData, column)
             
@@ -140,7 +143,8 @@ class CSVProfiler():
             "numericImages": {
                 "histogram": columnImage,
                 "boxplot": boxplotImage
-            }
+            },
+            "dataPreview": dataPreview
         }
         return profilerOverview
     
@@ -158,7 +162,11 @@ class CSVProfiler():
         columnData = columnData.astype(str)
         column_type = str(columnData.dtype)
         unique_values_count = len(columnData[columnData.duplicated(keep=False) == False])
-        nan_percentage = columnData.isna().sum() / len(columnData) * 100
+        missing_or_empty_count = columnData.isna().sum() + (columnData == '').sum()
+        nanPercentage = missing_or_empty_count / len(columnData) * 100
+
+        dataPReview = self.df.head(10)
+        dataPreview =  dataPReview.to_html(index=False, classes=["table-bordered", "table-striped", "table-hover"])
 
         numberNumeric = 0
         for item in columnData:
@@ -166,14 +174,17 @@ class CSVProfiler():
                 numberNumeric += 1
         min_value = columnData.min()
         max_value = columnData.max()
-        
+
+        newPatternFinder = patternFinder(columnData)
+        patterns = newPatternFinder.find_patterns()[0:10]
+
         profilerOverview = {
             "columnName": column,
             "columnType": column_type,
             "lenColumn": len(columnData),
             "distinctValues": columnData.nunique(),
             "uniqueValues": unique_values_count,
-            "nanValues": nan_percentage,
+            "nanValues": nanPercentage,
             'baseStats': {
                 "meanColumn": "N/A",
                 "medianColumn": "N/A",
@@ -181,9 +192,11 @@ class CSVProfiler():
                 "maxColumn": str(max_value)
 
             },
-            "extaInfoObject":{
-                "numberNumeric": numberNumeric
-            }
+            "extraInfo":{
+                "numberNumeric": numberNumeric,
+                "patterns": patterns
+            },
+            "dataPreview": dataPreview
         }
         return profilerOverview
 
