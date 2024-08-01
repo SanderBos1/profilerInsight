@@ -6,7 +6,7 @@ pushDockerhub.bat
 **/__pycache__/
 .pyc
 backend/profilerApp/data
-
+Documentatie
 .DS_Store
 node_modules
 /dist

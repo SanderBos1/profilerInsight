@@ -41,9 +41,9 @@
                 <form id="csvForm" v-on:submit.prevent="submitCSV" method="post" enctype="multipart/form-data">
                     <div class="form-group">
                         <div class="mb-3">
-                            <label for="CSVProperties" class="form-label">Seperator</label>
+                            <label for="CSVProperties" class="form-label">delimiter</label>
                             <select id="CSVProperties" class="form-control" v-model="CSVProperties.csvSeperator" data-bs-toggle="tooltip" title="Choose which value seperates your values and columns in your file.">
-                                <option disabled selected value="" >Choose a CSV Seperator , is the default option</option>
+                                <option disabled selected value="" >Choose a delimiter , is the default option</option>
                                 <option value=",">,</option>
                                 <option value=";">;</option>
                                 <option value="\t">\t</option>

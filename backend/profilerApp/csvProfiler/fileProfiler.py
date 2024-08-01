@@ -71,7 +71,7 @@ class CSVProfiler():
         """
         xlsxFile = BytesIO(file.read())
         df = pd.read_excel(xlsxFile, engine='openpyxl', header=self.properties['headerRow'])
-        df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
+        df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False, quotechar=self.properties['quotechar'])
 
         propertiesJson = json.dumps(self.properties, indent=4)
         propertiesFilePath = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.json")
