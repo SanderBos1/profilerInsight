@@ -31,10 +31,11 @@ def create_app():
     app.config["SESSION_TYPE"] = "filesystem"      
     app.config['SECRET_KEY'] = os.getenv("SECRET_KEY",)
 
-    #CSV are uploaded here
+    #flat datasets are uploaded here
     base_dir =  os.path.dirname(os.path.abspath(__file__))
     app.config['csvFolder'] = os.path.join(base_dir, 'data', 'csvFiles')
-    
+    app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
+
     db.init_app(app)
 
     from .userConnections import databaseBP

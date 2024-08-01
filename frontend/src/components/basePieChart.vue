@@ -46,6 +46,7 @@ export default {
     chartOptions() {
       return {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: 'top',
@@ -72,7 +73,6 @@ export default {
 .chart-container {
   position: relative;
   width: 100%;
-  max-width: 500px; /* Set your desired maximum width here */
   height: auto; /* Let the height adjust based on width */
   margin: 0 auto; /* Center the chart horizontally */
 }

@@ -4,7 +4,8 @@ from marshmallow import ValidationError
 import os
 import json
 from .jsonSchemas import csvUploadSchema
-from ..csvProfiler.csvProfiler import CSVProfiler
+from .fileProfiler import CSVProfiler
+import io
 
 csvProfilerBP = Blueprint(
     "csvProfilerBP",
@@ -186,10 +187,10 @@ def csvProfiler():
         return jsonify(e.messages), 400
     try:
 
-        file = request.files['csvFile']
+        file = request.files['flatDataSet']
         filename, ext = os.path.splitext(file.filename)
         filename = secure_filename(filename)
-    
+
         delimiter = data.get('csvSeperator', ',')
         headerRow = data.get('headerRow', 0) 
         quotechar = data.get('quoteChar', '"') 
@@ -200,9 +201,16 @@ def csvProfiler():
             'quotechar': quotechar
         }
 
-        newCSVProfiler = CSVProfiler(filename, properties)
-        newCSVProfiler.convertToCsv(file)
+        if ext not in current_app.config['ALLOWED_EXTENSIONS']:
+            return jsonify({"error": "Invalid file type."}), 400
+        elif ext == '.csv':
 
+            newCSVProfiler = CSVProfiler(filename, properties)
+            newCSVProfiler.convertToCsv(file)
+        else:
+            xlsxFile = io.BytesIO(file.read())
+            newCSVProfiler = CSVProfiler(filename, properties)
+            newCSVProfiler.xlsxToCSV(xlsxFile)
         return jsonify(message="Success"), 200
     except Exception as e:
         current_app.logger.error(f"An error occurred: {e}")

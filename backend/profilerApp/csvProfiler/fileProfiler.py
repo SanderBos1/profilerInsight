@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 from flask import current_app
-from io import StringIO
+from io import StringIO, BytesIO
 import os
 from ..patternFinder import patternFinder
 from ..plotCreator import plotCreator
@@ -61,6 +61,24 @@ class CSVProfiler():
         with open(propertiesFilePath, 'w') as jsonFile:
             jsonFile.write(propertiesJson)
 
+    
+    def xlsxToCSV(self, file) -> None:
+        """
+        Loads the data from an Excel file into a pandas DataFrame.
+
+        Reads the data from the Excel file, processes it, and creates a pandas DataFrame
+        with the appropriate column names and data.
+        """
+        xlsxFile = BytesIO(file.read())
+        df = pd.read_excel(xlsxFile, engine='openpyxl', header=self.properties['headerRow'])
+        df.to_csv(os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv"), index=False, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
+
+        propertiesJson = json.dumps(self.properties, indent=4)
+        propertiesFilePath = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.json")
+
+        with open(propertiesFilePath, 'w') as jsonFile:
+            jsonFile.write(propertiesJson)
+
     def loadCSV(self) -> None:
         """
         Loads the CSV data from the file into a pandas DataFrame.
@@ -71,14 +89,7 @@ class CSVProfiler():
         """
 
         fileName = os.path.join(current_app.config['csvFolder'], f"{self.fileName}.csv")
-        data=[]
-        with open(fileName, mode='r', encoding='utf-8') as file:
-            csvReader = csv.reader(file, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
-
-            for row in csvReader:
-                    data.append(row)
-    
-        df = pd.DataFrame(columns=data[self.properties['headerRow']], data=data[self.properties['headerRow']+1:], dtype=str)
+        df = pd.read_csv(fileName, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
         for column in df.columns:
             test_conversion = pd.to_numeric(df[column], errors='coerce')
             if test_conversion.notna().all():

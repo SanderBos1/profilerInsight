@@ -11,15 +11,24 @@
 
   </template>
   
-  <script>
+<script>
   import baseSideHeader from './components/baseSideHeader.vue';
   import baseHeader from './components/baseHeader.vue';
+  import { Tooltip } from 'bootstrap';
 
   export default {
     name: 'App',
     components: {
       baseSideHeader,
       baseHeader
-    }
-  };
-  </script>
+    },
+    mounted() {
+      new Tooltip(document.body, {
+        selector: "[data-bs-toggle='tooltip']",
+        trigger : 'hover',
+        delay: { show: 500, hide: 10 }
+      });
+  },
+
+}
+</script>
