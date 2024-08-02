@@ -32,7 +32,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: homePage },
-    { path: '/csvProfiler', component: csvProfiler },
+    { path: '/fileProfiler', component: csvProfiler },
     { path: '/connectionPage', component: connectionPage },
     { path: '/profilerPage', component: profilerPage },
     { path: '/settingsPage', component: settingsPage },

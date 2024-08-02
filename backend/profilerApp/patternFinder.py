@@ -11,10 +11,10 @@ class patternFinder:
         Tokenize the string into patterns of numbers, letters, and special characters.
 
         """
-        impSpecialCharacters = ['.', ',', '/', '@']
+        imp_spe_char = ['.', ',', '/', '@']
         pattern = re.compile(r'\d+|[a-zA-Z]+|[^a-zA-Z\d]+')
         tokens = pattern.findall(s)
-        return ''.join([token if token in impSpecialCharacters else 
+        return ''.join([token if token in imp_spe_char else 
                     '1' * len(token) if token.isdigit() else
                     'A' * len(token) if token.isalpha() else
                     '&' * len(token)

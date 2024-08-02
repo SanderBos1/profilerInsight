@@ -9,7 +9,7 @@ class plotCreator:
     """
     A class for creating plots. it can create serveral kinds of plots.
     """
-    def __init__(self, data:np.ndarray, columnName:str):
+    def __init__(self, data:np.ndarray, column_name:str):
         """
         Initializes the plotCreator with the given parameters.
 
@@ -19,7 +19,7 @@ class plotCreator:
         """
         self.data = data
         self.image = None
-        self.columnName = columnName
+        self.column_name = column_name
 
     def getImage(self, plotType:str):
         """
@@ -43,13 +43,13 @@ class plotCreator:
         creates a boxplot of the data and sets self.data as the base64 encoded string of the plot.
     
         """
-        boxplotData = self.data[~np.isnan(self.data)]
+        boxplot_data = self.data[~np.isnan(self.data)]
 
         plt.figure(figsize=(4, 3))
-        plt.boxplot(boxplotData, patch_artist=True, medianprops=dict(color='#5b5d62'), boxprops=dict(facecolor='#fe5000', color='orange'))
+        plt.boxplot(boxplot_data, patch_artist=True, medianprops=dict(color='#5b5d62'), boxprops=dict(facecolor='#fe5000', color='orange'))
 
         img_stream = io.BytesIO()
-        plt.title(f'Boxplot of {self.columnName}')
+        plt.title(f'Boxplot of {self.column_name}')
 
         plt.savefig(img_stream, format='png')
         plt.close()  
@@ -65,7 +65,7 @@ class plotCreator:
         """
         plt.figure(figsize=(4, 3))
         plt.hist(self.data, bins=20, edgecolor='#5b5d62', color='#fe5000')
-        plt.title(f'Histogram of {self.columnName}')
+        plt.title(f'Histogram of {self.column_name}')
         plt.xlabel('Value')
         plt.ylabel('Frequency')
 

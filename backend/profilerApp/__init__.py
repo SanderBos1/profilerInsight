@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import os
 from cryptography.fernet import Fernet
 from flask_cors import CORS
+from flasgger import Swagger
 
 db = SQLAlchemy()
 
@@ -15,6 +16,7 @@ def create_app():
 
 
     app = Flask(__name__)
+    Swagger(app)
 
     #allow vue frontend to communicate with the backend
     CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})

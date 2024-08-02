@@ -6,10 +6,10 @@
                     <p>Home</p> 
                 </div>
             </RouterLink>
-            <RouterLink to="/csvProfiler" role="button" class="grey border-0 btn btn-secondary">
+            <RouterLink to="/fileProfiler" role="button" class="grey border-0 btn btn-secondary">
                 <div class=" icon">
-                    <img class="icon rounded img-fluid " src="../assets/Images/fileIcon.svg" alt="FileUploader" data-bs-toggle="tooltip" data-bs-placement="right" title="Go to the CSV Profiler Page">
-                    <p>CSV Profiler</p>
+                    <img class="icon rounded img-fluid " src="../assets/Images/fileIcon.svg" alt="FileUploader" data-bs-toggle="tooltip" data-bs-placement="right" title="Go to the File Profiler Page">
+                    <p>File Profiler</p>
                 </div>
             </RouterLink >
             <RouterLink to="/connectionPage" role="button" class="grey border-0 btn btn-secondary">

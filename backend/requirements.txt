@@ -16,3 +16,4 @@ pandas
 flask_cors
 matplotlib
 openpyxl
+flasgger
