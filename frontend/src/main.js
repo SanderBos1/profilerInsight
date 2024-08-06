@@ -21,7 +21,6 @@ import csvProfiler from './components/views/csvProfiler.vue';
 import connectionPage from './components/views/connectionPage.vue';
 import profilerPage from './components/views/profilerPage.vue';
 import settingsPage from './components/views/settingsPage.vue';
-import tablePage from './components/views/tablePage.vue';
 
 // Create a Vue app instance
 const app = createApp(App);
@@ -36,7 +35,6 @@ const router = createRouter({
     { path: '/connectionPage', component: connectionPage },
     { path: '/profilerPage', component: profilerPage },
     { path: '/settingsPage', component: settingsPage },
-    { path: '/tablePage', component: tablePage }
   ]
 });
 

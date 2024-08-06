@@ -40,13 +40,11 @@ def create_app():
 
     db.init_app(app)
 
-    from .userConnections import databaseBP
-    from .userTables import usertableBP
-    from .profiler import profilerBP
+    from .databaseConnections import databaseBP
+    from .databaseProfiler import profilerBP
     from .csvProfiler import csvProfilerBP
 
     app.register_blueprint(databaseBP)
-    app.register_blueprint(usertableBP)
     app.register_blueprint(profilerBP)
     app.register_blueprint(csvProfilerBP)
 

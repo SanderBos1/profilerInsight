@@ -1,143 +1,163 @@
 <template>
+
+    <!-- Main container row for the component -->
     <div class="row">
-        <div class="col-md-3 mb-3">
-            <h2 class="text-center">Table</h2>
-            <select v-model="selectedTable" id="uniqueTableName" class="form-control">
-                <option v-for="uniqueTableName in uniqueTableNames" :key="uniqueTableName">
-                    {{ uniqueTableName}} 
-                </option>
-            </select> 
-            <h2 class="w-100 text-center">Columns</h2>
-            <div class="btn-group-vertical w-100" id="columnButton">
-                <button v-for="column in columns" :key="column" class="btn btn-secondary" @click="getOverview(column)">{{ column }}</button>
-            </div>
-        </div>
-        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="csv Upload Error">
-            <template v-slot:dialogueBody>
-                <div class="mb-3">
-                    {{ profilerError }}
+        <h2 align="center">Database Profiler</h2>
+
+    <!-- Table selector and column display  -->
+        <div class="col-sm-12 col-md-2 order-sm-1 order-md-2 text-sm-center text-center">
+            <label for="exampleDataList" class="form-label">Choose Table to Profile</label>
+            <input   v-model="selectedTable" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search..."/>
+            <datalist id="datalistOptions">
+                <option v-for="(table, index) in tables" :key="index" :value="table.table_id">{{ table.connection }}{{ table.schemaName }} {{table.tableName}}</option>
+            </datalist>
+            <h2 class="w-100 text-center mt-3">Columns</h2>
+                <div class="btn-group-vertical w-100" id="columnButton">
+                    <button v-for="tableColumn in tableColumns" :key="tableColumn" class="orange btn btn-secondary" @click="getOverview(tableColumn)" data-bs-toggle="tooltip" data-bs-placement="left" title="Click this button to Profile the data in this column">{{ tableColumn }}</button>
                 </div>
-            </template>
-    </basicDialogue>
-        <div class="col-md-9 mt-3" v-if="overview">
-            <div class="row">
-                <div class="col-md-9">
-                <h5>{{ column }}</h5>
-                </div>
-            <div class="col-md-3">
-                <button class="btn btn-primary w-100" @click="ingestColumn()">Ingest</button>
-            </div>
         </div>
-            <div class="row mt-2">
-            <div class="col-md-6">
-                <p><strong>Column Type:</strong> {{ overview.columnType }}</p>
+
+
+    <!-- profiler Overview -->
+
+        <div class="col-sm-12 col-md-10 order-sm-2 order-md-1 text-sm-center text-center">
+            <div v-if='selectedColumn'>
+                <div class="row">
+                    <div class="col-md-9 mt-3">
+                        <h3 align="center">{{ this.selectedColumn[0] }}</h3>
+                    </div>
+                <div class="col-md-3 mt-3">
+                    <button class="btn btn-primary grey" @click="ingestColumnData(this.selectedTable, this.selectedColumn)" data-bs-toggle="tooltip" title="Calculates data corresponding to the profiler and loads it to the database">Ingest</button>
+                </div>
+                <div v-if="profilerOverview">
+                    <dbProfilerOverview :profilerOverview="profilerOverview"></dbProfilerOverview>
+                </div>
             </div>
-            <div class="col-md-6">
-                <p><strong>Distinct Values:</strong> {{ overview.distinctValues }}</p>
-            </div>
-            <div class="col-md-6">
-                <p><strong>NaN Values:</strong> {{ overview.nanValues }}</p>
-            </div>
-            <div class="col-md-6">
-                <p><strong>Row Count:</strong> {{ overview.rowCount }}</p>
+            <div v-if="encourageIngestion">
+                {{encourageIngestion}}
             </div>
         </div>
     </div>
-</div>
+
+    <!-- error Display -->
+
+        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="FlatFile Profiler Error">
+            <template v-slot:dialogueBody>
+                <div class="mb-3">
+                    {{tablesLoadError }}
+                </div>
+            </template>
+        </basicDialogue>
+
+
+    </div>
 </template>
 
 <script>
-import basicDialogue  from '../baseDialogue.vue'
+import basicDialogue  from '../baseDialogue.vue';
+import dbProfilerOverview from '../dbProfilerOverview.vue';
+
+const API_ENDPOINTS = {
+  GET_Connected_Tables: 'http://127.0.0.1:5000/getConnectedTables',
+  get_table_columns: table_id => `http://127.0.0.1:5000/getColumns/${table_id}`,
+  get_ingestion_data: (column, table_id) => `http://127.0.0.1:5000/ingest/${table_id}/${column}`,
+  get_overview_data: (table, column) => `http://127.0.0.1:5000/getOverview/${table}/${column}`
+};
 
 export default{
+    name: "profilerPage",
     components:{
-        basicDialogue
+        basicDialogue,
+        dbProfilerOverview
     },
-    name: 'profilerPage',
     data(){
         return{
-            profilerError: "",
+            tables: [],
+            selectedTable: '',
             errorVisible: false,
-            uniqueTableNames: [],
-            columns: [],
-            selectedTable: null,
-            overview: null,
-            column: null
-            }
-        },
-
-    mounted(){
-        this.getConnectionIDs();
+            tablesLoadError: "",
+            tableColumns: [],
+            selectedColumn: '',
+            profilerOverview: {},
+            encourageIngestion: ""
+        }
     },
-    watch: {
+    mounted(){
+        this.getTables();
+    },
+    watch:{
         selectedTable(){
             this.getColumns();
         }
+        
     },
     methods:{
-        getConnectionIDs(){
-            const apiEndpoint = 'http://127.0.0.1:5000/getUniqueTableNames';
-            fetch(apiEndpoint)
-            .then(response => response.json())
-            .then(data => {
-                this.uniqueTableNames = data; 
-            })
-            .catch(error => {
-                this.errorVisible = true;
-                this.profilerError = error;
-            });
-        },
-        getColumns(){
-            const apiEndpoint = 'http://127.0.0.1:5000/getColumns/' + this.selectedTable;
-            fetch(apiEndpoint)
-            .then(response => response.json())
-            .then(data => {
-                this.columns = data['columnNames']; 
-            })
-            .catch(error => {
-                this.errorVisible = true;
-                this.profilerError = error;
-            });
-        },
-        getOverview(column){
-            const apiEndpoint = 'http://127.0.0.1:5000/getOverview/' + this.selectedTable  + "/" + column;
-            fetch(apiEndpoint)
-            .then(response => {
-                if (!response.ok) { 
-                    const error = new Error('Error fetching data');
-                    this.errorVisible = true;
-                    throw error;
+        async fetchData(url, method) {
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-                return response.json();
-            })
-            .then(data => {
-                this.overview = data
-                this.column = column
-            })
-            .catch(error => {
-                this.errorVisible = true;
-                this.profilerError = error;
             });
-    },
-    ingestColumn(){
-            const apiEndpoint = 'http://127.0.0.1:5000/ingest/' + this.selectedTable  + "/" + this.column;
-            fetch(apiEndpoint)
-            .then(response => {
-                if (!response.ok) { 
-                    const error = new Error('Error fetching data, so no ingestion was done.');
-                    this.errorVisible = true;
-                    throw error;
-                }
-                return response.json();
-            })
-            .then(data => {
-                this.overview = data
-            })
-            .catch(error => {
-                this.errorVisible = true;
-                this.profilerError = error;
-            });
+            if (!response.ok) {
+                const data = await response.json();
+                const errorMessage = data.error
+                this.handleError(`${response.status}, ${errorMessage}`);
+                return null; 
+            }   
+            return await response.json();
+        }catch (error) {
+            this.handleError(error.message);
         }
-    }
-}
+    },
+    handleError(message) {
+        this.errorVisible = true;
+        this.tablesLoadError = message;
+    },
+    async getColumns(){
+        this.profilerOverview = "";
+        this.encourageIngestion = "";
+        const url = API_ENDPOINTS.get_table_columns(this.selectedTable);
+        const method = "GET";
+        const data = await this.fetchData(url, method);
+        if(data){
+            this.tableColumns = data;
+        }
+
+    },
+    async getTables(){
+        const url = API_ENDPOINTS.GET_Connected_Tables
+        const method = "GET";
+        const data = await this.fetchData(url, method);
+        if(data){
+            this.tables = data;
+        }
+
+    },
+    async getOverview(column){
+        this.profilerOverview = "";
+        this.selectedColumn = column;
+        const url = API_ENDPOINTS.get_overview_data(this.selectedTable, column);
+        const method = "GET";
+        const data = await this.fetchData(url, method);
+        if(data){
+            if(data != "No Dict Found"){
+                this.profilerOverview = data;
+                this.encourageIngestion = ""
+            }
+            else{
+                this.encourageIngestion = "Please Ingest Data to view Overview"
+            }
+        }
+    },
+    async ingestColumnData(table, column){
+        const url = API_ENDPOINTS.get_ingestion_data(column, table);
+        const method = "GET";
+        const data = await this.fetchData(url, method);
+        if(data){
+            this.getOverview(column);
+        }    
+    },
+}}
 </script>

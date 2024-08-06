@@ -1,7 +1,9 @@
 <template>
-    <div v-if="OpenClose" class="modal fade show" 
-        tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" 
-        style="display:block">
+
+  <div v-if="OpenClose" class="modal fade show" 
+    tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" 
+    style="display:block">
+    
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -21,7 +23,8 @@
       </div>
     </div>
   </div>
-  </template>
+
+</template>
 
 <script>
 export default {
