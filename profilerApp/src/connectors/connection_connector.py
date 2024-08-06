@@ -1,19 +1,19 @@
 from flask import Blueprint, request, jsonify
-from ..models import dbConnections, connectedTables, ingestionOverview
-from ..import db_type_handler
-from .jsonSchemas import ConnectionSchema
+from  src.models import dbConnections, connectedTables, ingestionOverview
+from  src.database import db_type_handler   
+from  src.schemas import ConnectionSchema
 from marshmallow import ValidationError
-from profilerApp import db
+from src import db
 from flasgger import swag_from
 from sqlalchemy.exc import OperationalError
 
-databaseBP = Blueprint(
-    "databaseBP",
+connections_bp = Blueprint(
+    "connections_bp",
     __name__
 )
 
 
-@databaseBP.route('/getConnectedTables', methods=['GET'])
+@connections_bp.route('/get_connected_tables', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Fetches all connected tables and returns them as a JSON array.',
@@ -55,7 +55,7 @@ databaseBP = Blueprint(
         }
     }
 })
-def getConnectedTables():
+def get_connected_tables():
     try:
         connected_tables = connectedTables.query.all()
         connected_table_list = [connected_table.to_dict() for connected_table in connected_tables]
@@ -67,7 +67,7 @@ def getConnectedTables():
     
 
 
-@databaseBP.route('/ingestConnectedTables', methods=['GET'])
+@connections_bp.route('/ingest_connected_tables', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Ingests tables from all database connections into the connectedTables model. Each connection\'s tables are retrieved and stored in the database.',
@@ -93,7 +93,7 @@ def getConnectedTables():
         }
     }
 })
-def ingestConnectedTables():
+def ingest_conencted_table():
     """
     Ingests tables from all database connections into the connectedTables model.
 
@@ -121,7 +121,7 @@ def ingestConnectedTables():
         return jsonify(str(e)), 500
 
     
-@databaseBP.route('/getConnections', methods=['GET'])
+@connections_bp.route('/get_connections', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Retrieves all database connections and returns them as a JSON array.',
@@ -171,7 +171,7 @@ def ingestConnectedTables():
         }
     }
 })
-def getConnections():
+def get_connections():
     """
     Handles the GET request to retrieve all database connections.
 
@@ -192,7 +192,7 @@ def getConnections():
         return jsonify(str(e)), 500
 
 
-@databaseBP.route('/addPostgresqlConnection', methods=['POST'])
+@connections_bp.route('/add_postgres_connection', methods=['POST'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Adds a new PostgreSQL connection to the database. Requires connection details to be sent in the request body.',
@@ -293,7 +293,7 @@ def getConnections():
         }
     }
 })
-def addConnection():
+def add_connection():
     """
     Handles the POST request to add a new PostgreSQL connection.
 
@@ -331,7 +331,7 @@ def addConnection():
 
 
 
-@databaseBP.route('/deleteConnection/<connection_id>', methods=['DELETE'])
+@connections_bp.route('/delete_connection/<connection_id>', methods=['DELETE'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Deletes a PostgreSQL connection along with associated connected tables and ingestion records.',
@@ -381,7 +381,7 @@ def addConnection():
         }
     }
 })
-def deleteConnection(connection_id):
+def delete_connection(connection_id):
     """
     Handles the DELETE request to remove a PostgreSQL connection and its related records.
 

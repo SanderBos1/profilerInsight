@@ -2,9 +2,9 @@
 import numpy as np
 import pandas as pd
 from ..models import ingestionOverview
-from profilerApp import db
-from ..patternFinder import patternFinder
-from ..plotCreator import plotCreator
+from src import db
+from .patternFinder import PatternFinder
+from .plotCreator import PlotCreator
 
 class Profiler:
 
@@ -37,7 +37,7 @@ class Profiler:
         self.table_id = table_id
         self.connection_id = connection_id
 
-    def getOverview(self) -> dict:
+    def get_overview(self) -> dict:
 
         """
         Calculates and returns an overview of the data, including type, length, 
@@ -67,9 +67,9 @@ class Profiler:
 
         if column_type  in ['int64', 'float64']:
             column_type = 'numeric'
-            newPlotCreator = plotCreator(self.data, self.column)
-            histogram = newPlotCreator.getImage("histogram")
-            boxplot = newPlotCreator.getImage("boxplot")
+            newPlotCreator = PlotCreator(self.data, self.column)
+            histogram = newPlotCreator.get_image("histogram")
+            boxplot = newPlotCreator.get_image("boxplot")
             mean_value = round(float(self.data.mean()), 3)
             median_value = round(float(self.data.median()), 3)
             min_value = round(float(self.data.min()), 3)
@@ -78,7 +78,7 @@ class Profiler:
         else:
             column_type = 'string'
             self.data = self.data.astype(str)
-            pattern_finder = patternFinder(self.data)
+            pattern_finder = PatternFinder(self.data)
             patterns = pattern_finder.find_patterns()[0:10]
             mean_value = self.data.mean()
             median_value = self.data.median()
@@ -108,7 +108,7 @@ class Profiler:
         }
 
 
-    def saveOverview(self) -> None:
+    def save_overview(self) -> None:
         """
         Saves the overview of the data to the database. If a row with the specified
         table name and column already exists, it is updated; otherwise, a new row
@@ -118,7 +118,7 @@ class Profiler:
 
         """
         
-        information = self.getOverview()
+        information = self.get_overview()
         ingestion_overview = ingestionOverview(
             table=self.table_name,
             column=self.column,

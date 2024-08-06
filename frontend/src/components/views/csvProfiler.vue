@@ -84,11 +84,11 @@ import basicDialogue  from '../baseDialogue.vue'
 import baseIngestionOverview from '../csvIngestionOverview.vue';
 
 const API_ENDPOINTS = {
-  GET_CSV_FILES: 'http://127.0.0.1:5000/getCSVFiles',
-  DELETE_CSV_FILE: file => `http://127.0.0.1:5000/deleteCSVFile/${file}`,
-  GET_CSV_COLUMNS: file => `http://127.0.0.1:5000/getCSVColumns/${file}`,
-  GET_COLUMN_OVERRVIEW: (file, column) => `http://127.0.0.1:5000/getColumnOverview/${file}/${column}`,
-  UPLOAD_CSV: 'http://127.0.0.1:5000/uploadCSV'
+  GET_CSV_FILES: 'http://127.0.0.1:5000/get_all_files',
+  DELETE_CSV_FILE: file => `http://127.0.0.1:5000/delete_file/${file}`,
+  GET_CSV_COLUMNS: file => `http://127.0.0.1:5000/get_columns_file/${file}`,
+  GET_COLUMN_OVERRVIEW: (file, column) => `http://127.0.0.1:5000/file_column_overview/${file}/${column}`,
+  UPLOAD_CSV: 'http://127.0.0.1:5000/upload_file'
 };
 
 export default {

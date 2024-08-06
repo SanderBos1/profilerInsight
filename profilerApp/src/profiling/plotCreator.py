@@ -5,7 +5,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-class plotCreator:
+class PlotCreator:
     """
     A class for creating plots. it can create serveral kinds of plots.
     """
@@ -21,7 +21,7 @@ class plotCreator:
         self.image = None
         self.column_name = column_name
 
-    def getImage(self, plotType:str):
+    def get_image(self, plotType:str):
         """
         creates a plot of the data and returns it as a base64 encoded string.
         
@@ -30,15 +30,15 @@ class plotCreator:
 
         """
         if plotType == "histogram":
-            self.createHistogram()
+            self.create_histogram()
         elif plotType == "boxplot":
-            self.createBoxplot()
+            self.create_boxplot()
         else:
             return "Not implemented Yet"
         
         return self.image
 
-    def createBoxplot(self):
+    def create_boxplot(self):
         """
         creates a boxplot of the data and sets self.data as the base64 encoded string of the plot.
     
@@ -58,7 +58,7 @@ class plotCreator:
         img_base64 = base64.b64encode(img_bytes).decode('utf-8')
         self.image = img_base64
 
-    def createHistogram(self):
+    def create_histogram(self):
         """
         creates a Histogram of the data and sets self.data as the base64 encoded string of the plot.
     

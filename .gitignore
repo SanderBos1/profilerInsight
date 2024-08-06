@@ -5,12 +5,11 @@ generateEncryptionKey.py
 pushDockerhub.bat
 **/__pycache__/
 .pyc
-backend/profilerApp/data
+profilerApp/src/data
 Documentatie
 .DS_Store
 node_modules
 /dist
-./backend/profilerApp/data
 
 # local env files
 .env.local

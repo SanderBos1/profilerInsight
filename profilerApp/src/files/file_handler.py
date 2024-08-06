@@ -4,7 +4,7 @@ from flask import current_app
 from io import StringIO, BytesIO
 import os
 
-class FlatFileHandler():
+class FileHandler():
     """
     A class for preparing flat files and serving the profile data. It reads data from a file-like object,
     processes it, and provides profiling statistics for each column.

@@ -2,10 +2,10 @@ from flask import current_app
 import os
 import pandas as pd
 import json
-from ..patternFinder import patternFinder
-from ..plotCreator import plotCreator
+from .patternFinder import PatternFinder
+from .plotCreator import PlotCreator
 
-class profilerGenerator():
+class FileProfiler():
 
     def __init__(self, file_name:str):
         """
@@ -16,10 +16,10 @@ class profilerGenerator():
         - properties (dict): Dictionary containing the file properties like separator, header row, and quote character.
         """
         self.file_name = file_name
-        self.properties = self.loadProperties()
-        self.df = self.loadData()
+        self.properties = self.load_properties()
+        self.df = self.load_data()
 
-    def loadProperties(self) -> dict:
+    def load_properties(self) -> dict:
         """
         Loads the properties of the file into a dictionary.
 
@@ -31,7 +31,7 @@ class profilerGenerator():
             properties = json.load(properties)
         return properties
 
-    def loadData(self) -> None:
+    def load_data(self) -> None:
         """
         Loads the CSV data from the file into a pandas DataFrame.
 
@@ -48,7 +48,7 @@ class profilerGenerator():
                 df[column] = test_conversion
         return df
     
-    def getColumns(self) -> list:
+    def get_columns(self) -> list:
         """
         Returns the columns in the DataFrame as a list of strings.
 
@@ -59,7 +59,7 @@ class profilerGenerator():
         """
         return self.df.columns.tolist()
     
-    def numericalProfiler(self, column_data,  column:str) -> dict:
+    def numerical_profiler(self, column_data,  column:str) -> dict:
         """
         Calculates the profiler overview of a column with a numerical type.
 
@@ -77,15 +77,15 @@ class profilerGenerator():
         data_preview = self.df.head(10)
         data_preview =  data_preview.to_html(index=False, classes=["table table-bordered", "table-striped", "table-hover"])
 
-        newPlotCreator = plotCreator(column_data, column)
+        newPlotCreator = PlotCreator(column_data, column)
             
         column_type = str(column_data.dtype)
         median_value = round(column_data.median(), 3)
         mean_value = round(column_data.mean(), 3)
         min_value = round(column_data.min(), 3)
         max_value = round(column_data.max(), 3)
-        boxplot_image = newPlotCreator.getImage("boxplot")
-        column_image = newPlotCreator.getImage("histogram")
+        boxplot_image = newPlotCreator.get_image("boxplot")
+        column_image = newPlotCreator.get_image("histogram")
 
         profiler_overview = {
             "columnName": column,
@@ -109,7 +109,7 @@ class profilerGenerator():
         }
         return profiler_overview
     
-    def objectProfiler(self, column_data, column:str) -> dict:
+    def object_profiler(self, column_data, column:str) -> dict:
         """
         Calculates the profiler overview of a column with object type.
 
@@ -136,7 +136,7 @@ class profilerGenerator():
         min_value = column_data.min()
         max_value = column_data.max()
 
-        pattern_finder = patternFinder(column_data)
+        pattern_finder = PatternFinder(column_data)
         patterns = pattern_finder.find_patterns()[0:10]
 
         profiler_overview = {
@@ -162,7 +162,7 @@ class profilerGenerator():
         return profiler_overview
 
 
-    def fileProfiler(self, column:str) -> dict:
+    def profile_file(self, column:str) -> dict:
         """
         Profiles the DataFrame and returns statistics for the specified column.
 
@@ -175,7 +175,7 @@ class profilerGenerator():
 
         column_type = str(self.df[column].dtype)
         if column_type in ['float64', 'int64']:
-            profiler_overview = self.numericalProfiler(self.df[column], column)
+            profiler_overview = self.numerical_profiler(self.df[column], column)
         elif column_type == 'object':
-            profiler_overview = self.objectProfiler(self.df[column], column)
+            profiler_overview = self.object_profiler(self.df[column], column)
         return profiler_overview

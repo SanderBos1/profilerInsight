@@ -1,7 +1,7 @@
 import psycopg2
-from .database import Database
+from .base_connector import BaseConnector
 
-class postgresConnection(Database):
+class PostgresConnector(BaseConnector):
     def __init__(self, connection:dict, password:str):
         self.connectionDetails = connection
         self.password = password
@@ -94,7 +94,7 @@ class postgresConnection(Database):
         """
         query = f"""
             SELECT "{column}"
-            FROM {schema}.{table};
+            FROM {schema}."{table}";
         """
 
         return self.execute_query(query)

@@ -101,10 +101,10 @@ import basicDialogue  from '../baseDialogue.vue'
 
 
 const API_ENDPOINTS = {
-  GET_CONNECTIONS: 'http://127.0.0.1:5000/getConnections',
-  ADD_POSTGRES_CONNECTION: 'http://127.0.0.1:5000/addPostgresqlConnection',
-  DELETE_CONNECTION: connection_id => `http://127.0.0.1:5000/deleteConnection/${connection_id}`,
-  ingest_connection_tables: 'http://127.0.0.1:5000/ingestConnectedTables'
+  GET_CONNECTIONS: 'http://127.0.0.1:5000/get_connections',
+  ADD_POSTGRES_CONNECTION: 'http://127.0.0.1:5000/add_postgres_connection',
+  DELETE_CONNECTION: connection_id => `http://127.0.0.1:5000/delete_connection/${connection_id}`,
+  ingest_connection_tables: 'http://127.0.0.1:5000/ingest_connected_tables'
 
 };
 
@@ -171,7 +171,7 @@ export default {
     },
     async submitPostgressForm() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/addPostgresqlConnection", {
+        const response = await fetch("http://127.0.0.1:5000/add_postgres_connection", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

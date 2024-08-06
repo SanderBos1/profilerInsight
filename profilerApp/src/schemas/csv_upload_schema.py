@@ -1,6 +1,6 @@
 from marshmallow import Schema, fields
 
-class csvUploadSchema(Schema):
+class CSVUploadSchema(Schema):
     """
     Schema for validating and deserializing input data related to CSV file processing.
 

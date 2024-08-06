@@ -58,10 +58,10 @@ import basicDialogue  from '../baseDialogue.vue';
 import dbProfilerOverview from '../dbProfilerOverview.vue';
 
 const API_ENDPOINTS = {
-  GET_Connected_Tables: 'http://127.0.0.1:5000/getConnectedTables',
-  get_table_columns: table_id => `http://127.0.0.1:5000/getColumns/${table_id}`,
+  GET_Connected_Tables: 'http://127.0.0.1:5000/get_connected_tables',
+  get_table_columns: table_id => `http://127.0.0.1:5000/get_columns/${table_id}`,
   get_ingestion_data: (column, table_id) => `http://127.0.0.1:5000/ingest/${table_id}/${column}`,
-  get_overview_data: (table, column) => `http://127.0.0.1:5000/getOverview/${table}/${column}`
+  get_overview_data: (table, column) => `http://127.0.0.1:5000/profile_column/${table}/${column}`
 };
 
 export default{

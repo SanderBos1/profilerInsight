@@ -1,4 +1,4 @@
-class Database:
+class BaseConnector:
     def __init__(self, connection_details):
         self.connection_details = connection_details
 

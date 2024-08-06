@@ -16,6 +16,15 @@ def create_app():
 
 
     app = Flask(__name__)
+
+    from .connectors.connection_connector import connections_bp
+    from .connectors.profiler_connector import db_profiler_bp
+    from .connectors.file_connector import file_profiler_bp
+
+    app.register_blueprint(db_profiler_bp)
+    app.register_blueprint(file_profiler_bp)
+    app.register_blueprint(connections_bp)
+    
     Swagger(app)
 
     #allow vue frontend to communicate with the backend
@@ -40,13 +49,7 @@ def create_app():
 
     db.init_app(app)
 
-    from .databaseConnections import databaseBP
-    from .databaseProfiler import profilerBP
-    from .csvProfiler import csvProfilerBP
 
-    app.register_blueprint(databaseBP)
-    app.register_blueprint(profilerBP)
-    app.register_blueprint(csvProfilerBP)
 
     with app.app_context():
         # uncomment drop_all if you want to replace the database (when you have changed something)

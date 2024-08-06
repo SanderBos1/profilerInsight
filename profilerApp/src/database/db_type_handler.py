@@ -1,8 +1,8 @@
-from .databaseConnectors import postgresConnection
+from ..database import PostgresConnector
 
 
 CONNECTION_CLASSES = {
-    'postgres': postgresConnection,
+    'postgres': PostgresConnector,
 }
 
 def get_database_connection(db_type:str, connection:object, password:str) -> object:

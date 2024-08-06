@@ -3,13 +3,13 @@ from flasgger import swag_from
 import numpy as np
 from sqlalchemy.exc import IntegrityError
 
-from .profiler import Profiler
+from src.profiling import Profiler
 from ..models import dbConnections, connectedTables, ingestionOverview
-from profilerApp import db
-from.. import db_type_handler
+from src import db
+from..database import db_type_handler
 
-profilerBP = Blueprint(
-    "profilerBP",
+db_profiler_bp = Blueprint(
+    "db_profiler_bp",
     __name__,
 )
 
@@ -56,8 +56,8 @@ profilerBP = Blueprint(
         }
     }
 })
-@profilerBP.route('/getColumns/<table_id>', methods=['GET'])
-def getColumns(table_id:str):
+@db_profiler_bp.route('/get_columns/<table_id>', methods=['GET'])
+def get_columns(table_id:str):
     """
     Retrieve the columns of a table based on the table ID.
 
@@ -87,7 +87,7 @@ def getColumns(table_id:str):
     
 
 
-@profilerBP.route('/ingest/<table_id>/<column>', methods=['GET'])
+@db_profiler_bp.route('/ingest/<table_id>/<column>', methods=['GET'])
 @swag_from({
     'tags': ['Profiler'],
     'summary': 'Ingest data from a specified column into the profiler',
@@ -147,7 +147,7 @@ def getColumns(table_id:str):
         }
     }
 })
-def dbProfilerIngestion(table_id:str, column:str):
+def db_profiler_ingestion(table_id:str, column:str):
     """
     Ingests data from a specified column of a table into the profiler.
 
@@ -177,14 +177,14 @@ def dbProfilerIngestion(table_id:str, column:str):
         return jsonify(str(e)), 500
     try:
         profiler = Profiler(answer, table_tablename, column, table_id, table_connection_id)
-        profiler.saveOverview()
+        profiler.save_overview()
     except IntegrityError as e:
         db.session.rollback()
         return jsonify("Data already ingested"), 400
     return jsonify("Data Ingested"), 200
 
 
-@profilerBP.route('/getOverview/<table_id>/<column>', methods=['GET'])
+@db_profiler_bp.route('/profile_column/<table_id>/<column>', methods=['GET'])
 @swag_from({
     'tags': ['Profiler'],
     'summary': 'Get the ingestion overview for a specified column',
@@ -244,7 +244,7 @@ def dbProfilerIngestion(table_id:str, column:str):
         }
     }
 })
-def dbProfiler(table_id:str,  column:str):
+def db_profiler(table_id:str,  column:str):
     """
     Retrieves the ingestion overview for a specified column in a table.
 

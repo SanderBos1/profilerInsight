@@ -1,7 +1,7 @@
 from collections import defaultdict
 import re
 
-class patternFinder:
+class PatternFinder:
 
     def __init__(self, data):
         self.data = data

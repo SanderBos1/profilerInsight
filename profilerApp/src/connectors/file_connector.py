@@ -3,18 +3,18 @@ from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 import os
 import json
-from .jsonSchemas import csvUploadSchema
-from .FlatFileHandler import FlatFileHandler
-from .profilerGenerator import profilerGenerator
+from src.schemas import CSVUploadSchema
+from src.files import FileHandler
+from src.profiling  import FileProfiler
 import io
 from flasgger import swag_from
 
-csvProfilerBP = Blueprint(
-    "csvProfilerBP",
+file_profiler_bp = Blueprint(
+    "file_profiler_bp",
     __name__,
 )
 
-@csvProfilerBP.route('/getColumnOverview/<filename>/<column>', methods=['GET'])
+@file_profiler_bp.route('/file_column_overview/<filename>/<column>', methods=['GET'])
 @swag_from({    'tags': ['File Profiler'],
     'description': 'Retrieve the overview of a specific column in a CSV file.',
     'parameters': [
@@ -75,7 +75,8 @@ csvProfilerBP = Blueprint(
             'description': 'General server error (any other exceptions).'
         }
     }})
-def getColumnOverview(filename:str, column:str):
+
+def file_column_overview(filename:str, column:str):
     """
     Retrieves an overview of a specific column from a CSV file.
 
@@ -90,8 +91,8 @@ def getColumnOverview(filename:str, column:str):
     """
     filename = secure_filename(filename)
     try:
-        profiler_generator = profilerGenerator(filename)
-        columns = profiler_generator.fileProfiler(column)
+        profiler_generator = FileProfiler(filename)
+        columns = profiler_generator.profile_file(column)
         return jsonify(columns), 200
     
     except FileNotFoundError:
@@ -108,13 +109,13 @@ def getColumnOverview(filename:str, column:str):
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
 
-@csvProfilerBP.route('/getCSVFiles', methods=['GET'])
+@file_profiler_bp.route('/get_all_files', methods=['GET'])
 @swag_from({
     'tags': ['File Profiler'],  
-    'description': 'Retrieve a list of all CSV files in the configured directory. This endpoint scans the configured directory for CSV files and returns their filenames without extensions.',
+    'description': 'Retrieve a list of all files in the configured directory. This endpoint scans the configured directory for CSV files and returns their filenames without extensions.',
     'responses': {
         '200': {
-            'description': 'Successful retrieval of CSV filenames',
+            'description': 'Successful retrieval of the filenames',
             'schema': {
                 'type': 'array',
                 'items': {
@@ -128,7 +129,7 @@ def getColumnOverview(filename:str, column:str):
         }
     }
 })
-def getCSVFiles():
+def get_all_files():
     """
     Retrieves a list of all CSV files present in the configured directory.
 
@@ -149,7 +150,7 @@ def getCSVFiles():
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
     
-@csvProfilerBP.route('/deleteCSVFile/<filename>', methods=['DELETE'])
+@file_profiler_bp.route('/delete_file/<filename>', methods=['DELETE'])
 @swag_from({
     'tags': ['File Profiler'],
     'description': 'Delete a specified CSV file and its properties file.',
@@ -183,14 +184,14 @@ def getCSVFiles():
         }
     }
 })
-def deleteCSV(filename):
+def delete_file(filename):
     """
-    Deletes a specified CSV file and its associated properties file.
+    Deletes a specified  file and its associated properties file.
 
-    This endpoint removes both the CSV file and its JSON properties file from the configured directory.
+    This endpoint removes both the file and its JSON properties file from the configured directory.
 
     Args:
-        filename (str): The name of the CSV file to be deleted (without extension).
+        filename (str): The name of the file to be deleted (without extension).
 
     Returns:
         Response: A JSON object with a success message on successful deletion, or an error message on failure, with HTTP status code 200, 404, or 500.
@@ -211,10 +212,10 @@ def deleteCSV(filename):
         return jsonify({"error": str(e)}), 500
 
 
-@csvProfilerBP.route('/getCSVColumns/<filename>', methods=['GET'])
+@file_profiler_bp.route('/get_columns_file/<filename>', methods=['GET'])
 @swag_from({
     'tags': ['File Profiler'],
-    'description': 'Retrieve the list of columns in a specified CSV file. This endpoint loads a CSV file and its properties, retrieves the column names, and returns them.',
+    'description': 'Retrieve the list of columns in a specified  file. This endpoint loads a  file and its properties, retrieves the column names, and returns them.',
     'parameters': [
         {
             'name': 'filename',
@@ -246,7 +247,7 @@ def deleteCSV(filename):
         }
     }
 })
-def getCSVColumns(filename:str):
+def file_get_columns(filename:str):
     """
     Retrieves the list of column names from a specified CSV file.
 
@@ -260,8 +261,8 @@ def getCSVColumns(filename:str):
     """
     filename = secure_filename(filename)
     try:
-        profiler_generator = profilerGenerator(filename)
-        columns = profiler_generator.getColumns()
+        profiler_generator = FileProfiler(filename)
+        columns = profiler_generator.get_columns()
         return jsonify(columns), 200
     except FileNotFoundError:
         error_message = f"File {filename}.json not found."
@@ -271,13 +272,12 @@ def getCSVColumns(filename:str):
         error_message = f"Error decoding JSON in file {filename}.json."
         current_app.logger.error(error_message)
         return jsonify({"error": error_message}), 400
-    
     except Exception as e:
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
 
 
-@csvProfilerBP.route('/uploadCSV', methods=['POST'])
+@file_profiler_bp.route('/upload_file', methods=['POST'])
 @swag_from({
     'tags': ['File Profiler'],
     'description': 'Upload a  file and process it with specified properties. This endpoint handles file uploads, validates the form data, and processes the uploaded file using the specified properties.',
@@ -332,9 +332,9 @@ def getCSVColumns(filename:str):
         }
     }
 })
-def csvProfiler():
+def upload_file():
     """
-    Uploads and processes a CSV file with specified properties.
+    Uploads and processes a file with specified properties.
 
     This endpoint handles the upload of a CSV or XLSX file, validates the form data including delimiter, header row, and quote character, and processes the file accordingly. The processing depends on the file type and specified properties.
 
@@ -348,7 +348,7 @@ def csvProfiler():
         Response: A JSON object with a success message on successful processing, or an error message on failure, with HTTP status code 200, 400, or 500.
     """
     try:
-        csv_upload_form = csvUploadSchema()
+        csv_upload_form = CSVUploadSchema()
         data = csv_upload_form.load(request.form)
     except ValidationError as e:
         return jsonify(e.messages), 400
@@ -371,11 +371,11 @@ def csvProfiler():
         if ext not in current_app.config['ALLOWED_EXTENSIONS']:
             return jsonify({"error": "Invalid file type."}), 400
         elif ext == '.csv':
-            flat_file_handler = FlatFileHandler(filename, properties)
+            flat_file_handler = FileHandler(filename, properties)
             flat_file_handler.uploadCSV(file)
         else:
             xlsx_file = io.BytesIO(file.read())
-            flat_file_handler = FlatFileHandler(filename, properties)
+            flat_file_handler = FileHandler(filename, properties)
             flat_file_handler.uploadXLSX(xlsx_file)
         return jsonify(message="Success"), 200
     except Exception as e:
