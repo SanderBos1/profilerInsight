@@ -84,11 +84,11 @@ import basicDialogue  from '../baseDialogue.vue'
 import baseIngestionOverview from '../csvIngestionOverview.vue';
 
 const API_ENDPOINTS = {
-  GET_CSV_FILES: 'http://127.0.0.1:5000/get_all_files',
-  DELETE_CSV_FILE: file => `http://127.0.0.1:5000/delete_file/${file}`,
-  GET_CSV_COLUMNS: file => `http://127.0.0.1:5000/get_columns_file/${file}`,
-  GET_COLUMN_OVERRVIEW: (file, column) => `http://127.0.0.1:5000/file_column_overview/${file}/${column}`,
-  UPLOAD_CSV: 'http://127.0.0.1:5000/upload_file'
+    GET_CSV_FILES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_all_files',
+    DELETE_CSV_FILE: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/delete_file/${file}`,
+    GET_CSV_COLUMNS: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns_file/${file}`,
+    GET_COLUMN_OVERRVIEW: (file, column) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/file_column_overview/${file}/${column}`,
+    UPLOAD_CSV: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/upload_file'
 };
 
 export default {

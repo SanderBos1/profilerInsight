@@ -12,6 +12,6 @@ class CSVUploadSchema(Schema):
     Each field has a default value which will be used if the field is not provided in the input.
     """
 
-    csvSeperator = fields.Str(missing=',')
-    headerRow = fields.Int(missing=0)
-    quoteChar = fields.Str(missing='"')
+    csvSeperator = fields.Str(load_default=',')
+    headerRow = fields.Int(load_default=0)
+    quoteChar = fields.Str(load_default='"')

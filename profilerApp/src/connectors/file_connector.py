@@ -14,7 +14,7 @@ file_profiler_bp = Blueprint(
     __name__,
 )
 
-@file_profiler_bp.route('/file_column_overview/<filename>/<column>', methods=['GET'])
+@file_profiler_bp.route('/api/file_column_overview/<filename>/<column>', methods=['GET'])
 @swag_from({    'tags': ['File Profiler'],
     'description': 'Retrieve the overview of a specific column in a CSV file.',
     'parameters': [
@@ -109,7 +109,7 @@ def file_column_overview(filename:str, column:str):
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
 
-@file_profiler_bp.route('/get_all_files', methods=['GET'])
+@file_profiler_bp.route('/api/get_all_files', methods=['GET'])
 @swag_from({
     'tags': ['File Profiler'],  
     'description': 'Retrieve a list of all files in the configured directory. This endpoint scans the configured directory for CSV files and returns their filenames without extensions.',
@@ -150,7 +150,7 @@ def get_all_files():
         current_app.logger.error(f"An error occurred: {e}")
         return jsonify({"error": str(e)}), 500
     
-@file_profiler_bp.route('/delete_file/<filename>', methods=['DELETE'])
+@file_profiler_bp.route('/api/delete_file/<filename>', methods=['DELETE'])
 @swag_from({
     'tags': ['File Profiler'],
     'description': 'Delete a specified CSV file and its properties file.',
@@ -212,7 +212,7 @@ def delete_file(filename):
         return jsonify({"error": str(e)}), 500
 
 
-@file_profiler_bp.route('/get_columns_file/<filename>', methods=['GET'])
+@file_profiler_bp.route('/api/get_columns_file/<filename>', methods=['GET'])
 @swag_from({
     'tags': ['File Profiler'],
     'description': 'Retrieve the list of columns in a specified  file. This endpoint loads a  file and its properties, retrieves the column names, and returns them.',
@@ -277,7 +277,7 @@ def file_get_columns(filename:str):
         return jsonify({"error": str(e)}), 500
 
 
-@file_profiler_bp.route('/upload_file', methods=['POST'])
+@file_profiler_bp.route('/api/upload_file', methods=['POST'])
 @swag_from({
     'tags': ['File Profiler'],
     'description': 'Upload a  file and process it with specified properties. This endpoint handles file uploads, validates the form data, and processes the uploaded file using the specified properties.',

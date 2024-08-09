@@ -99,12 +99,11 @@
 <script>
 import basicDialogue  from '../baseDialogue.vue'
 
-
 const API_ENDPOINTS = {
-  GET_CONNECTIONS: 'http://127.0.0.1:5000/get_connections',
-  ADD_POSTGRES_CONNECTION: 'http://127.0.0.1:5000/add_postgres_connection',
-  DELETE_CONNECTION: connection_id => `http://127.0.0.1:5000/delete_connection/${connection_id}`,
-  ingest_connection_tables: 'http://127.0.0.1:5000/ingest_connected_tables'
+    GET_CONNECTIONS: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT +   '/api/get_connections',
+    ADD_POSTGRES_CONNECTION: 'http://' + process.env.VUE_APP_FLASK_HOST +  ':' + process.env.VUE_APP_FLASK_PORT + '/api/add_postgres_connection',
+    DELETE_CONNECTION: connection_id => `http://` + process.env.VUE_APP_FLASK_HOST + ':' +process.env.VUE_APP_FLASK_PORT + `/api/delete_connection/${connection_id}`,
+    ingest_connection_tables: 'http://' + process.env.VUE_APP_FLASK_HOST +':' + process.env.VUE_APP_FLASK_PORT + '/api/ingest_connected_tables'
 
 };
 

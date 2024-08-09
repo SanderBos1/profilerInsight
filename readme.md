@@ -26,19 +26,17 @@ Current data profiling tools often provide only superficial insights and typical
 Create a `.env` file in the root directory of the project. In this file, specify the database connection and Flask environment configuration. Here is an example of what this file might look like:
 
 ```env
-FLASK_APP=run.py
+SECRET_KEY="default"
+ENCRYPTION_KEY="default"
+
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_NAME=profilerDB
 DATABASE_USER=postgres
 DATABASE_PASSWORD=test
-SECRET_KEY="default"
-ENCRYPTION_KEY="default"
 ```
 
 ### Explanation of Variables:
-
-- **FLASK_APP:** This variable can remain as is. It points to the `run.py` file, which is used to test and run the backend locally.
 - **SECRET_KEY and ENCRYPTION_KEY:** These keys are used to secure the frontend. It is highly recommended to change these values and keep them confidential.
 - **Database settings (DATABASE_HOST, DATABASE_PORT, DATABASE_NAME, DATABASE_USER, DATABASE_PASSWORD):** These variables only need to be modified if you intend to use a different database than the default Docker database provided.
 

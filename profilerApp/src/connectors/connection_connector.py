@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
-from  src.models import dbConnections, connectedTables, ingestionOverview
-from  src.database import db_type_handler   
-from  src.schemas import ConnectionSchema
+from src.models import dbConnections, connectedTables, ingestionOverview
+from src.database import db_type_handler   
+from src.schemas import ConnectionSchema
 from marshmallow import ValidationError
 from src import db
 from flasgger import swag_from
@@ -13,7 +13,7 @@ connections_bp = Blueprint(
 )
 
 
-@connections_bp.route('/get_connected_tables', methods=['GET'])
+@connections_bp.route('/api/get_connected_tables', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Fetches all connected tables and returns them as a JSON array.',
@@ -59,15 +59,15 @@ def get_connected_tables():
     try:
         connected_tables = connectedTables.query.all()
         connected_table_list = [connected_table.to_dict() for connected_table in connected_tables]
-        return jsonify(connected_table_list), 200
+        return jsonify({'Answer': connected_table_list}), 200
     except OperationalError as e:
-        return jsonify({"error": "Database error occurred", "details": str(e)}), 500
+        return jsonify({"Error": "Database error occurred", "details": str(e)}), 500
     except Exception as e:
         return jsonify(str(e)), 500
     
 
 
-@connections_bp.route('/ingest_connected_tables', methods=['GET'])
+@connections_bp.route('/api/ingest_connected_tables', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Ingests tables from all database connections into the connectedTables model. Each connection\'s tables are retrieved and stored in the database.',
@@ -93,7 +93,7 @@ def get_connected_tables():
         }
     }
 })
-def ingest_conencted_table():
+def ingest_connected_table():
     """
     Ingests tables from all database connections into the connectedTables model.
 
@@ -114,14 +114,14 @@ def ingest_conencted_table():
                 new_connection = connectedTables(connection_id = connection.connection_id, schemaName = item[0], tableName = item[1])
                 db.session.add(new_connection)
                 db.session.commit()
-        return jsonify("Loaded"), 200
+        return jsonify({"Message": "connection_loaded"}), 200
     except OperationalError as e:
-        return jsonify({"error": "Database operation failed", "details": str(e)}), 500
+        return jsonify({"Error": "Database operation failed", "details": str(e)}), 500
     except Exception as e:
         return jsonify(str(e)), 500
 
     
-@connections_bp.route('/get_connections', methods=['GET'])
+@connections_bp.route('/api/get_connections', methods=['GET'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Retrieves all database connections and returns them as a JSON array.',
@@ -185,14 +185,14 @@ def get_connections():
     try:
         connection_list = dbConnections.query.all()
         connections_dict_list = [connection.to_dict() for connection in connection_list]
-        return jsonify(connections_dict_list), 200
+        return jsonify({'Answer': connections_dict_list}), 200
     except OperationalError as e:
-        return jsonify({"error": "Database operation failed", "details": str(e)}), 500
+        return jsonify({"Error": "Database operation failed", "details": str(e)}), 500
     except Exception as e:
         return jsonify(str(e)), 500
 
 
-@connections_bp.route('/add_postgres_connection', methods=['POST'])
+@connections_bp.route('/api/add_postgres_connection', methods=['POST'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Adds a new PostgreSQL connection to the database. Requires connection details to be sent in the request body.',
@@ -293,7 +293,7 @@ def get_connections():
         }
     }
 })
-def add_connection():
+def add_postgres_connection():
     """
     Handles the POST request to add a new PostgreSQL connection.
 
@@ -307,7 +307,8 @@ def add_connection():
         connection_schema = ConnectionSchema()
         data = connection_schema.load(request.get_json())
     except ValidationError as e:
-        return jsonify(e.messages), 400
+
+        return jsonify({"Error": "Missing Fields."}), 400
     try:
         connection_id = data['connection_id']
         host = data['host']
@@ -316,22 +317,21 @@ def add_connection():
         password = data['password']
         database = data['database']
         db_type = data['db_type']
-        print(db_type)
         new_connection = dbConnections(connection_id=connection_id, host=host, port=port, username=username, password=password, database=database, db_type=db_type)
         try:
             db.session.add(new_connection)
             db.session.commit()
-            return data, 200
+            return jsonify({"Message":"Connection Added Succesfully!"}), 200
         except Exception as e:
-            return "Connection name has already been chosen", 500
+            return jsonify({"Error": "Connection_id already exists"}), 500
     except OperationalError as e:
-        return jsonify({"error": "Database operation failed", "details": str(e)}), 500
+        return jsonify({"Error": "Database operation failed", "details": str(e)}), 500
     except Exception as e:
         return jsonify(str(e)), 500
 
 
 
-@connections_bp.route('/delete_connection/<connection_id>', methods=['DELETE'])
+@connections_bp.route('/api/delete_connection/<connection_id>', methods=['DELETE'])
 @swag_from({
     'tags': ['Database'],
     'description': 'Deletes a PostgreSQL connection along with associated connected tables and ingestion records.',
@@ -381,7 +381,7 @@ def add_connection():
         }
     }
 })
-def delete_connection(connection_id):
+def delete_connection(connection_id:str):
     """
     Handles the DELETE request to remove a PostgreSQL connection and its related records.
 
@@ -395,6 +395,8 @@ def delete_connection(connection_id):
     """
     try:
         connection = dbConnections.query.filter_by(connection_id=connection_id).first()
+        if connection is None:
+            return jsonify({'Error': 'Connection not found'}), 404
         connected_tables = connectedTables.query.filter_by(connection_id=connection_id)
         ingestions = ingestionOverview.query.filter_by(connection_id=connection_id)
         for ingestion in ingestions:
@@ -403,8 +405,8 @@ def delete_connection(connection_id):
             db.session.delete(table)
         db.session.delete(connection)
         db.session.commit()
-        return jsonify("Connection deleted successfully!"), 200
+        return jsonify({'Message':"Connection deleted successfully!"}), 200
     except Exception as e:
-        return jsonify(str(e)), 500
+        return jsonify({'Error': str(e)}), 500
 
 

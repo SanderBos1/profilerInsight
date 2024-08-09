@@ -1,4 +1,5 @@
-from src import db, cipher_suite
+from src import db
+
 
 class connectedTables(db.Model):
     """

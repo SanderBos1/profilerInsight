@@ -1,4 +1,7 @@
-from src import db, cipher_suite
+from src import db
+from src.config.encryption import EncryptionUtil  # Import the encryption utility
+import os
+
 
 
 class dbConnections(db.Model):
@@ -31,10 +34,12 @@ class dbConnections(db.Model):
     
     @property
     def password(self):
+        cipher_suite = EncryptionUtil.get_cipher_suite()
         return cipher_suite.decrypt(self._password).decode('utf-8')
 
     @password.setter
     def password(self, raw_password):
+        cipher_suite = EncryptionUtil.get_cipher_suite()
         self._password = cipher_suite.encrypt(raw_password.encode('utf-8'))
 
     def to_dict(self):

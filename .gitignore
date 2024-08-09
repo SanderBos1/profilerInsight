@@ -10,6 +10,10 @@ Documentatie
 .DS_Store
 node_modules
 /dist
+profilerApp/.pytest_cache
+.env.development
+.env.test
+frontend/dist/
 
 # local env files
 .env.local

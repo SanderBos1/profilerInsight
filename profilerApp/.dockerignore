@@ -1,10 +1,10 @@
-profilerApp/data/csvFiles/*
-profilerApp/migrations
+src/data/csvFiles/*
+src/migrations
 
-profilerApp/**/__pycache__
-profilerApp/**/*.pyc
-profilerApp/**/*.pyo
-profilerApp/**/*.pyd
+src/**/__pycache__
+src/**/*.pyc
+src/**/*.pyo
+src/**/*.pyd
 
 **/__pycache__
 **/*.pyc

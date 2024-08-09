@@ -58,10 +58,10 @@ import basicDialogue  from '../baseDialogue.vue';
 import dbProfilerOverview from '../dbProfilerOverview.vue';
 
 const API_ENDPOINTS = {
-  GET_Connected_Tables: 'http://127.0.0.1:5000/get_connected_tables',
-  get_table_columns: table_id => `http://127.0.0.1:5000/get_columns/${table_id}`,
-  get_ingestion_data: (column, table_id) => `http://127.0.0.1:5000/ingest/${table_id}/${column}`,
-  get_overview_data: (table, column) => `http://127.0.0.1:5000/profile_column/${table}/${column}`
+    GET_CONNECTED_TABLES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_connected_tables',
+    get_table_columns: table_id => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns/${table_id}`,
+    get_ingestion_data: (column, table_id) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/ingest/${table_id}/${column}`,
+    get_overview_data: (table, column) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/profile_column/${table}/${column}`
 };
 
 export default{
@@ -127,7 +127,7 @@ export default{
 
     },
     async getTables(){
-        const url = API_ENDPOINTS.GET_Connected_Tables
+        const url = API_ENDPOINTS.GET_CONNECTED_TABLES
         const method = "GET";
         const data = await this.fetchData(url, method);
         if(data){

@@ -56,7 +56,7 @@ db_profiler_bp = Blueprint(
         }
     }
 })
-@db_profiler_bp.route('/get_columns/<table_id>', methods=['GET'])
+@db_profiler_bp.route('/api/get_columns/<table_id>', methods=['GET'])
 def get_columns(table_id:str):
     """
     Retrieve the columns of a table based on the table ID.
@@ -87,7 +87,7 @@ def get_columns(table_id:str):
     
 
 
-@db_profiler_bp.route('/ingest/<table_id>/<column>', methods=['GET'])
+@db_profiler_bp.route('/api/ingest/<table_id>/<column>', methods=['GET'])
 @swag_from({
     'tags': ['Profiler'],
     'summary': 'Ingest data from a specified column into the profiler',
@@ -184,7 +184,7 @@ def db_profiler_ingestion(table_id:str, column:str):
     return jsonify("Data Ingested"), 200
 
 
-@db_profiler_bp.route('/profile_column/<table_id>/<column>', methods=['GET'])
+@db_profiler_bp.route('/api/profile_column/<table_id>/<column>', methods=['GET'])
 @swag_from({
     'tags': ['Profiler'],
     'summary': 'Get the ingestion overview for a specified column',
