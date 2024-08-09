@@ -35,13 +35,14 @@
             </table>
         </div>
     </div>
-    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="csv Upload Error">
+    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="connection Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
                     {{connectionError }}
                 </div>
             </template>
     </basicDialogue>
+    
     <basicDialogue :visible="showModal" @update:visible="showModal = $event" dialogTitle="Choose Connection Type">
         <template v-slot:dialogueBody>
             <div class="row">
@@ -145,7 +146,7 @@ export default {
             });
             if (!response.ok) {
                 const data = await response.json();
-                const errorMessage = data.error
+                const errorMessage = data["Error"]
                 this.handleError(`${response.status}, ${errorMessage}`);
                 return null; 
             }   
@@ -164,13 +165,13 @@ export default {
       await this.fetchData(apiEndpoint, 'GET')
         .then((data) => {
           if (data) {
-            this.connections = data;
+            this.connections = data["Answer"];
           }
         });
     },
     async submitPostgressForm() {
     try {
-        const response = await fetch("http://127.0.0.1:5000/add_postgres_connection", {
+        const response = await fetch(API_ENDPOINTS.ADD_POSTGRES_CONNECTION, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -179,8 +180,10 @@ export default {
         });
 
         if (!response.ok) {
+            const data = await response.json();
+            this.showPostgres = false;
             this.errorVisible = true;
-            this.tabelError = response.status;
+            this.connectionError = data["Error"] ;
         }
         else{
             this.fetchConnections()

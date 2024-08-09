@@ -1,12 +1,10 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, validate
 
 class ConnectionSchema(Schema):
-    connection_id = fields.Str(required=True)
-    host = fields.Str(required=True)
-    port = fields.Str(required=True)
-    username = fields.Str(required=True)
-    password = fields.Str(required=True)
-    database = fields.Str(required=True)
-    db_type = fields.Str(required=True)
-
-
+    connection_id = fields.Str(required=True, validate=validate.Length(min=1))
+    host = fields.Str(required=True, validate=validate.Length(min=1))
+    port = fields.Str(required=True, validate=validate.Length(min=1))
+    username = fields.Str(required=True, validate=validate.Length(min=1))
+    password = fields.Str(required=True, validate=validate.Length(min=1))
+    database = fields.Str(required=True, validate=validate.Length(min=1))
+    db_type = fields.Str(required=True, validate=validate.Length(min=1))

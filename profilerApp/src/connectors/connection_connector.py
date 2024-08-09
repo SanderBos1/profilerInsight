@@ -116,7 +116,7 @@ def ingest_connected_table():
                 db.session.commit()
         return jsonify({"Message": "connection_loaded"}), 200
     except OperationalError as e:
-        return jsonify({"Error": "Database operation failed", "details": str(e)}), 500
+        return jsonify({"Error": "Something went wrong in the database"}), 500
     except Exception as e:
         return jsonify(str(e)), 500
 
@@ -187,9 +187,9 @@ def get_connections():
         connections_dict_list = [connection.to_dict() for connection in connection_list]
         return jsonify({'Answer': connections_dict_list}), 200
     except OperationalError as e:
-        return jsonify({"Error": "Database operation failed", "details": str(e)}), 500
+        return jsonify({"Error": "Something went wrong in the database"}), 500
     except Exception as e:
-        return jsonify(str(e)), 500
+        return jsonify({"Error": "Something went wrong", "details": str(e)}), 500
 
 
 @connections_bp.route('/api/add_postgres_connection', methods=['POST'])
@@ -307,8 +307,7 @@ def add_postgres_connection():
         connection_schema = ConnectionSchema()
         data = connection_schema.load(request.get_json())
     except ValidationError as e:
-
-        return jsonify({"Error": "Missing Fields."}), 400
+        return jsonify({"Error": "Incorrect Data"}), 400
     try:
         connection_id = data['connection_id']
         host = data['host']

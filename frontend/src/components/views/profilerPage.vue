@@ -131,7 +131,7 @@ export default{
         const method = "GET";
         const data = await this.fetchData(url, method);
         if(data){
-            this.tables = data;
+            this.tables = data['Answer'];
         }
 
     },

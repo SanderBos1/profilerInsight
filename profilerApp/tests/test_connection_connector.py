@@ -100,7 +100,28 @@ def test_add_connection_wrong_schema(client):
         "host": "localhost"
     })
     assert response.status_code == 400
-    assert response.json == {"Error": "Missing Fields."}
+    assert response.json == {"Error": "Incorrect Data"}
+
+def test_add_connection_empty_data(client):
+    """
+    Test the API endpoint for adding a PostgreSQL connection with empty values
+
+    This test sends a POST request to the '/api/add_postgres_connection' endpoint
+    with a JSON payload that has empty data. It asserts that the response
+    status code is 400 and the response JSON contains an error message indicating
+    that something was wrong with the input
+    """
+    response = client.post('/api/add_postgres_connection', json={
+        "connection_id": "",
+        "host": "",
+        "port": "",
+        "username": "",
+        "password": "",
+        "database": "",
+        "db_type": ""
+    })
+    assert response.status_code == 400
+    assert response.json == {"Error": "Incorrect Data"}
 
 def test_delete_connection_unknown(client):
     """
