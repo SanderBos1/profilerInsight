@@ -2,8 +2,8 @@ from src import create_app
 import os 
 from gevent import pywsgi
 
-app = create_app("development")
-# app = create_app("test")
+# app = create_app("development")
+app = create_app("test")
 # app = create_app()
 
 if __name__ == '__main__':

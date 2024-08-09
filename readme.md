@@ -47,13 +47,19 @@ DATABASE_PASSWORD=test
 1. **Access the Web Interface:**
    - Open your web browser and go to [http://localhost:8080](http://localhost:8080) to access the Profiler Insight interface.
 
-### Performing Data Profiling on Files
+# User Manual
 
-1. **Navigate to CSV Profiler:**
-   - Click on "CSV Profiler" in the left-hand menu.
+
+## Accessing the Web Interface
+- Open your web browser and go to [http://localhost:8080](http://localhost:8080) to open the Profiler Insight interface.
+
+## Performing Data Profiling on Files (XLSX & CSV)
+
+1. **Navigate to File Profiler:**
+   - Click on "File Profiler" in the left menu.
 
 2. **Add Data Source:**
-   - Select "Upload" and click on "Choose File." Select your desired `.xlsx` or `.csv` file from your local storage.
+   - Select "Upload" and click on "Choose File". Choose the desired `.xlsx` or `.csv` file from your local storage.
    - Click on "Submit" to load the data.
 
 3. **Select File:**
@@ -61,6 +67,23 @@ DATABASE_PASSWORD=test
 
 4. **Analyze Data:**
    - Start the analysis by clicking on one of the displayed columns.
+
+---
+
+## Postgres Database
+
+1. **Add a Connection:**
+   - Go to “connections”.
+   - Choose “PostgreSQL”.
+   - Fill in all the values as desired and press “submit”.
+
+2. **Choose a Table:**
+   - Go to “Database Profiler”.
+   - Select the appropriate table in “choose table to profile”.
+   - If no table appears, the information entered in step 1 may be incorrect.
+
+3. **Choose a Column:**
+   - Click on one of the displayed columns to view your data.
 
 ## Notes:
 
