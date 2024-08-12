@@ -25,8 +25,8 @@ def create_app(config_name=None):
         load_dotenv('.env.development')
     elif config_name == 'test':
         load_dotenv('.env.test')
-    else:
-        load_dotenv()
+    elif config_name == 'production':
+        load_dotenv('.env.production')
 
     # Register blueprints
     from .connectors.connection_connector import connections_bp

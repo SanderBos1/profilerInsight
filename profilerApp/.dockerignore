@@ -14,4 +14,3 @@ src/**/*.pyd
 *.log
 *.tmp
 venv/
-.env/

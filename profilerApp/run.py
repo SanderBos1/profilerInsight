@@ -2,9 +2,9 @@ from src import create_app
 import os 
 from gevent import pywsgi
 
-app = create_app("development")
+# app = create_app("development")
 # app = create_app("test")
-# app = create_app()
+app = create_app("production")
 
 if __name__ == '__main__':
     host = os.getenv('FLASK_HOST', '127.0.0.1')
