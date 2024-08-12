@@ -15,3 +15,4 @@ pandas==2.2.2
 matplotlib==3.9.1
 openpyxl==3.1.5
 gevent==24.2.1
+pydocstyle == 6.3.0

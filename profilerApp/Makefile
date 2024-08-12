@@ -7,10 +7,13 @@ make_vm:
 	python -m venv venv
 
 test:
-	python	-m	pytest	
+	python -m pytest	
+
+dockstyle:
+	pydocstyle ./src run.py
 
 lint:
-	pylint  --disable=C0303 run.py ./src
+	pylint --disable=C0303 run.py ./src
 
+clean: test lint dockstyle
 
-all: install lint test

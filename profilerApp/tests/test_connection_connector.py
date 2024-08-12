@@ -71,7 +71,7 @@ def test_add_existing_connection(client):
 
     This test sends a POST request to the '/api/add_postgres_connection' endpoint
     with a JSON payload for a connection that already exists. It asserts that the
-    response status code is 500 and the response JSON contains an error message
+    response status code is 403 and the response JSON contains an error message
     indicating that the connection_id already exists.
     """
     response = client.post('/api/add_postgres_connection', json={
@@ -83,7 +83,7 @@ def test_add_existing_connection(client):
         "database": "profilerDB",
         "db_type": "postgres"
     })
-    assert response.status_code == 500
+    assert response.status_code == 403
     assert response.json == {"Error": "Connection_id already exists"}
 
 def test_add_connection_wrong_schema(client):

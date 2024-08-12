@@ -2,8 +2,8 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from flask_cors import CORS
-from src.config import get_database, register_error_handlers
-from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp
+from src.config import get_database
+from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp, errors_bp
 
 def create_app(config_name=None):
     """
@@ -34,9 +34,7 @@ def create_app(config_name=None):
     app.register_blueprint(db_profiler_bp)
     app.register_blueprint(file_profiler_bp)
     app.register_blueprint(connections_bp)
-
-    # Register error handlers
-    register_error_handlers(app)
+    app.register_blueprint(errors_bp)   
 
     # Configure Cross-Origin Resource Sharing (CORS)
     frontend_host = os.getenv("FRONTEND_HOST")

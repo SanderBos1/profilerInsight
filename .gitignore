@@ -11,9 +11,9 @@ Documentatie
 node_modules
 /dist
 profilerApp/.pytest_cache
-.env.development
-.env.test
-.env.production
+profilerApp/.env.development
+profilerApp/.env.test
+profilerApp/.env.production
 frontend/dist/
 
 # local env files
