@@ -1,9 +1,10 @@
-import numpy as np
 import base64
 import io
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
+
+matplotlib.use('Agg')
 
 class PlotCreator:
     """
@@ -21,7 +22,7 @@ class PlotCreator:
         self.image = None
         self.column_name = column_name
 
-    def get_image(self, plotType:str):
+    def get_image(self, plot_type:str):
         """
         creates a plot of the data and returns it as a base64 encoded string.
         
@@ -29,9 +30,9 @@ class PlotCreator:
          - plotType (str): The type of plot to create. Can be either "histogram" or "boxplot".
 
         """
-        if plotType == "histogram":
+        if plot_type == "histogram":
             self.create_histogram()
-        elif plotType == "boxplot":
+        elif plot_type == "boxplot":
             self.create_boxplot()
         else:
             return "Not implemented Yet"
@@ -46,7 +47,8 @@ class PlotCreator:
         boxplot_data = self.data[~np.isnan(self.data)]
 
         plt.figure(figsize=(4, 3))
-        plt.boxplot(boxplot_data, patch_artist=True, medianprops=dict(color='#5b5d62'), boxprops=dict(facecolor='#fe5000', color='orange'))
+        plt.boxplot(boxplot_data, patch_artist=True, medianprops=dict(color='#5b5d62'), \
+                    boxprops=dict(facecolor='#fe5000', color='orange'))
 
         img_stream = io.BytesIO()
         plt.title(f'Boxplot of {self.column_name}')

@@ -1,19 +1,21 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
 import os
+from flask import Flask
+from dotenv import load_dotenv
 from flask_cors import CORS
-from flasgger import Swagger
-
-db = SQLAlchemy()
+from src.config import get_database, register_error_handlers
+from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp
 
 def create_app(config_name=None):
     """
     Create and configure an instance of the Flask application.
 
+    This function sets up the Flask application with the necessary configuration,
+    including environment variables, blueprints, error handlers, CORS, Swagger, 
+    SQLAlchemy, and file upload settings based on the provided configuration name.
+
     Args:
-        config_name (str): The configuration environment name. 
-                            Options are 'development', 'test', or None for production.
+        config_name (str): The configuration environment name. Options are:
+                           'development', 'test', or None for production. Defaults to None.
 
     Returns:
         Flask: The configured Flask application instance.
@@ -29,20 +31,12 @@ def create_app(config_name=None):
         load_dotenv('.env.production')
 
     # Register blueprints
-    from .connectors.connection_connector import connections_bp
-    from .connectors.profiler_connector import db_profiler_bp
-    from .connectors.file_connector import file_profiler_bp
-
     app.register_blueprint(db_profiler_bp)
     app.register_blueprint(file_profiler_bp)
     app.register_blueprint(connections_bp)
 
     # Register error handlers
-    from .config.errors import register_error_handlers
     register_error_handlers(app)
-
-    # Initialize Swagger for API documentation
-    Swagger(app)
 
     # Configure Cross-Origin Resource Sharing (CORS)
     frontend_host = os.getenv("FRONTEND_HOST")
@@ -68,6 +62,7 @@ def create_app(config_name=None):
     app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
 
     # Initialize database and create tables
+    db = get_database()
     db.init_app(app)
     with app.app_context():
         db.create_all()

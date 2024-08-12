@@ -1,9 +1,11 @@
-from flask import current_app 
 import os
-import pandas as pd
 import json
+
+from flask import current_app 
+import pandas as pd
+
 from .patternFinder import PatternFinder
-from .plotCreator import PlotCreator
+from .plot_creator import PlotCreator
 
 class FileProfiler():
 
@@ -13,7 +15,8 @@ class FileProfiler():
 
         Parameters:
         - file_name (str): The name of the file (without extension).
-        - properties (dict): Dictionary containing the file properties like separator, header row, and quote character.
+        - properties (dict): Dictionary containing the file properties like separator, 
+        header row, and quote character.
         """
         self.file_name = file_name
         self.properties = self.load_properties()
@@ -26,7 +29,8 @@ class FileProfiler():
         Reads properties such as the delimiter, quote character, and header row from a JSON file.
         and returns it as a dictionary.
         """
-        properties_filename = os.path.join(current_app.config['csvFolder'], f"{self.file_name}.json")
+        properties_filename = os.path.join(current_app.config['csvFolder'], \
+                                            f"{self.file_name}.json")
         with open(properties_filename, 'rb') as properties:
             properties = json.load(properties)
         return properties
@@ -41,7 +45,9 @@ class FileProfiler():
         """
 
         file_name = os.path.join(current_app.config['csvFolder'], f"{self.file_name}.csv")
-        df = pd.read_csv(file_name, quotechar=self.properties['quotechar'], delimiter=self.properties['delimiter'])
+        df = pd.read_csv(file_name, quotechar=self.properties['quotechar'], \
+                         delimiter=self.properties['delimiter'],\
+                              header=self.properties['header_row'])
         for column in df.columns:
             test_conversion = pd.to_numeric(df[column], errors='coerce')
             if test_conversion.notna().all():
@@ -75,7 +81,8 @@ class FileProfiler():
         missing_or_empty_count = column_data.isna().sum() + (column_data == '').sum()
         nan_percentage = missing_or_empty_count / len(column_data) * 100
         data_preview = self.df.head(10)
-        data_preview =  data_preview.to_html(index=False, classes=["table table-bordered", "table-striped", "table-hover"])
+        data_preview =  data_preview.to_html(index=False, classes=["table table-bordered", \
+                                                                   "table-striped", "table-hover"])
 
         newPlotCreator = PlotCreator(column_data, column)
             
@@ -127,7 +134,8 @@ class FileProfiler():
         nan_percantage = missing_or_empty_count / len(column_data) * 100
 
         data_preview = self.df.head(10)
-        data_preview =  data_preview.to_html(index=False, classes=["table table-bordered", "table-striped", "table-hover"])
+        data_preview =  data_preview.to_html(index=False, classes=["table table-bordered", \
+                                                                   "table-striped", "table-hover"])
 
         number_numeric = 0
         for item in column_data:
@@ -179,3 +187,4 @@ class FileProfiler():
         elif column_type == 'object':
             profiler_overview = self.object_profiler(self.df[column], column)
         return profiler_overview
+    

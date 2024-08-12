@@ -1,3 +1,3 @@
-from .db_connections_model import dbConnections
-from .db_tabels_model import connectedTables
-from .profiler_data_model import ingestionOverview
+from .db_connections_model import DbConnections
+from .db_tabels_model import ConnectedTables
+from .profiler_data_model import IngestionOverview

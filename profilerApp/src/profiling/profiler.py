@@ -1,10 +1,13 @@
 
 import numpy as np
 import pandas as pd
-from ..models import ingestionOverview
-from src import db
+from src.config import get_database
+from ..models import IngestionOverview
 from .patternFinder import PatternFinder
-from .plotCreator import PlotCreator
+from .plot_creator import PlotCreator
+
+db = get_database()
+
 
 class Profiler:
 
@@ -67,9 +70,9 @@ class Profiler:
 
         if column_type  in ['int64', 'float64']:
             column_type = 'numeric'
-            newPlotCreator = PlotCreator(self.data, self.column)
-            histogram = newPlotCreator.get_image("histogram")
-            boxplot = newPlotCreator.get_image("boxplot")
+            new_plot_creator = PlotCreator(self.data, self.column)
+            histogram = new_plot_creator.get_image("histogram")
+            boxplot = new_plot_creator.get_image("boxplot")
             mean_value = round(float(self.data.mean()), 3)
             median_value = round(float(self.data.median()), 3)
             min_value = round(float(self.data.min()), 3)
@@ -119,7 +122,7 @@ class Profiler:
         """
         
         information = self.get_overview()
-        ingestion_overview = ingestionOverview(
+        ingestion_overview = IngestionOverview(
             table=self.table_name,
             column=self.column,
             table_id = self.table_id,
@@ -141,5 +144,3 @@ class Profiler:
 
         db.session.merge(ingestion_overview)
         db.session.commit()
-
-

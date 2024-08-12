@@ -135,7 +135,7 @@ export default {
             });
             if (!response.ok) {
                 const data = await response.json();
-                const errorMessage = data.error
+                const errorMessage = data['Error'];
                 this.handleError(`${response.status}, ${errorMessage}`);
                 return null; 
             }   

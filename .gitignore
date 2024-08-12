@@ -13,6 +13,7 @@ node_modules
 profilerApp/.pytest_cache
 .env.development
 .env.test
+.env.production
 frontend/dist/
 
 # local env files

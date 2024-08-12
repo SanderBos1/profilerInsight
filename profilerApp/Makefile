@@ -5,13 +5,12 @@ install:
 
 make_vm:
 	python -m venv venv
-test:
-	python	-m	pytest	-vv	main_test.py
 
-format:
-	black *.py
+test:
+	python	-m	pytest	
 
 lint:
-	pylint --disable=R,C main.py
+	pylint  --disable=C0303 run.py ./src
+
 
 all: install lint test
