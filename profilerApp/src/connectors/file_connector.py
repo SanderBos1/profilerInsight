@@ -1,40 +1,3 @@
-"""
-This module provides routes for managing file operations related to CSV and XLSX files. 
-
-Key Routes:
-- `/api/file_column_overview/<filename>/<column>`: Retrieves an overview of a specific column from
-    a CSV file, including profiling information.
-- `/api/get_all_files`: Lists all CSV files present in the configured directory.
-- `/api/delete_file/<filename>`: Deletes the specified file 
-    and its associated properties file from the configured directory.
-- `/api/get_columns_file/<filename>`: Retrieves the list of column names from a specified CSV file.
-- `/api/upload_file`: Handles the upload and processing of CSV or XLSX files, 
-    including validation of file properties.
-
-Dependencies:
-- `flask`: Used for creating and managing Flask routes and handling HTTP requests and responses.
-- `werkzeug`: Provides utilities for file handling, such as `secure_filename`.
-- `marshmallow`: Used for schema validation and deserialization.
-- `src.schemas`: Contains the `CSVUploadSchema` for validating upload request data.
-- `src.files`: Includes `FileHandler` for handling file operations.
-- `src.profiling`: Provides `FileProfiler` for profiling file contents.
-
-Configuration:
-- The `csvFolder` configuration should specify the directory where CSV files are stored and managed.
-
-Error Handling:
-- The module handles various exceptions, including `FileNotFoundError`, `json.JSONDecodeError`, 
-`IOError`, and `ValueError`, returning appropriate error messages and HTTP status codes.
-
-Usage:
-    Import and register the `file_profiler_bp` Blueprint in a Flask application 
-    to enable the defined routes for file operations and profiling.
-
-Example:
-    from your_module import file_profiler_bp
-    app.register_blueprint(file_profiler_bp)
-"""
-
 import os
 import json
 import logging
@@ -45,8 +8,9 @@ from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
 from src.schemas import CSVUploadSchema
-from src.files import FileHandler
-from src.profiling  import FileProfiler
+from src.files import CsvHandler, XlsxHandler   
+from src.loaders import FileLoader
+from src.profiling import CheckType
 
 file_profiler_bp = Blueprint(
     "file_profiler_bp",
@@ -56,7 +20,7 @@ file_profiler_bp = Blueprint(
 @file_profiler_bp.route('/api/file_column_overview/<filename>/<column>', methods=['GET'])
 def file_column_overview(filename:str, column:str):
     """
-    Retrieves an overview of a specific column from a CSV file.
+    Retrieve an overview of a specific column from a CSV file.
 
     This endpoint provides profiling information for the specified column, 
     including statistics and visualizations. 
@@ -71,9 +35,23 @@ def file_column_overview(filename:str, column:str):
     """
     filename = secure_filename(filename)
     try:
-        profiler_generator = FileProfiler(filename)
-        columns = profiler_generator.profile_file(column)
-        return jsonify(columns), 200
+        # loads data & example
+        profiler_generator = FileLoader(filename)
+        example = profiler_generator.load_examples()
+
+        # checks type of data
+        data = profiler_generator.load(column)
+        check_type = CheckType(data)
+        profiler, data, dtype = check_type.check_type()
+
+        # profiles data
+        profiler_instance = profiler(data, column, dtype)
+        profiler_overview = profiler_instance.profiler_output()
+
+        return jsonify({
+            "overview": profiler_overview,
+            "example": example
+        }), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
         return jsonify({"Error": "File not found."}), 404
@@ -84,9 +62,9 @@ def file_column_overview(filename:str, column:str):
 @file_profiler_bp.route('/api/get_all_files', methods=['GET'])
 def get_all_files():
     """
-    Retrieves a list of all CSV files present in the configured directory.
+    Retrieve a list of all CSV files present in the configured directory.
 
-    This endpoint scans the directory specified by the `csvFolder` configuration \
+    This endpoint scans the directory specified by the `csv_folder` configuration \
           and returns the filenames of CSV files without their extensions.
 
     Returns:
@@ -94,7 +72,7 @@ def get_all_files():
             or an error message on failure, with HTTP status code 200 or 500.
     """
     try: 
-        files = os.listdir(current_app.config['csvFolder'])
+        files = os.listdir(current_app.config['csv_folder'])
         filenames = []
         for file in files:
             filename = file.split(".")
@@ -108,7 +86,7 @@ def get_all_files():
 @file_profiler_bp.route('/api/delete_file/<filename>', methods=['DELETE'])
 def delete_file(filename):
     """
-    Deletes a specified  file and its associated properties file.
+    Delete a specified  file and its associated properties file.
 
     This endpoint removes both the file and its JSON properties file from the configured directory.
 
@@ -121,8 +99,8 @@ def delete_file(filename):
     """
     try: 
         sec_filename =secure_filename(filename)
-        filename = os.path.join(current_app.config['csvFolder'], f"{sec_filename}.csv")
-        properties_filename = os.path.join(current_app.config['csvFolder'], f"{sec_filename}.json")
+        filename = os.path.join(current_app.config['csv_folder'], f"{sec_filename}.csv")
+        properties_filename = os.path.join(current_app.config['csv_folder'], f"{sec_filename}.json")
         os.remove(filename)
         os.remove(properties_filename)
         return jsonify(message="Success"), 200
@@ -134,7 +112,7 @@ def delete_file(filename):
 @file_profiler_bp.route('/api/get_columns_file/<filename>', methods=['GET'])
 def file_get_columns(filename:str):
     """
-    Retrieves the list of column names from a specified CSV file.
+    Retrieve the list of column names from a specified CSV file.
 
     This endpoint loads the specified CSV file and its associated properties file, \
         then returns a list of column names found in the CSV file.
@@ -148,8 +126,8 @@ def file_get_columns(filename:str):
     """
     filename = secure_filename(filename)
     try:
-        profiler_generator = FileProfiler(filename)
-        columns = profiler_generator.get_columns()
+        file_loader = FileLoader(filename)
+        columns = file_loader.load_columns()
         return jsonify(columns), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
@@ -163,7 +141,7 @@ def file_get_columns(filename:str):
 @file_profiler_bp.route('/api/upload_file', methods=['POST'])
 def upload_file():
     """
-    Uploads and processes a file with specified properties.
+    Upload and processes a file with specified properties.
 
     This endpoint handles the upload of a CSV or XLSX file, \
         validates the form data including delimiter, header row, and quote character, \
@@ -204,19 +182,22 @@ def upload_file():
         }
 
         if ext == '.csv':
-            flat_file_handler = FileHandler(filename, properties)
-            flat_file_handler.upload_csv(file)
+            flat_file_handler = CsvHandler(properties)
+            df = flat_file_handler.clean(file)
+            flat_file_handler.save_properties(filename)
+            flat_file_handler.save(df, filename)
         else:
             xlsx_file = io.BytesIO(file.read())
-            flat_file_handler = FileHandler(filename, properties)
-            flat_file_handler.upload_xlsx(xlsx_file)
+            df = flat_file_handler = XlsxHandler(properties)
+            flat_file_handler.save_properties(filename)
+            flat_file_handler.clean(df, xlsx_file)
         return jsonify(message="Success"), 200
     except FileNotFoundError as e:
         logging.error('File Not Found: %s', e)
-        return jsonify({"error": "File not found."}), 404
+        return jsonify({"Error": "File not found."}), 404
     except IOError as e:
         logging.error('I/O Error: %s', e)
-        return jsonify({"error": "Error reading file."}), 500
+        return jsonify({"Error": "Error reading file."}), 500
     except ValueError as e:
         logging.error('Value Error: %s', e)
-        return jsonify({"error": "Invalid value provided."}), 400
+        return jsonify({"Error": "Invalid value provided."}), 400

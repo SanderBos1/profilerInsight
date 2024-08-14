@@ -10,10 +10,10 @@ test:
 	python -m pytest	
 
 dockstyle:
-	pydocstyle ./src run.py
+	pydocstyle ./src ./test run.py
 
 lint:
-	pylint --disable=C0303 run.py ./src
+	pylint --disable=C0303,C0114  run.py ./src 
 
 clean: test lint dockstyle
 

@@ -1,47 +1,15 @@
-"""
-This module defines the `connections_bp` Blueprint for managing database connection operations 
-and interactions with the `ConnectedTables` and `DbConnections` models.
-
-Endpoints:
-- `/api/get_connected_tables`: Retrieves a list of all connected tables.
-- `/api/ingest_connected_tables`: Ingests tables from all database connections\
-    into the `ConnectedTables` model.
-- `/api/get_connections`: Retrieves a list of all database connections.
-- `/api/add_postgres_connection`: Adds a new PostgreSQL connection with provided details.
-- `/api/delete_connection/<connection_id>`: Deletes a PostgreSQL connection and associated records.
-
-Imports:
-- `Blueprint`: For creating a Flask Blueprint to group related routes.
-- `request`: For accessing request data and handling incoming JSON payloads.
-- `jsonify`: For creating JSON responses.
-- `ValidationError`: For handling validation errors from Marshmallow schema.
-- `OperationalError`, `IntegrityError`: For handling database errors.
-- `get_database`: For accessing the SQLAlchemy database instance.
-- `DbConnections`, `ConnectedTables`, `IngestionOverview`: SQLAlchemy models for 
-    database operations and schema.
-- `db_type_handler`: For managing database connections and operations.
-- `ConnectionSchema`: Marshmallow schema for validating database connection data.
-
-Usage:
-    Import and register the `connections_bp` Blueprint 
-    in a Flask application to enable the defined endpoints.
-
-Example:
-    from your_module import connections_bp
-    app.register_blueprint(connections_bp)
-"""
 import logging
 
 from flask import Blueprint, request, jsonify
 from marshmallow import ValidationError
 
 from sqlalchemy.exc import OperationalError, IntegrityError 
-from src.config import get_database
+from src.config import SingletonDB
 from src.models import DbConnections, ConnectedTables, IngestionOverview
-from src.database import db_type_handler   
+from src.database import get_database_connection   
 from src.schemas import ConnectionSchema
 
-db = get_database()
+DB = SingletonDB.get_instance()
 
 connections_bp = Blueprint(
     "connections_bp",
@@ -94,14 +62,14 @@ def ingest_connected_table():
         for connection in connection_list:
             password = connection.password
             connection_dict = connection.to_dict()
-            new_db_connection = db_type_handler.get_database_connection(connection_dict['db_type'],\
+            new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                          connection_dict, password)
             answer = new_db_connection.get_all_tables()
             for item in answer:
                 new_connection = ConnectedTables(connection_id = connection.connection_id,\
                                                   schemaName = item[0], tableName = item[1])
-                db.session.add(new_connection)
-                db.session.commit()
+                DB.session.add(new_connection)
+                DB.session.commit()
         return jsonify({"Message": "connection_loaded"}), 200
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)
@@ -110,7 +78,7 @@ def ingest_connected_table():
 @connections_bp.route('/api/get_connections', methods=['GET'])
 def get_connections():
     """
-    Handles the GET request to retrieve all database connections.
+    Handle the GET request to retrieve all database connections.
 
     Queries the database for all entries in the `DbConnections` model, 
     converts each entry to a dictionary,
@@ -135,7 +103,7 @@ def get_connections():
 @connections_bp.route('/api/add_postgres_connection', methods=['POST'])
 def add_postgres_connection():
     """
-    Handles the POST request to add a new PostgreSQL connection.
+    Handle the POST request to add a new PostgreSQL connection.
 
     Expects connection details to be provided in the request body. Validates the input data, 
     creates a new `DbConnections`
@@ -166,11 +134,11 @@ def add_postgres_connection():
                                        port=port, username=username, password=password, \
                                         database=database, db_type=db_type)
         try:
-            db.session.add(new_connection)
-            db.session.commit()
+            DB.session.add(new_connection)
+            DB.session.commit()
             return jsonify({"Message":"Connection Added Succesfully!"}), 200
         except IntegrityError as e:
-            db.session.rollback()
+            DB.session.rollback()
             logging.error('Integrity error: %s', e)
             return jsonify({"Error": "Connection_id already exists"}), 403
     except OperationalError as e:
@@ -180,7 +148,7 @@ def add_postgres_connection():
 @connections_bp.route('/api/delete_connection/<connection_id>', methods=['DELETE'])
 def delete_connection(connection_id:str):
     """
-    Handles the DELETE request to remove a PostgreSQL connection and its related records.
+    Handle the DELETE request to remove a PostgreSQL connection and its related records.
 
     This endpoint deletes the specified connection, 
     along with any tables and ingestion records associated with it.
@@ -203,14 +171,14 @@ def delete_connection(connection_id:str):
         connected_tables = ConnectedTables.query.filter_by(connection_id=connection_id)
         ingestions = IngestionOverview.query.filter_by(connection_id=connection_id)
         for ingestion in ingestions:
-            db.session.delete(ingestion)
+            DB.session.delete(ingestion)
         for table in connected_tables:
-            db.session.delete(table)
-        db.session.delete(connection)
-        db.session.commit()
+            DB.session.delete(table)
+        DB.session.delete(connection)
+        DB.session.commit()
         return jsonify({'Message':"Connection deleted successfully!"}), 200
     except IntegrityError as e:
-        db.session.rollback()
+        DB.session.rollback()
         logging.error('Integrity error: %s', e)
         return jsonify({"Error": "Connection_id already exists"}), 403
     except OperationalError as e:

@@ -14,47 +14,39 @@
             <div class="row">
               <div class="col-md-6 mt-3">
                 <dt>Type:</dt>
-                <dd>{{ columnInfo.columnType }}</dd>
+                <dd>{{ columnInfo.column_type }}</dd>
               </div>
               <div class="col-md-6 mt-3">
                 <dt>Length:</dt>
-                <dd>{{ columnInfo.lenColumn }}</dd>
+                <dd>{{ columnInfo.column_length }}</dd>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
                 <dt>Distinct Values:</dt>
-                <dd>{{ columnInfo.distinctValues }}</dd>
+                <dd>{{ columnInfo.distinct_values }}</dd>
               </div>
               <div class="col-md-6">
                 <dt>Unique Values:</dt>
-                <dd>{{ columnInfo.uniqueValues }}</dd>
+                <dd>{{ columnInfo.unique_values }}</dd>
               </div>
               <div class="col-md-6">
                 <dt>Mean:</dt>
-                <dd>{{ columnInfo.baseStats.meanColumn }}</dd>
+                <dd>{{ columnInfo.mean }}</dd>
               </div>
               <div class="col-md-6">
                 <dt>Median:</dt>
-                <dd>{{ columnInfo.baseStats.medianColumn }}</dd>
+                <dd>{{ columnInfo.median }}</dd>
               </div>
             </div>
             <div class="row">
               <div class="col-md-6">
                 <dt>Min:</dt>
-                <dd>{{ columnInfo.baseStats.minColumn }}</dd>
+                <dd>{{ columnInfo.min }}</dd>
               </div>
               <div class="col-md-6">
                 <dt>Max:</dt>
-                <dd>{{ columnInfo.baseStats.maxColumn }}</dd>
-              </div>
-            </div>
-            <div v-if="'extraInfo' in columnInfo">
-              <div class="row">
-                <div class="col-md-6">
-                  <dt>Numerical Rows:</dt>
-                  <dd>{{ columnInfo.extraInfo.numberNumeric }}</dd>
-                </div>
+                <dd>{{ columnInfo.max }}</dd>
               </div>
             </div>
           </div>
@@ -64,16 +56,16 @@
       <!-- Second column with pie chart and NaN Values -->
       <div class="col-sm-12 col-md-6">
         <basePieChart
-          :values="[columnInfo.nanValues, 100 - columnInfo.nanValues]"
+          :values="[columnInfo.nan_percantage, 100 - columnInfo.nan_percantage]"
           :labels="['NanValues', 'Values']"
           :backgroundColor="['#5b5d62', '#fe5000']"
         ></basePieChart>
         <dt align="center">NaN Values:</dt>
-        <dd align="center">{{ columnInfo.nanValues }}</dd>
+        <dd align="center">{{ columnInfo.nan_percantage }}</dd>
       </div>
 
       <!-- Distribution images section -->
-      <div v-if="'numericImages' in columnInfo">
+      <div v-if="Object.hasOwn(columnInfo, 'histogram')">
         <div class="row pt-3">
           <h5 align="center">Distribution</h5>
           <div class="col-md-6">
@@ -81,7 +73,7 @@
               <div class="card-body">
                 <dd align="center">
                   <img
-                    v-bind:src="'data:image/jpeg;base64,' + columnInfo.numericImages.histogram"
+                    v-bind:src="'data:image/jpeg;base64,' + columnInfo.histogram"
                     alt="histogramImage"
                     class="img-fluid"
                   >
@@ -94,7 +86,7 @@
               <div class="card-body">
                 <dd align="center">
                   <img
-                    v-bind:src="'data:image/jpeg;base64,' + columnInfo.numericImages.boxplot"
+                    v-bind:src="'data:image/jpeg;base64,' + columnInfo.boxplot"
                     alt="boxplot"
                     class="img-fluid"
                   >
@@ -106,8 +98,8 @@
       </div>
 
       <!-- Data Patterns section -->
-    <div v-if="'extraInfo' in columnInfo">
-      <div class="col-md-12">
+      <div v-if="Object.hasOwn(columnInfo, 'patterns')">
+        <div class="col-md-12">
         <div class="card mt-3">
           <div class="card-header text-center grey" data-bs-toggle="tooltip" title="Show which patterns there are in your data. A represent a letter, 1 a number and & a special characters. The characters . , @ and / represent themself.">
             <h5>Data Patterns</h5>
@@ -122,7 +114,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(pattern, index) in columnInfo.extraInfo.patterns" :key="index">
+                  <tr v-for="(pattern, index) in columnInfo.patterns" :key="index">
                     <td>
                       {{ pattern[0] }}
                     </td>
@@ -150,7 +142,7 @@
           <div class="card-body">
             <div class="row">
               <div class="col-md-12 overflow-auto">
-                <div v-html="columnInfo.dataPreview"></div>
+                <div v-html="example"></div>
               </div>
             </div>
           </div>
@@ -167,12 +159,17 @@ import basePieChart from './basePieChart.vue';
 export default {
   name: 'baseIngestionOverview',
   props: {
-      columnInfo: Object
+      columnInfo: Object,
+      example: Object
   },
 
   components:{
     basePieChart
   },
+  beforeMount(){
+    console.log(this.columnInfo)
+  }
+  
 
 }       
     

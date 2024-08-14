@@ -1,41 +1,3 @@
-"""
-This module defines the `PostgresConnector` class, 
-which provides an interface for interacting with a PostgreSQL database.
-
-The `PostgresConnector` class is designed to handle database operations such as 
- * establishing connections
- * executing queries,
- * retrieving metadata about tables and columns. 
- 
-It inherits from the `BaseConnector` class and utilizes the `psycopg2`
-library to manage connections and execute SQL commands.
-
-Key functionalities of `PostgresConnector` include:
-- Establishing a connection to a PostgreSQL database.
-- Executing SQL queries and returning query results.
-- Retrieving a list of all tables in the database.
-- Retrieving column names for a specific table.
-- Fetching data from a specific column in a table.
-
-Dependencies:
-- `psycopg2`: A PostgreSQL adapter for Python.
-- `BaseConnector`: The base class providing a common interface for database connectors.
-
-Classes:
-- `PostgresConnector`: A connector for interfacing with a PostgreSQL database.
-
-Methods:
-- `get_connection() -> object`: Establishes and returns a connection to the PostgreSQL database.
-- `execute_query(query: str, params=None) -> list`: 
-    Executes a SQL query with optional parameters and returns the results.
-- `get_all_tables() -> list`: 
-        Retrieves a list of all tables in the PostgreSQL database.
-- `get_table_columns(schema: str, table: str) -> list`: 
-        Retrieves a list of column names for a specified table.
-- `get_column_data(schema: str, table: str, column: str) -> list`: 
-        Retrieves data from a specified column in a table.
-"""
-
 import psycopg2
 from .base_connector import BaseConnector
 
@@ -52,7 +14,7 @@ class PostgresConnector(BaseConnector):
     """
     def get_connection(self) -> object:
         """
-        Establishes a connection to a PostgreSQL database.
+        Establish a connection to a PostgreSQL database.
 
         Returns:
         - psycopg2.extensions.connection: A connection object for the database.
@@ -68,7 +30,7 @@ class PostgresConnector(BaseConnector):
 
     def execute_query(self, query:str, params=None):
         """
-        Executes a SQL query on the PostgreSQL database.
+        Execute a SQL query on the PostgreSQL database.
 
         Args:
             query (str): The SQL query to be executed.
@@ -88,7 +50,7 @@ class PostgresConnector(BaseConnector):
             
     def get_all_tables(self) -> list:
         """
-        Gets a list of all tables in a PostgreSQL database.
+        Get a list of all tables in a PostgreSQL database.
 
         Returns:
         - list: A list of table names.
@@ -106,7 +68,7 @@ class PostgresConnector(BaseConnector):
 
     def get_table_columns(self, schema:str, table:str)  -> list:
         """
-        Gets a list of columns in a table in a PostgreSQL database.
+        Get a list of columns in a table in a PostgreSQL database.
 
         Args:
         - schema (str): The schema of the table.
@@ -126,7 +88,7 @@ class PostgresConnector(BaseConnector):
     
     def get_column_data(self, schema:str, table:str, column:str) -> list:
         """
-        Gets the data in a column in a table in a PostgreSQL database.
+        Get the data in a column in a table in a PostgreSQL database.
 
         Args:
         - schema (str): The schema of the table.

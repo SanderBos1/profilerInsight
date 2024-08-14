@@ -1,16 +1,3 @@
-"""
-This module defines the `BaseConnector` class, which serves as an abstract base class 
-for database connectors. Subclasses should implement the methods to handle specific 
-database interactions, such as executing queries, retrieving tables, and fetching column data.
-
-The `BaseConnector` class provides an interface for various database operations, 
-ensuring that subclasses adhere to a consistent set of methods.
-
-Usage:
-    Subclasses should inherit from `BaseConnector` and implement the abstract methods
-    to connect to and interact with a specific type of database.
-"""
-
 class BaseConnector:
     """
     Abstract base class for database connectors.
@@ -21,26 +8,26 @@ class BaseConnector:
     retrieving metadata about tables and columns.
 
     Attributes:
-        connection_details (dict): A dictionary containing the details required 
+        - connection_details (dict): A dictionary containing the details required 
                                    to establish a connection to the database.
+        - password (str): The password for the database connection.
     """
 
     def __init__(self, connection: dict, password:str):
         """
-        Initializes the BaseConnector with connection details.
+        Initialize the BaseConnector with connection details.
 
         Args:
             connection_details (dict): A dictionary containing the necessary details 
-                                       to connect to the database.
-            password (str): The password for the database connection.
+                                       to connect to the database
+        - password (str): The password for the database connection.
         """
-        
         self.connection = connection
         self.password = password
 
     def get_connection(self) -> object:
         """
-        Establishes and returns a database connection.
+        Establish and returns a database connection.
 
         This method should be overridden by subclasses to provide the actual 
         implementation for connecting to the specific database.
@@ -55,7 +42,7 @@ class BaseConnector:
 
     def execute_query(self, query: str, params=None) -> object:
         """
-        Executes a database query.
+        Execute a database query.
 
         This method should be overridden by subclasses to provide the actual 
         implementation for executing queries against the database.
@@ -74,7 +61,7 @@ class BaseConnector:
 
     def get_all_tables(self) -> list:
         """
-        Retrieves a list of all tables in the database.
+        Retrieve a list of all tables in the database.
 
         This method should be overridden by subclasses to provide the actual 
         implementation for retrieving all table names from the database.
@@ -89,7 +76,7 @@ class BaseConnector:
 
     def get_table_columns(self, schema: str, table: str) -> list:
         """
-        Retrieves a list of columns for a specific table in a given schema.
+        Retrieve a list of columns for a specific table in a given schema.
 
         This method should be overridden by subclasses to provide the actual 
         implementation for retrieving column names for a specified table and schema.
@@ -108,7 +95,7 @@ class BaseConnector:
 
     def get_column_data(self, schema: str, table: str, column: str) -> list:
         """
-        Retrieves data from a specific column in a given table and schema.
+        Retrieve data from a specific column in a given table and schema.
 
         This method should be overridden by subclasses to provide the actual 
         implementation for retrieving data from a specified column.
@@ -125,4 +112,3 @@ class BaseConnector:
             NotImplementedError: If not overridden by subclasses.
         """
         raise NotImplementedError("This method should be overridden by subclasses")
-    

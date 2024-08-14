@@ -1,2 +1,2 @@
-from .app_database import get_database
-from .encryption import get_cipher_suite
+from .app_database import SingletonDB 
+from .encryption import SingletonFernet

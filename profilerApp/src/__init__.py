@@ -2,7 +2,7 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from flask_cors import CORS
-from src.config import get_database
+from src.config import SingletonDB
 from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp, errors_bp
 
 def create_app(config_name=None):
@@ -56,11 +56,12 @@ def create_app(config_name=None):
 
     # Configure file upload settings
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    app.config['csvFolder'] = os.path.join(base_dir, 'data', 'csvFiles')
+  
+    app.config['csv_folder'] = os.path.join(base_dir, 'data', 'csvFiles')
     app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
 
     # Initialize database and create tables
-    db = get_database()
+    db = SingletonDB.get_instance()
     db.init_app(app)
     with app.app_context():
         db.create_all()

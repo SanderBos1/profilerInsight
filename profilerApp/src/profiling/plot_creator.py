@@ -15,19 +15,23 @@ class PlotCreator:
         Initializes the plotCreator with the given parameters.
 
         Parameters:
-        - columnName (str): The name of the column corresponding to the data.
-        - data (np.ndarray): The data to be plotted.
+            - columnName (str): The name of the column corresponding to the data.
+            - data (np.ndarray): The data to be plotted.
         """
+
         self.data = data
         self.image = None
         self.column_name = column_name
 
-    def get_image(self, plot_type:str):
+    def get_image(self, plot_type:str) -> str:
         """
-        creates a plot of the data and returns it as a base64 encoded string.
+        Create a plot of the data and returns it as a base64 encoded string.
         
-        Parameters:
-         - plotType (str): The type of plot to create. Can be either "histogram" or "boxplot".
+        Args:
+            - plotType (str): The type of plot to create. Can be either "histogram" or "boxplot".
+
+        Returns:
+            - self.image (str): A base64 encoded string of the plot.
 
         """
         if plot_type == "histogram":
@@ -41,14 +45,14 @@ class PlotCreator:
 
     def create_boxplot(self):
         """
-        creates a boxplot of the data and sets self.data as the base64 encoded string of the plot.
+        create a boxplot of the data and sets self.data as the base64 encoded string of the plot.
     
         """
         boxplot_data = self.data[~np.isnan(self.data)]
 
         plt.figure(figsize=(4, 3))
-        plt.boxplot(boxplot_data, patch_artist=True, medianprops=dict(color='#5b5d62'), \
-                    boxprops=dict(facecolor='#fe5000', color='orange'))
+        plt.boxplot(boxplot_data, patch_artist=True, medianprops={"color":'#5b5d62'}, \
+                    boxprops={"facecolor":'#fe5000', "color":'orange'})
 
         img_stream = io.BytesIO()
         plt.title(f'Boxplot of {self.column_name}')
@@ -62,7 +66,7 @@ class PlotCreator:
 
     def create_histogram(self):
         """
-        creates a Histogram of the data and sets self.data as the base64 encoded string of the plot.
+        Create a Histogram of the data and sets self.data as the base64 encoded string of the plot.
     
         """
         plt.figure(figsize=(4, 3))

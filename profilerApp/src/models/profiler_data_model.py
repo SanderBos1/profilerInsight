@@ -1,45 +1,9 @@
-"""
-This module defines the `IngestionOverview` model for storing and managing ingestion details
-of specific tables and columns.
+from src.config import SingletonDB
 
-The `IngestionOverview` class is an SQLAlchemy model that provides a structure for recording
-detailed statistics and information about the columns of tables after ingestion.
+DB = SingletonDB.get_instance()
 
-Dependencies:
-- `get_database`: A function to retrieve the SQLAlchemy database instance.
 
-Classes:
-- `IngestionOverview`: SQLAlchemy model class for ingestion details of a table column.
-
-Attributes:
-- `table`: Name of the table.
-- `column`: Name of the column.
-- `table_id`: Unique identifier for the table.
-- `connection_id`: Identifier of the associated database connection.
-- `column_length`: Length of the column.
-- `column_type`: Data type of the column.
-- `data_preview`: Preview of the first 10 elements of the column.
-- `median_value`: Median value of the column.
-- `mean_value`: Mean value of the column.
-- `min_value`: Minimum value of the column.
-- `max_value`: Maximum value of the column.
-- `number_nans`: Number of NaN values in the column.
-- `number_unique`: Number of unique values in the column.
-- `number_distinct`: Number of distinct values in the column.
-- `patterns`: Patterns found in the column.
-- `histogram`: Base64-encoded histogram image of the column.
-- `boxplot`: Base64-encoded boxplot image of the column.
-
-Methods:
-- `__repr__()`: Represents the ingestion overview instance as a string.
-- `to_dict()`: Converts the model instance to a dictionary representation.
-"""
-
-from src.config import get_database
-
-db = get_database()
-
-class IngestionOverview(db.Model):
+class IngestionOverview(DB.Model):
     """
     Provides an overview of the ingestion details for a particular table and column.
 
@@ -69,31 +33,31 @@ class IngestionOverview(db.Model):
         __repr__: Represents the ingestion overview instance as a string.
         to_dict: Converts the model instance to a dictionary.
     """
-    table = db.Column(db.String(80), nullable=False)
-    column = db.Column(db.String(80), nullable=False)
-    table_id = db.Column(db.Integer, nullable=False)
-    connection_id = db.Column(db.String(80), nullable=False)
-    column_length = db.Column(db.Integer, nullable=False)
-    column_type = db.Column(db.String(80), nullable=False)
-    data_preview = db.Column(db.Text, nullable=True)
-    median_value = db.Column(db.Float, nullable=False)
-    mean_value = db.Column(db.Float, nullable=False)
-    min_value = db.Column(db.Float, nullable=False)
-    max_value = db.Column(db.Float, nullable=False)
-    number_nans = db.Column(db.Integer, nullable=False)
-    number_unique = db.Column(db.Integer, nullable=False) 
-    number_distinct = db.Column(db.Integer, nullable=False)
-    patterns = db.Column(db.String(80), nullable=True)
-    histogram = db.Column(db.Text, nullable=True)
-    boxplot = db.Column(db.Text, nullable=True)
+    table = DB.Column(DB.String(80), nullable=False)
+    column = DB.Column(DB.String(80), nullable=False)
+    table_id = DB.Column(DB.Integer, nullable=False)
+    connection_id = DB.Column(DB.String(80), nullable=False)
+    column_length = DB.Column(DB.Integer, nullable=False)
+    column_type = DB.Column(DB.String(80), nullable=False)
+    data_preview = DB.Column(DB.Text, nullable=True)
+    median_value = DB.Column(DB.Float, nullable=False)
+    mean_value = DB.Column(DB.Float, nullable=False)
+    min_value = DB.Column(DB.Float, nullable=False)
+    max_value = DB.Column(DB.Float, nullable=False)
+    number_nans = DB.Column(DB.Integer, nullable=False)
+    number_unique = DB.Column(DB.Integer, nullable=False) 
+    number_distinct = DB.Column(DB.Integer, nullable=False)
+    patterns = DB.Column(DB.String(80), nullable=True)
+    histogram = DB.Column(DB.Text, nullable=True)
+    boxplot = DB.Column(DB.Text, nullable=True)
 
     __table_args__ = (
-        db.PrimaryKeyConstraint('table', 'column'),
+        DB.PrimaryKeyConstraint('table', 'column'),
     )
     
     def __repr__(self):
         """
-        Returns a string representation of the IngestionOverview instance.
+        Return a string representation of the IngestionOverview instance.
 
         The string representation includes the table name and column name.
 
@@ -104,7 +68,7 @@ class IngestionOverview(db.Model):
     
     def to_dict(self):
         """
-        Converts the IngestionOverview instance to a dictionary representation.
+        Convert the IngestionOverview instance to a dictionary representation.
 
         The dictionary includes all attributes of the instance.
 

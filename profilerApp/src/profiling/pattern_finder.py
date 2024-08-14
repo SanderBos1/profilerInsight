@@ -2,7 +2,12 @@ from collections import defaultdict
 import re
 
 class PatternFinder:
-
+    """
+    The PatternFinder class, finds patterns in a list of strings.
+    
+    Parameters:
+        - data (list): The list of strings to find patterns in.
+    """
     def __init__(self, data):
         self.data = data
     
@@ -20,7 +25,7 @@ class PatternFinder:
                     '&' * len(token)
                     for token in tokens])
 
-    def find_patterns(self):
+    def find_patterns(self) -> list:
         """
         Find and return patterns in the given list of strings.
         """

@@ -1,10 +1,10 @@
 # tests/conftest.py
 import pytest
 from src import create_app
-from src.config import get_database
+from src.config import SingletonDB
 from src.models import DbConnections
 
-@pytest.fixture()
+@pytest.fixture(scope='function')
 def app():
 
     # Create the app and configure it for testing
@@ -12,13 +12,16 @@ def app():
     with app.app_context():
 
         # Create all tables
-        db = get_database()
+        db = SingletonDB.get_instance()
         db.create_all()
 
         # Add test data
         new_connection = DbConnections(connection_id="test", host="localhost", port="5432", username="postgres", password="test", database="profilerDB", db_type="postgres")
         db.session.add(new_connection)
         db.session.commit()
+
+        # csv config:
+        app.config['csv_folder'] = 'mock/path'
     
     yield app
 

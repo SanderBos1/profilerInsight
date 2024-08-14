@@ -12,11 +12,12 @@ errors_bp = Blueprint(
 
 @errors_bp.app_errorhandler(404)
 def handle_404(e):
-        """
-        Handle 404 Not Found errors.
+    """
+    Handle 404 Not Found errors.
 
-        Returns:
-            Response: A JSON response with a message indicating that the endpoint was not found,
-                      and an HTTP status code of 404.
-        """
-        return jsonify({'message': 'Endpoint not found'}), 404
+    Returns:
+        Response: A JSON response with a message indicating that the endpoint was not found,
+        and an HTTP status code of 404.
+
+    """
+    return jsonify({'Message': 'Endpoint not found'}), 404

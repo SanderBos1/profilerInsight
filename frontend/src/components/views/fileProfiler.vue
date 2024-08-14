@@ -18,8 +18,12 @@
         </div>
     </div>
     <div class="col-md-10 order-sm-2 order-md-1">
-            <baseIngestionOverview :columnInfo=columnInfo></baseIngestionOverview>
-
+        <div v-if=columnInfo >
+            <baseIngestionOverview
+                :columnInfo="columnInfo.overview"
+                :example="columnInfo.example"
+            ></baseIngestionOverview>
+        </div>
     </div>
 </div>
    
@@ -81,7 +85,7 @@
 
 <script>
 import basicDialogue  from '../baseDialogue.vue'
-import baseIngestionOverview from '../csvIngestionOverview.vue';
+import baseIngestionOverview from '../fileIngestionOverview.vue';
 
 const API_ENDPOINTS = {
     GET_CSV_FILES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_all_files',

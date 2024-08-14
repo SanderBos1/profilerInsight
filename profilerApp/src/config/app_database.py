@@ -1,22 +1,40 @@
-"""
-Module for managing a singleton instance of SQLAlchemy for database interactions.
-"""
 
 from flask_sqlalchemy import SQLAlchemy
 
-# Singleton instance of SQLAlchemy
-_DATABASE= None
-
-def get_database():
+class SingletonDB:
     """
-    Get the singleton instance of SQLAlchemy.
+    A singleton class that loads the database that is used by the flask application.
 
-    If the instance does not exist, it is created and initialized.
+    Paramters:
+        - N / A
 
-    Returns:
-        SQLAlchemy: The singleton instance of SQLAlchemy.
+    Example Usage:
+        from module_name import SingletonDB
+
+        db = SingletonDB.get_instance()
+        # Now `db` can be used to interact with the database.
+
     """
-    global _DATABASE
-    if _DATABASE is None:
-        _DATABASE = SQLAlchemy()
-    return _DATABASE
+
+    _instance = None
+
+    @classmethod
+    def get_instance(cls):
+        """
+        Get the singleton instance of SQLAlchemy.
+
+        If the instance does not exist, it is created and initialized.
+
+        Returns:
+            SQLAlchemy: The singleton instance of SQLAlchemy.
+
+        Example usage:
+
+            >>> db = SingletonDB.get_instance()
+            >>> type(db)
+            <class 'flask_sqlalchemy.SQLAlchemy'>
+
+        """
+        if cls._instance is None:
+            cls._instance = SQLAlchemy()
+        return cls._instance

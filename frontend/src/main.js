@@ -17,7 +17,7 @@ import './assets/css/main.css';
 
 //views
 import homePage from './components/views/homePage.vue';
-import csvProfiler from './components/views/csvProfiler.vue';
+import fileProfiler from './components/views/fileProfiler.vue';
 import connectionPage from './components/views/connectionPage.vue';
 import profilerPage from './components/views/profilerPage.vue';
 import settingsPage from './components/views/settingsPage.vue';
@@ -31,7 +31,7 @@ const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: '/', component: homePage },
-    { path: '/fileProfiler', component: csvProfiler },
+    { path: '/fileProfiler', component: fileProfiler },
     { path: '/connectionPage', component: connectionPage },
     { path: '/profilerPage', component: profilerPage },
     { path: '/settingsPage', component: settingsPage },
