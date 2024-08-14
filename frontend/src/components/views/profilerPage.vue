@@ -24,23 +24,22 @@
             <div v-if='selectedColumn'>
                 <div class="row">
                     <div class="col-md-9 mt-3">
-                        <h3 align="center">{{ this.selectedColumn[0] }}</h3>
+                        <h3 align="center">{{ this.selectedColumn }}</h3>
                     </div>
                 <div class="col-md-3 mt-3">
                     <button class="btn btn-primary grey" @click="ingestColumnData(this.selectedTable, this.selectedColumn)" data-bs-toggle="tooltip" title="Calculates data corresponding to the profiler and loads it to the database">Ingest</button>
                 </div>
-                <div v-if="profilerOverview">
-                    <dbProfilerOverview :profilerOverview="profilerOverview"></dbProfilerOverview>
-                </div>
             </div>
-            <div v-if="encourageIngestion">
-                {{encourageIngestion}}
-            </div>
+            <div v-if=profilerOverview >
+                <baseIngestionOverview
+                    :columnInfo="profilerOverview.overview"
+                    :example="profilerOverview.example"
+                ></baseIngestionOverview>
+        </div>
         </div>
     </div>
 
     <!-- error Display -->
-
         <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="FlatFile Profiler Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
@@ -55,7 +54,7 @@
 
 <script>
 import basicDialogue  from '../baseDialogue.vue';
-import dbProfilerOverview from '../dbProfilerOverview.vue';
+import baseIngestionOverview from '../profilerOverview.vue';
 
 const API_ENDPOINTS = {
     GET_CONNECTED_TABLES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_connected_tables',
@@ -68,7 +67,7 @@ export default{
     name: "profilerPage",
     components:{
         basicDialogue,
-        dbProfilerOverview
+        baseIngestionOverview
     },
     data(){
         return{

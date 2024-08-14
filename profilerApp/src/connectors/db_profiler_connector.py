@@ -61,7 +61,6 @@ def db_profiler_ingestion(table_id:str, column:str):
     try:
         # loads data & example
         profiler_generator = DbLoader()
-        example = profiler_generator.load_examples()
 
         # checks type of data
         data, table_name, connection_id = profiler_generator.load(column, table_id)
@@ -87,7 +86,6 @@ def db_profiler_ingestion(table_id:str, column:str):
             number_unique=profiler_overview['unique_values'],
             number_distinct=profiler_overview['distinct_values'],
             number_nans=profiler_overview['nan_percantage'],
-            data_preview=example,
             patterns=profiler_overview.get('patterns', None),
             boxplot=profiler_overview.get('boxplot', None),
             histogram=profiler_overview.get('histogram', None),
@@ -97,9 +95,7 @@ def db_profiler_ingestion(table_id:str, column:str):
         DB.session.commit()
 
         return jsonify({
-            "overview": profiler_overview,
-            "example": example
-        }), 200
+            "Message": "Data Ingested"}), 200
     except IntegrityError as e:
         logging.error('Integrity error: %s', e)
         DB.session.rollback()
@@ -126,24 +122,29 @@ def db_profiler(table_id:str,  column:str):
         - JSON object with a message indicating no overview was found.
     """
     try:
+        profiler_generator = DbLoader()
+        example = profiler_generator.load_examples(table_id)
+
         if IngestionOverview.query.filter_by(table_id=table_id, column=column).first() is not None:
             overview = IngestionOverview.query.filter_by(table_id=table_id, column=column).first()
             overview_dict = {
                 "column_length": overview.column_length,
-                "number_nans": overview.number_nans,
-                "number_unique": overview.number_unique,
-                "number_distinct": overview.number_distinct,
+                "nan_percantage": overview.number_nans,
+                "unique_values": overview.number_unique,
+                "distinct_values": overview.number_distinct,
                 "column_type": overview.column_type,
-                "data_preview": overview.data_preview,
-                "mean_value": overview.mean_value,
-                "median_value": overview.median_value,
-                "min_value": overview.min_value,
-                "max_value": overview.max_value,
-                "patterns": overview.patterns,
+                "mean": overview.mean_value,
+                "median": overview.median_value,
+                "min": overview.min_value,
+                "max": overview.max_value,
+                "pattern": overview.patterns,
                 "histogram": overview.histogram,
                 "boxplot": overview.boxplot
             }
-            return jsonify(overview_dict), 200
+            return jsonify({
+                "overview": overview_dict,
+                "example": example
+            }), 200        
         return jsonify("No Dict Found"), 200
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)

@@ -15,8 +15,8 @@ class TextProfiler(BaseProfiler):
             - patterns: A list of patterns found in the data.
         
         """
-        pattern_finder = PatternFinder(self.data)
-        patterns = pattern_finder.find_patterns()[0:10]
+        pattern_finder = PatternFinder()
+        patterns = pattern_finder.find_patterns(self.data)[0:10]
         return patterns
     
 

@@ -74,6 +74,17 @@ class BaseConnector:
         """
         raise NotImplementedError("This method should be overridden by subclasses")
 
+    def get_preview_data(self, schema:str, table:str) -> object:
+        """
+        Get the data residing in the first 10 rows of the database.
+        Load it into a Pandas Dataframe and convert it to html.
+        
+        Params:
+            - schema (str): The schema where the table is saved
+            - table (str): The chosen table.
+        """
+        raise NotImplementedError("This method should be overridden by subclasses")
+    
     def get_table_columns(self, schema: str, table: str) -> list:
         """
         Retrieve a list of columns for a specific table in a given schema.

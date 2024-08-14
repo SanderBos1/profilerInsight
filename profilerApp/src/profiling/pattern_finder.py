@@ -1,15 +1,18 @@
 from collections import defaultdict
 import re
 
+import pandas as pd
+
 class PatternFinder:
     """
     The PatternFinder class, finds patterns in a list of strings.
     
     Parameters:
-        - data (list): The list of strings to find patterns in.
+        - N / A
+        
     """
-    def __init__(self, data):
-        self.data = data
+    def __init__(self):
+        pass
     
     def tokenize_string(self, s):
         """
@@ -17,21 +20,29 @@ class PatternFinder:
 
         """
         imp_spe_char = ['.', ',', '/', '@']
-        pattern = re.compile(r'\d+|[a-zA-Z]+|[^a-zA-Z\d]+')
-        tokens = pattern.findall(s)
-        return ''.join([token if token in imp_spe_char else 
-                    '1' * len(token) if token.isdigit() else
-                    'A' * len(token) if token.isalpha() else
-                    '&' * len(token)
-                    for token in tokens])
 
-    def find_patterns(self) -> list:
+        returned_pattern = ""
+        for token in s:
+            if token in imp_spe_char:
+                returned_pattern = returned_pattern + token
+            elif token.isdigit():
+                returned_pattern = returned_pattern + "1"
+            elif token.isalpha():
+                returned_pattern = returned_pattern + "A"
+            else:
+                returned_pattern = returned_pattern + "&"
+        return returned_pattern
+
+    def find_patterns(self, data:pd.Series) -> list:
         """
         Find and return patterns in the given list of strings.
+
+        Args:
+            - data (list): The list of strings to find patterns in.
         """
         pattern_counts = defaultdict(int)
     
-        for item in self.data:
+        for item in data:
             pattern = self.tokenize_string(item)
             pattern_counts[pattern] += 1
     

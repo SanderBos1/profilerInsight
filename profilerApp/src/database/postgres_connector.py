@@ -1,4 +1,5 @@
 import psycopg2
+
 from .base_connector import BaseConnector
 
 class PostgresConnector(BaseConnector):
@@ -83,7 +84,25 @@ class PostgresConnector(BaseConnector):
             WHERE table_schema = '{schema}'
             AND table_name = '{table}';
         """
+        columns = self.execute_query(query)
+        columns = [column[0] for column in columns]
+        return columns
 
+    
+    def get_preview_data(self, schema:str, table:str) -> object:
+        """
+        Get the data residing in the first 10 rows of the database.
+        Load it into a Pandas Dataframe and convert it to html.
+        
+        Params:
+            - schema (str): The schema where the table is saved
+            - table (str): The chosen table.
+        """
+        query = f"""
+            SELECT * 
+            FROM {schema}."{table}"
+            Limit 10;
+        """
         return self.execute_query(query)
     
     def get_column_data(self, schema:str, table:str, column:str) -> list:

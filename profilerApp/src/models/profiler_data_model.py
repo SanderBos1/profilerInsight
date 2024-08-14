@@ -17,7 +17,6 @@ class IngestionOverview(DB.Model):
         connection_id (str): Identifier of the associated database connection.
         column_length (int): Length of the column.
         column_type (str): Data type of the column.
-        data_preview (str): Preview of the first 10 elements of the column.
         median_value (float): Median value of the column.
         mean_value (float): Mean value of the column.
         min_value (float): Minimum value of the column.
@@ -39,7 +38,6 @@ class IngestionOverview(DB.Model):
     connection_id = DB.Column(DB.String(80), nullable=False)
     column_length = DB.Column(DB.Integer, nullable=False)
     column_type = DB.Column(DB.String(80), nullable=False)
-    data_preview = DB.Column(DB.Text, nullable=True)
     median_value = DB.Column(DB.Float, nullable=False)
     mean_value = DB.Column(DB.Float, nullable=False)
     min_value = DB.Column(DB.Float, nullable=False)
@@ -82,7 +80,6 @@ class IngestionOverview(DB.Model):
             "connection_id": self.connection_id,
             "column_length": self.column_length,
             "column_type": self.column_type,
-            "data_preview": self.data_preview,
             "median_value": self.median_value,
             "mean_value": self.mean_value,
             "min_value": self.min_value,

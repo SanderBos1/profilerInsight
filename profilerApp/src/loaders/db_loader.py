@@ -38,15 +38,28 @@ class DbLoader(BasicLoader):
         column_data = pd.Series(column_data)
         return column_data, table_tablename, table_connection_id
     
-    def load_examples(self) -> pd.DataFrame:
+    def load_examples(self, table_id:str) -> pd.DataFrame:
         """
         Load the first 10 rows of the database table into a dataframe.
 
         Returns:
             - df: a DataFrame containing the first 10 rows of the csv file
         """
-        return ["test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8", \
-                "test9", "test10"]
+        table_info = ConnectedTables.query.filter_by(table_id=table_id).first()
+        table_connection_id = table_info.connection_id
+        table_schema = table_info.schemaName
+        table_tablename = table_info.tableName
+        connection = DbConnections.query.filter_by(connection_id=table_connection_id).first()
+        password = connection.password
+        connection_dict = connection.to_dict()
+        new_db_connection = get_database_connection(connection_dict['db_type'],\
+                                                                     connection_dict, password)
+        preview = new_db_connection.get_preview_data(table_schema, table_tablename)      
+        columns = new_db_connection.get_table_columns(table_schema, table_tablename)      
+        df = pd.DataFrame(preview, columns=columns)
+        preview = df.to_html(index=False, classes=["table table-bordered", \
+                                                                   "table-striped", "table-hover"])
+        return preview
         
     def load_columns(self, table_id:str) -> list:
         """

@@ -1,7 +1,7 @@
 <template>
   <div v-if="columnInfo" class="row">
     <!-- Main container row for the component -->
-    <h2 align="center">Selected Column: {{ columnInfo.columnName }}</h2>
+    <h2 align="center">Selected Column: {{ columnInfo.column}}</h2>
 
     <div class="row">
       <!-- First column with card displaying basic column info -->
@@ -166,11 +166,6 @@ export default {
   components:{
     basePieChart
   },
-  beforeMount(){
-    console.log(this.columnInfo)
-  }
-  
-
 }       
     
 </script>
