@@ -66,8 +66,9 @@ def ingest_connected_table():
                                                                          connection_dict, password)
             answer = new_db_connection.get_all_tables()
             for item in answer:
-                new_connection = ConnectedTables(connection_id = connection.connection_id,\
-                                                  schemaName = item[0], tableName = item[1])
+                new_connection = ConnectedTables(connection_id = connection.connection_id, \
+                                                db_name=connection.database, \
+                                                schemaName = item[0], tableName = item[1])
                 DB.session.add(new_connection)
                 DB.session.commit()
         return jsonify({"Message": "connection_loaded"}), 200
@@ -100,7 +101,7 @@ def get_connections():
         logging.error('Database error occurred: %s', e)
         return jsonify('Database error occurred: %s', e), 500
 
-@connections_bp.route('/api/add_postgres_connection', methods=['POST'])
+@connections_bp.route('/api/add_connection', methods=['POST'])
 def add_postgres_connection():
     """
     Handle the POST request to add a new PostgreSQL connection.

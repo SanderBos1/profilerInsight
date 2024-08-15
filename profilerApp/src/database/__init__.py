@@ -1,3 +1,4 @@
 from .base_connector import BaseConnector
 from .postgres_connector import PostgresConnector
 from .handle_dbtype import get_database_connection
+from .azure_sql_connector import AzureSQLConnector

@@ -11,5 +11,5 @@ export const API_ENDPOINTS = {
     get_table_columns: table_id => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns/${table_id}`,
     get_ingestion_data: (column, table_id) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/ingest/${table_id}/${column}`,
     get_overview_data: (table, column) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/profile_column/${table}/${column}`,
-    ADD_POSTGRES_CONNECTION: 'http://' + process.env.VUE_APP_FLASK_HOST +  ':' + process.env.VUE_APP_FLASK_PORT + '/api/add_postgres_connection',
+    ADD_POSTGRES_CONNECTION: 'http://' + process.env.VUE_APP_FLASK_HOST +  ':' + process.env.VUE_APP_FLASK_PORT + '/api/add_connection',
 };

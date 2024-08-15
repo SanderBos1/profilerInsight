@@ -9,7 +9,9 @@
             <label for="exampleDataList" class="form-label">Choose Table to Profile</label>
             <input   v-model="selectedTable" class="form-control" list="datalistOptions" id="exampleDataList" placeholder="Type to search..."/>
             <datalist id="datalistOptions">
-                <option v-for="(table, index) in tables" :key="index" :value="table.table_id">{{ table.connection }}{{ table.schemaName }} {{table.tableName}}</option>
+                <option v-for="table in tables" :key="table.table_id" :value="table.table_id">
+                    {{ table.connection_id }}: {{ table.db_name }} - {{ table.schemaName }}.{{ table.tableName }}
+                </option>
             </datalist>
             <h2 class="w-100 text-center mt-3">Columns</h2>
                 <div class="btn-group-vertical w-100" id="columnButton">

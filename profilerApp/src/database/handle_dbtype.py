@@ -1,8 +1,9 @@
-from . import PostgresConnector
-
+from .postgres_connector import PostgresConnector
+from .azure_sql_connector import AzureSQLConnector
 
 CONNECTION_CLASSES = {
     'postgres': PostgresConnector,
+    'azuresql': AzureSQLConnector
 }
 
 def get_database_connection(db_type:str, connection:object, password:str) -> object:

@@ -19,6 +19,7 @@ class DbConnections(DB.Model):
         _password (bytes): Encrypted password for the database connection.
         database (str): Name of the database.
         db_type (str): Type of the database.
+        extra_info (str): Additional information about the database connection
     """
 
     connection_id = DB.Column(DB.String(80), primary_key=True, unique=True, nullable=False)
@@ -28,6 +29,7 @@ class DbConnections(DB.Model):
     _password = DB.Column(DB.LargeBinary, nullable=False)
     database = DB.Column(DB.String(120), unique=False, nullable=False)
     db_type = DB.Column(DB.String(80), unique=False, nullable=False)
+    extra_info = DB.Column(DB.String(500), unique=False, nullable=True)
 
     def __repr__(self):
         """
@@ -81,6 +83,7 @@ class DbConnections(DB.Model):
             "port": self.port,
             "username": self.username,
             "database": self.database,
-            "db_type": self.db_type
+            "db_type": self.db_type,
+            "extra_info": self.extra_info
         }
         return db_connection_dict

@@ -9,7 +9,7 @@
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">Connection ID</th>
-                        <th scope="col">Host</th>
+                        <th scope="col">Server</th>
                         <th scope="col">Port</th>
                         <th scope="col">Username</th>
                         <th scope="col">Password</th>
@@ -20,7 +20,7 @@
                 <tbody> 
                     <tr v-for="connection in connections" :key="connection.connectionId">
                         <td>{{ connection.connection_id }}</td>
-                        <td>{{ connection.host }}</td>
+                        <td>{{ connection.server }}</td>
                         <td>{{ connection.port }}</td>
                         <td>{{ connection.username }}</td>
                         <td>*****</td> 

@@ -18,7 +18,7 @@ class ConnectedTables(DB.Model):
     Methods:
         to_dict: Converts the model instance to a dictionary.
     """
-
+    db_name = DB.Column(DB.String(80), nullable=False)
     table_id = DB.Column(DB.Integer, primary_key=True)
     connection_id = DB.Column(DB.String(80), nullable=False)
     schemaName = DB.Column(DB.String(80), nullable=False)
@@ -46,6 +46,7 @@ class ConnectedTables(DB.Model):
             dict: A dictionary representation of the ConnectedTables instance.
         """
         connected_tables_dict = {
+            "db_name": self.db_name,
             "table_id": self.table_id,
             "connection_id": self.connection_id,
             "schemaName": self.schemaName,

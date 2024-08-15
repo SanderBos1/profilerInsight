@@ -1,6 +1,6 @@
 <template>
 
-    <div v-if="postgres" class="modal fade show" 
+    <div v-if="azureSQLDatabase" class="modal fade show" 
         tabindex="-1" aria-labelledby="exampleModalLabel" aria-modal="true" role="dialog" 
         style="display:block">
 
@@ -10,7 +10,7 @@
                 <!-- Modal Header -->
                 <div class="modal-header">
                     <div class="col-md-11 col-sm-11">
-                        <h5 class="modal-title">Add Postgres Connection.</h5>
+                        <h5 class="modal-title">Add Azure SQL Database Connection.</h5>
                     </div>
                     <div class="col-md-1 col-sm-1">
                         <button type="button"  @click="close()" :class='"closeDialogue btn btn-danger"' >X</button>
@@ -19,34 +19,34 @@
 
                 <!-- Modal Body -->
                 <div class="modal-body">
-                    <form v-on:submit.prevent="submitPostgressForm" id="addConnectionForm">
+                    <form v-on:submit.prevent="submitAzureSQLDBForm" id="addConnectionForm">
                         <div class="mb-3">
                             <label for="connectionId" class="form-label">Connection ID</label>
-                            <input type="text" id="connectionId"  v-model="postgresForm.connection_id" class="form-control" data-bs-toggle="tooltip" title="A unique identifier of your connections">
+                            <input type="text" id="connectionId"  v-model="azuresqlForm.connection_id" class="form-control" data-bs-toggle="tooltip" title="A unique identifier of your connections">
                         </div>
                         <div class="mb-3">
                             <label for="host" class="form-label">server</label>
-                            <input type="text" id="host" v-model="postgresForm.server" class="form-control" data-bs-toggle="tooltip" title="Where your database is hosted">
+                            <input type="text" id="host" v-model="azuresqlForm.server" class="form-control" data-bs-toggle="tooltip" title="Where your database is hosted">
                         </div>
                         <div class="mb-3">
                             <label for="port" class="form-label">Port</label>
-                            <input type="number" id="port" v-model="postgresForm.port" class="form-control" data-bs-toggle="tooltip" title="The port of your database server">
+                            <input type="number" id="port" v-model="azuresqlForm.port" class="form-control" data-bs-toggle="tooltip" title="The port of your database server">
                         </div>
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
-                            <input type="text" id="username" v-model="postgresForm.username" class="form-control" data-bs-toggle="tooltip" title="The user that connects to the databgase">
+                            <input type="text" id="username" v-model="azuresqlForm.username" class="form-control" data-bs-toggle="tooltip" title="The user that connects to the database, use an sql user, not an email adress">
                         </div>
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" id="password" v-model="postgresForm.password" class="form-control" data-bs-toggle="tooltip" title="The corresponding password">
+                            <input type="password" id="password" v-model="azuresqlForm.password" class="form-control" data-bs-toggle="tooltip" title="The corresponding password">
                         </div>
                         <div class="mb-3">
                             <label for="database" class="form-label">Database</label>
-                            <input type="text" id="database" v-model="postgresForm.database" class="form-control" data-bs-toggle="tooltip" title="Which database you want to connect to.">
-                        </div>        
+                            <input type="text" id="database" v-model="azuresqlForm.database" class="form-control" data-bs-toggle="tooltip" title="Which database you want to connect to.">
+                        </div>
                         <div class="mb-3">
                             <label for="db_type" class="form-label">db_type</label>
-                            <input type="text" id="db_type" v-model="postgresForm.db_type" class="form-control" readonly data-bs-toggle="tooltip" title="Your chosen Database Type">
+                            <input type="text" id="db_type" v-model="azuresqlForm.db_type" class="form-control" readonly data-bs-toggle="tooltip" title="Your chosen Database Type">
                         </div>  
                             <button class="btn btn-primary grey">Submit</button>
                     </form>
@@ -77,43 +77,43 @@
 
 export default{
 
-    name: "postgresConnectionForm",
+    name: "azureSQLDatabaseConnectionForm",
     props: {
-        postgres: Boolean,
+        azureSQLDatabase: Boolean,
     },
-    emits: ['closeForm', 'backToConnectionTypes', 'connectionAdded'],
+    emits: ['connectionAdded', 'backToConnectionTypes', 'closeForm'],
     data(){
         return{
             error: "",
-            postgresForm:{
+            azuresqlForm:{
                 connection_id: '',
                 server: '',
-                port: '',
+                port: '1433',
                 username: '',
                 password: '',
                 database: '',
-                db_type: 'postgres'
+                db_type: 'azuresql',
             }
         }
     },
     methods:{
         close(){
-            this.$emit('closeForm', "postgres");
+            this.$emit('closeForm', "azuresql");
         },
         returnBack(){
-            this.$emit('backToConnectionTypes', "postgres");
+            this.$emit('backToConnectionTypes', "azuresql");
         },
         closeError() {
             this.error = "";
         },
-        async submitPostgressForm() {
+        async submitAzureSQLDBForm() {
             try {
                 const response = await fetch(this.$API_ENDPOINTS.ADD_POSTGRES_CONNECTION, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify(this.postgresForm)
+                body: JSON.stringify(this.azuresqlForm)
             });
 
             if (!response.ok) {
@@ -121,7 +121,7 @@ export default{
                 this.error = data["Error"];
             }
             else{
-                this.$emit('connectionAdded', "postgres");
+                this.$emit('connectionAdded', "azuresql");
                 this.close();
                 }
         
