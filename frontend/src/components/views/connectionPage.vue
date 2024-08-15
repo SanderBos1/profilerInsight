@@ -1,8 +1,6 @@
 <template>
     <div class="row mt-3">
-        <div class="offset-md-10">
-            <button class="btn btn-secondary" @click="showModal = true" data-bs-toggle="tooltip" title="Define a connection to a database" >Add Connection</button>    
-        </div>
+        <addConncetion  @loadConnections="fetchConnections" @ingestTables="ingestTables"></addConncetion>
     </div>
     
     <div class="row mt-3">
@@ -17,7 +15,6 @@
                         <th scope="col">Password</th>
                         <th scope="col">Database</th>
                         <th scope="col">db_type</th>
-
                     </tr>
                 </thead>
                 <tbody> 
@@ -26,7 +23,7 @@
                         <td>{{ connection.host }}</td>
                         <td>{{ connection.port }}</td>
                         <td>{{ connection.username }}</td>
-                        <td>*****</td> <!-- You should not display passwords directly in UI -->
+                        <td>*****</td> 
                         <td>{{ connection.database }}</td>
                         <td>{{ connection.db_type}}</td>
                         <td><button class="btn btn-primary grey" @click="deleteConnection(connection.connection_id)" data-bs-toggle="tooltip" title="Removes the connection, and everything connected to it.">Remove</button></td>
@@ -35,180 +32,75 @@
             </table>
         </div>
     </div>
-    <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="connection Error">
+    <errorDialogue :error="error"  @closeError="closeError" dialogTitle="connection Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
-                    {{connectionError }}
+                    {{error }}
                 </div>
             </template>
-    </basicDialogue>
-    
-    <basicDialogue :visible="showModal" @update:visible="showModal = $event" dialogTitle="Choose Connection Type">
-        <template v-slot:dialogueBody>
-            <div class="row">
-                <div class="col-4">
-                    <img src="../../assets/Images/postgresLogo.jpg" @click="changeModals()" class="img-thumbnail" alt="Postgres Logo">
-                </div>
-            </div>
-        </template>
-    </basicDialogue>
+    </errorDialogue>
 
-    <basicDialogue :visible="showPostgres"  @update:visible="showPostgres = $event" dialogTitle="Postgres Connection">
-            <template v-slot:dialogueBody>
-                <div class="mb-3">
-                    <form v-on:submit.prevent="submitPostgressForm" id="addConnectionForm">
-                        <div class="mb-3">
-                            <label for="connectionId" class="form-label">Connection ID</label>
-                            <input type="text" id="connectionId"  v-model="postgresConnectionForm.connection_id" class="form-control" data-bs-toggle="tooltip" title="A unique identifier of your connections">
-                        </div>
-                    <div class="mb-3">
-                        <label for="host" class="form-label">Host</label>
-                        <input type="text" id="host" v-model="postgresConnectionForm.host" class="form-control" data-bs-toggle="tooltip" title="Where your database is hosted">
-                    </div>
-                    <div class="mb-3">
-                        <label for="port" class="form-label">Port</label>
-                        <input type="text" id="port" v-model="postgresConnectionForm.port" class="form-control" data-bs-toggle="tooltip" title="The port of your database server">
-                    </div>
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" id="username" v-model="postgresConnectionForm.username" class="form-control" data-bs-toggle="tooltip" title="The user that connects to the databgase">
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" id="password" v-model="postgresConnectionForm.password" class="form-control" data-bs-toggle="tooltip" title="The corresponding password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="database" class="form-label">Database</label>
-                        <input type="text" id="database" v-model="postgresConnectionForm.database" class="form-control" data-bs-toggle="tooltip" title="Which database you want to connect to.">
-                    </div>        
-                    <div class="mb-3">
-                        <label for="db_type" class="form-label">db_type</label>
-                        <input type="text" id="db_type" v-model="postgresConnectionForm.db_type" class="form-control" readonly data-bs-toggle="tooltip" title="Your chosen Database Type">
-                    </div>  
-                        <button class="btn btn-primary grey">Submit</button>
-                    </form>
-                </div>
-            </template>
-            <template v-slot:dialogueFooter>
-                <button class="btn btn-primary grey" @click="changeModals()">Return</button>
-
-            </template>
-
-    </basicDialogue>
 </template>
 
 <script>
-import basicDialogue  from '../baseDialogue.vue'
-
-const API_ENDPOINTS = {
-    GET_CONNECTIONS: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT +   '/api/get_connections',
-    ADD_POSTGRES_CONNECTION: 'http://' + process.env.VUE_APP_FLASK_HOST +  ':' + process.env.VUE_APP_FLASK_PORT + '/api/add_postgres_connection',
-    DELETE_CONNECTION: connection_id => `http://` + process.env.VUE_APP_FLASK_HOST + ':' +process.env.VUE_APP_FLASK_PORT + `/api/delete_connection/${connection_id}`,
-    ingest_connection_tables: 'http://' + process.env.VUE_APP_FLASK_HOST +':' + process.env.VUE_APP_FLASK_PORT + '/api/ingest_connected_tables'
-
-};
+import addConncetion from '../addConnection.vue';
 
 
 export default {
     name: 'tablePage',
     components:{
-        basicDialogue
+        addConncetion,
     },
     data() {
         return {
         errorVisible: false,
-        connectionError: "",
-        showModal: false,
-        showPostgres: false,
+        error: "",
         connections: [],
-        postgresConnectionForm:{
-            connection_id: "",
-            host: "",
-            port: "",
-            username: "",
-            password: "",
-            database: "",
-            db_type: "postgres"
-        }
     };
   },
   created() {
     this.fetchConnections();
   },
   methods: {
-    async fetchData(url, method) {
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                const errorMessage = data["Error"]
-                this.handleError(`${response.status}, ${errorMessage}`);
-                return null; 
-            }   
-            return await response.json();
-        }catch (error) {
-            this.handleError(error.message);
-        }
-    },
-    handleError(message) {
-        this.errorVisible = true;
-        this.connectionError = message;
+    closeError() {
+        this.error = "";
     },
 
     async fetchConnections() {
-      const apiEndpoint = API_ENDPOINTS.GET_CONNECTIONS;
-      await this.fetchData(apiEndpoint, 'GET')
+      const apiEndpoint = this.$API_ENDPOINTS.GET_CONNECTIONS;
+      await this.$fetchData(apiEndpoint, 'GET')
         .then((data) => {
-          if (data) {
-            this.connections = data["Answer"];
-          }
-        });
-    },
-    async submitPostgressForm() {
-    try {
-        const response = await fetch(API_ENDPOINTS.ADD_POSTGRES_CONNECTION, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(this.postgresConnectionForm)
-        });
-
-        if (!response.ok) {
-            const data = await response.json();
-            this.showPostgres = false;
-            this.errorVisible = true;
-            this.connectionError = data["Error"] ;
-        }
-        else{
-            this.fetchConnections()
-            this.ingestTables()
-            this.showPostgres = false;
+            if ("Answer" in data) {
+                this.connections = data["Answer"];
             }
-        
-    } catch (error) {
-        this.errorVisible = true;
-        this.tabelError = error;
-    }
+            else{
+                this.error = data["Error"]
+            }
+        });
     },
+
     async deleteConnection(connection_id) {
-        const apiEndpoint = API_ENDPOINTS.DELETE_CONNECTION(connection_id);
-        await this.fetchData(apiEndpoint, 'DELETE');
-        this.fetchConnections();
+        const apiEndpoint = this.$API_ENDPOINTS.DELETE_CONNECTION(connection_id);
+        await this.$fetchData(apiEndpoint, 'DELETE')
+            .then((data) => {
+                if ("Error" in data) {
+                    this.error = data["Error"]
+                }
+                else{
+                    this.fetchConnections();
+                }
+        });
 
     },
     async ingestTables(){
-        const apiEndpoint = API_ENDPOINTS.ingest_connection_tables;
-        await this.fetchData(apiEndpoint, 'GET');
-    },
-    changeModals(){
-        this.showModal = !this.showModal;
-        this.showPostgres = !this.showPostgres;
+        const apiEndpoint = this.$API_ENDPOINTS.ingest_connection_tables;
+        await this.$fetchData(apiEndpoint, 'GET')
+            .then((data) => {
+                if ("Error" in data) {
+                    this.error = data["Error"]
+                }
+
+        });
     },
 }};
     

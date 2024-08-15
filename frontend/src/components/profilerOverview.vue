@@ -160,7 +160,7 @@ export default {
   name: 'baseIngestionOverview',
   props: {
       columnInfo: Object,
-      example: Object
+      example: String
   },
 
   components:{

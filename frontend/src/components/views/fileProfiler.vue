@@ -14,7 +14,7 @@
         </select> 
         <h2 class="w-100 text-center mt-3">Columns</h2>
         <div class="btn-group-vertical w-100" id="columnButton">
-            <button v-for="csvColumn in csvColumns" :key="csvColumn" class="orange btn btn-secondary" @click="getOverview(csvColumn)" data-bs-toggle="tooltip" data-bs-placement="right" title="Click this button to Profile the data in this column">{{ csvColumn }}</button>
+            <button v-for="fileColumn in fileColumns" :key="fileColumn" class="orange btn btn-secondary" @click="getOverview(fileColumn)" data-bs-toggle="tooltip" data-bs-placement="right" title="Click this button to Profile the data in this column">{{ fileColumn }}</button>
         </div>
     </div>
     <div class="col-md-10 order-sm-2 order-md-1">
@@ -73,33 +73,23 @@
         </template>
     </basicDialogue>
     <div class="row">
-        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="FlatFile Profiler Error">
+        <errorDialogue :error="error"  @closeError="closeError" dialogTitle="file Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
-                    {{csvUploadError }}
+                    {{error }}
                 </div>
             </template>
-        </basicDialogue>
+    </errorDialogue>
     </div>
 </template>
 
 <script>
-import basicDialogue  from '../baseDialogue.vue'
 import baseIngestionOverview from '../profilerOverview.vue';
-
-const API_ENDPOINTS = {
-    GET_CSV_FILES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_all_files',
-    DELETE_CSV_FILE: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/delete_file/${file}`,
-    GET_CSV_COLUMNS: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns_file/${file}`,
-    GET_COLUMN_OVERRVIEW: (file, column) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/file_column_overview/${file}/${column}`,
-    UPLOAD_CSV: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/upload_file'
-};
 
 export default {
     name: 'csvProfiler',
     components:{
-        basicDialogue,
-        baseIngestionOverview
+        baseIngestionOverview,
     },
     data() {
         return {
@@ -107,9 +97,8 @@ export default {
         selectCSVFile: '',
         deleteCSVDialogue: false,
         uploadCSV: false,
-        errorVisible: false,
-        csvUploadError: "",
-        csvColumns: [],
+        error: "",
+        fileColumns: [],
         csvFiles: [],
         columnInfo: null,
         CSVProperties:{
@@ -129,55 +118,65 @@ export default {
     }
     },
   methods:{
-    async fetchData(url, method) {
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                const errorMessage = data['Error'];
-                this.handleError(`${response.status}, ${errorMessage}`);
-                return null; 
-            }   
-            return await response.json();
-        }catch (error) {
-            this.handleError(error.message);
-        }
-    },
-    handleError(message) {
-        this.errorVisible = true;
-        this.csvUploadError = message;
+    closeError() {
+        this.error = "";
     },
     async deleteCSV() {
-        const apiEndpoint = API_ENDPOINTS.DELETE_CSV_FILE(this.toBeDeleteCSV);
-        await this.fetchData(apiEndpoint, 'DELETE');
-        this.getCSVFiles();
-        this.csvColumns = [],
-        this.columnInfo = null;
-
+        const apiEndpoint = this.$API_ENDPOINTS.DELETE_CSV_FILE(this.toBeDeleteCSV);
+        await this.$fetchData(apiEndpoint, 'DELETE')
+        .then((data) => {
+            if ("Message" in data) {
+                this.getCSVFiles();
+                this.fileColumns = [],
+                this.columnInfo = null;
+            }
+            else{
+                this.error = data["Error"]
+            }
+        });
     },
     async getCSVFiles() {
-        const apiEndpoint = API_ENDPOINTS.GET_CSV_FILES;
-        this.csvFiles = await this.fetchData(apiEndpoint, 'GET');
+        const apiEndpoint = this.$API_ENDPOINTS.GET_CSV_FILES;
+        await this.$fetchData(apiEndpoint, 'GET')
+            .then((data) => {
+                if ("Answer" in data) {
+                    this.csvFiles = data["Answer"];
+                }
+                else{
+                    this.error = data["Error"]
+                }
+        });
     },
     async getColumns() {
         if (!this.selectCSVFile) return;
-        const apiEndpoint = API_ENDPOINTS.GET_CSV_COLUMNS(this.selectCSVFile);
-        this.csvColumns = await this.fetchData(apiEndpoint, 'GET');
-        this.columnInfo = null;
+        const apiEndpoint = this.$API_ENDPOINTS.GET_CSV_COLUMNS(this.selectCSVFile);
+        this.csvColumns = await this.$fetchData(apiEndpoint, 'GET')
+        .then((data) => {
+            if (!("Error" in data)) {
+                this.fileColumns = data["Answer"];
+                this.columnInfo = null;
+            }
+            else{
+                this.error = data["Error"]
+            }
+        });
     
     },
     handleFileUpload(event) {
             const file = event.target.files[0]
             this.CSVProperties.csvFile = file;
-        },
+    },
     async getOverview(csvColumn) {
-        const apiEndpoint = API_ENDPOINTS.GET_COLUMN_OVERRVIEW(this.selectCSVFile, csvColumn);
-        this.columnInfo = await this.fetchData(apiEndpoint, 'GET');
+        const apiEndpoint = this.$API_ENDPOINTS.GET_COLUMN_OVERRVIEW(this.selectCSVFile, csvColumn);
+        await this.$fetchData(apiEndpoint, 'GET')
+            .then((data) => {
+                if (!("Error" in data)) {
+                    this.columnInfo=data;
+                }
+                else{
+                    this.error = data["Error"]
+                }
+            });
     },
     async submitCSV() {
         const formData = new FormData();
@@ -189,23 +188,23 @@ export default {
         if (csvFile) formData.append('flatDataSet', csvFile);
 
         try {
-            const response = await fetch(API_ENDPOINTS.UPLOAD_CSV, {
+            const response = await fetch(this.$API_ENDPOINTS.UPLOAD_CSV, {
             method: 'POST',
             body: formData
             });
 
             if (!response.ok) {
                 const data = await response.json();
-                this.handleError(data['error']);
+                this.error = data['Error'];
                 return;
                 }
 
             await this.getCSVFiles();
             this.uploadCSV = false;
         } catch (error) {
-            this.handleError(error.message);
-  }
-}
+            this.error = error.message;
+        }
+    }
   }
 }
 </script>

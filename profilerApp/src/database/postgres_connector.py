@@ -24,7 +24,7 @@ class PostgresConnector(BaseConnector):
             dbname=self.connection['database'],
             user=self.connection['username'],
             password=self.password,
-            host=self.connection['host'],
+            host=self.connection['server'],
             port=self.connection['port']
         )
         return conn

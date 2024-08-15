@@ -1,5 +1,5 @@
 from .base_profiler import BaseProfiler
-from .plot_creator import PlotCreator
+from src.utils import PlotCreator
 
 
 class NumericalProfiler(BaseProfiler):

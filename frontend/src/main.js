@@ -22,6 +22,13 @@ import connectionPage from './components/views/connectionPage.vue';
 import profilerPage from './components/views/profilerPage.vue';
 import settingsPage from './components/views/settingsPage.vue';
 
+
+//global components
+import { fetchData } from './utils/globalFunctions.js';
+import { API_ENDPOINTS } from './utils/endpoints';
+import errorDialogue from './components/global/errorDialogue.vue';
+import basicDialogue from './components/global/basicDialogue.vue';
+
 // Create a Vue app instance
 const app = createApp(App);
 
@@ -40,6 +47,12 @@ const router = createRouter({
 
 // Use the router instance in the app
 app.use(router);
+
+app.component('errorDialogue', errorDialogue);
+app.component('basicDialogue', basicDialogue);
+
+app.config.globalProperties.$API_ENDPOINTS = API_ENDPOINTS;
+app.config.globalProperties.$fetchData = fetchData;
 
 
 

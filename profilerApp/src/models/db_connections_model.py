@@ -22,8 +22,8 @@ class DbConnections(DB.Model):
     """
 
     connection_id = DB.Column(DB.String(80), primary_key=True, unique=True, nullable=False)
-    host = DB.Column(DB.String(80), unique=False, nullable=False)
-    port = DB.Column(DB.String(80), unique=False, nullable=False)
+    server = DB.Column(DB.String(80), unique=False, nullable=False)
+    port = DB.Column(DB.Integer, unique=False, nullable=False)
     username = DB.Column(DB.String(80), unique=False, nullable=False)
     _password = DB.Column(DB.LargeBinary, nullable=False)
     database = DB.Column(DB.String(120), unique=False, nullable=False)
@@ -77,7 +77,7 @@ class DbConnections(DB.Model):
         """
         db_connection_dict = {
             "connection_id": self.connection_id,
-            "host": self.host,
+            "server": self.server,
             "port": self.port,
             "username": self.username,
             "database": self.database,

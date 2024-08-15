@@ -1,6 +1,6 @@
 import pandas as pd
 
-from src.profiling import PatternFinder
+from src.utils import PatternFinder
 
 
 

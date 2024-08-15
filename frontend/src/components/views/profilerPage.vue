@@ -19,8 +19,10 @@
 
 
     <!-- profiler Overview -->
-
         <div class="col-sm-12 col-md-10 order-sm-2 order-md-1 text-sm-center text-center">
+            <div v-if='encourageIngestion' class="alert alert-warning" role="alert">
+                {{ encourageIngestion }}
+            </div>
             <div v-if='selectedColumn'>
                 <div class="row">
                     <div class="col-md-9 mt-3">
@@ -40,41 +42,31 @@
     </div>
 
     <!-- error Display -->
-        <basicDialogue :visible="errorVisible"  @update:visible="errorVisible = $event" dialogTitle="FlatFile Profiler Error">
+    <errorDialogue :error="error"  @closeError="closeError" dialogTitle="file Error">
             <template v-slot:dialogueBody>
                 <div class="mb-3">
-                    {{tablesLoadError }}
+                    {{error }}
                 </div>
             </template>
-        </basicDialogue>
+    </errorDialogue>
 
 
     </div>
 </template>
 
 <script>
-import basicDialogue  from '../baseDialogue.vue';
 import baseIngestionOverview from '../profilerOverview.vue';
-
-const API_ENDPOINTS = {
-    GET_CONNECTED_TABLES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_connected_tables',
-    get_table_columns: table_id => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns/${table_id}`,
-    get_ingestion_data: (column, table_id) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/ingest/${table_id}/${column}`,
-    get_overview_data: (table, column) => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/profile_column/${table}/${column}`
-};
 
 export default{
     name: "profilerPage",
     components:{
-        basicDialogue,
-        baseIngestionOverview
+        baseIngestionOverview,
     },
     data(){
         return{
             tables: [],
             selectedTable: '',
-            errorVisible: false,
-            tablesLoadError: "",
+            error: "",
             tableColumns: [],
             selectedColumn: '',
             profilerOverview: {},
@@ -91,72 +83,62 @@ export default{
         
     },
     methods:{
-        async fetchData(url, method) {
-        try {
-            const response = await fetch(url, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (!response.ok) {
-                const data = await response.json();
-                const errorMessage = data.error
-                this.handleError(`${response.status}, ${errorMessage}`);
-                return null; 
-            }   
-            return await response.json();
-        }catch (error) {
-            this.handleError(error.message);
-        }
-    },
-    handleError(message) {
-        this.errorVisible = true;
-        this.tablesLoadError = message;
+
+    closeError() {
+        this.error = "";
     },
     async getColumns(){
         this.profilerOverview = "";
         this.encourageIngestion = "";
-        const url = API_ENDPOINTS.get_table_columns(this.selectedTable);
-        const method = "GET";
-        const data = await this.fetchData(url, method);
+        const url = this.$API_ENDPOINTS.get_table_columns(this.selectedTable);
+        const data = await this.$fetchData(url, "get");
         if(data){
             this.tableColumns = data;
         }
 
     },
     async getTables(){
-        const url = API_ENDPOINTS.GET_CONNECTED_TABLES
+        const url = this.$API_ENDPOINTS.GET_CONNECTED_TABLES
         const method = "GET";
-        const data = await this.fetchData(url, method);
-        if(data){
-            this.tables = data['Answer'];
-        }
+        await this.$fetchData(url, method)
+            .then((data) => {
+                if ("Answer" in data) {
+                    this.tables = data['Answer'];
+                }
+                else{
+                    this.error = data["Error"]
+                }
+        });
 
     },
     async getOverview(column){
         this.profilerOverview = "";
         this.selectedColumn = column;
-        const url = API_ENDPOINTS.get_overview_data(this.selectedTable, column);
-        const method = "GET";
-        const data = await this.fetchData(url, method);
-        if(data){
-            if(data != "No Dict Found"){
-                this.profilerOverview = data;
-                this.encourageIngestion = ""
-            }
-            else{
-                this.encourageIngestion = "Please Ingest Data to view Overview"
-            }
-        }
+        const url = this.$API_ENDPOINTS.get_overview_data(this.selectedTable, column);
+        await this.$fetchData(url, "GET")
+            .then((data) => {
+                if (!("Message" in data)) {
+                    this.profilerOverview = data;
+                    this.encourageIngestion = ""
+                }
+                else{
+                    this.encourageIngestion = "Please ingest your data first"
+                }
+        });
     },
     async ingestColumnData(table, column){
-        const url = API_ENDPOINTS.get_ingestion_data(column, table);
-        const method = "GET";
-        const data = await this.fetchData(url, method);
-        if(data){
-            this.getOverview(column);
-        }    
-    },
-}}
+        const url = this.$API_ENDPOINTS.get_ingestion_data(column, table);
+
+        await this.$fetchData(url, "GET")
+            .then((data) => {
+                if ("Message" in data){
+                    this.getOverview(column);
+                }
+                else{
+                    this.error = data["Message"]
+                }
+            });
+        }
+    }
+}
 </script>

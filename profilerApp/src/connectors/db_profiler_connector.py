@@ -145,7 +145,7 @@ def db_profiler(table_id:str,  column:str):
                 "overview": overview_dict,
                 "example": example
             }), 200        
-        return jsonify("No Dict Found"), 200
+        return jsonify({"Message": "No dict Found!"}), 200
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)
         return jsonify({"Error": "Database operation failed"}), 500

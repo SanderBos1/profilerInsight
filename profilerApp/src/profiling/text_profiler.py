@@ -1,5 +1,5 @@
 from .base_profiler import BaseProfiler
-from .pattern_finder import PatternFinder
+from src.utils import PatternFinder
 
 class TextProfiler(BaseProfiler):
     """

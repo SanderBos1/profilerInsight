@@ -124,13 +124,13 @@ def add_postgres_connection():
         return jsonify({"Error": "Incorrect Data"}), 400
     try:
         connection_id = data['connection_id']
-        host = data['host']
+        server = data['server']
         port = data['port']
         username = data['username']
         password = data['password']
         database = data['database']
         db_type = data['db_type']
-        new_connection = DbConnections(connection_id=connection_id, host=host, \
+        new_connection = DbConnections(connection_id=connection_id, server=server, \
                                        port=port, username=username, password=password, \
                                         database=database, db_type=db_type)
         try:

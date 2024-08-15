@@ -78,7 +78,7 @@ def get_all_files():
             filename = file.split(".")
             if filename[1] == "csv":
                 filenames.append(filename[0])
-        return jsonify(filenames), 200
+        return jsonify({"Answer":filenames}), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
         return jsonify({"Error": "File not found."}), 404
@@ -103,7 +103,7 @@ def delete_file(filename):
         properties_filename = os.path.join(current_app.config['csv_folder'], f"{sec_filename}.json")
         os.remove(filename)
         os.remove(properties_filename)
-        return jsonify(message="Success"), 200
+        return jsonify({"Message":"Success"}), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
         return jsonify({"Error": "File not found."}), 404
@@ -128,7 +128,7 @@ def file_get_columns(filename:str):
     try:
         file_loader = FileLoader(filename)
         columns = file_loader.load_columns()
-        return jsonify(columns), 200
+        return jsonify({"Answer": columns}), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
         return jsonify({"Error": "File not found."}), 404
