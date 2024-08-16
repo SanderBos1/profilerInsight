@@ -15,7 +15,7 @@ profilerApp/.env.development
 profilerApp/.env.test
 profilerApp/.env.production
 frontend/dist/
-
+local_installation/
 # local env files
 .env.local
 .env.*.local

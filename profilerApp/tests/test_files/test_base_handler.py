@@ -30,4 +30,3 @@ def test_save_properties_csv(mock_join, mock_open, app):
         expected_properties_json = json.dumps(properties, indent=4)
         mock_open.assert_called_once_with('/mock/path/test_properties.json', 'w', encoding='utf-8')
         mock_open().write.assert_called_once_with(expected_properties_json)
-

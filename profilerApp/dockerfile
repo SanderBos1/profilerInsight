@@ -1,10 +1,5 @@
 FROM python:3.12.4-alpine3.19
 
-# ARG FRONTEND_HOST
-# ARG FRONTEND_PORT
-# ARG FLASK_HOST
-# ARG FLASK_PORT
-
 RUN apk update && \
     apk add --no-cache \
         build-base \
@@ -13,7 +8,6 @@ RUN apk update && \
 
 RUN mkdir /profilerApp
 WORKDIR /profilerApp
-
 
 COPY requirements.txt /profilerApp/
 RUN pip install --no-cache-dir -r /profilerApp/requirements.txt
