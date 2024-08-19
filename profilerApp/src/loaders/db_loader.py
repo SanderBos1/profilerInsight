@@ -16,6 +16,23 @@ class DbLoader(BasicLoader):
         - BasicLoader (class): The parent class that defines the structure of a loader class.
 
     """
+    def  get_connection_info(self, table_id:str) -> dict:
+        """
+        Get the connection information for a table.
+
+        Args:
+            - table_id (str): The ID of the table.
+
+        Returns:
+            - connection_dict (dict): A dictionary containing the connection information.
+        """
+        table_info = ConnectedTables.query.filter_by(table_id=table_id).first()
+        table_info = table_info.to_dict()
+        table_connection_id = table_info['connection_id']
+        connection = DbConnections.query.filter_by(connection_id=table_connection_id).first()
+        password = connection.password
+        connection_dict = connection.to_dict()
+        return connection_dict, table_info, password
     
     def load(self, column, table_id:str) -> pd.DataFrame:
         """
@@ -24,19 +41,13 @@ class DbLoader(BasicLoader):
         Returns:
             - column_data: A pandas series containing the data of the specified column.
         """
-        table_info = ConnectedTables.query.filter_by(table_id=table_id).first()
-        table_connection_id = table_info.connection_id
-        table_schema = table_info.schemaName
-        table_tablename = table_info.tableName
-        connection = DbConnections.query.filter_by(connection_id=table_connection_id).first()
-        password = connection.password
-        connection_dict = connection.to_dict()
+        connection_dict, table_info, password = self.get_connection_info(table_id)
         new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                      connection_dict, password)
-        column_data = new_db_connection.get_column_data(table_schema, table_tablename, column)
+        column_data = new_db_connection.get_column_data(table_info['schemaName'], table_info['tableName'], column)
         column_data = np.array([row[0] for row in column_data])
         column_data = pd.Series(column_data)
-        return column_data, table_tablename, table_connection_id
+        return column_data, table_info['tableName'], table_info['connection_id']
     
     def load_examples(self, table_id:str) -> pd.DataFrame:
         """
@@ -45,17 +56,12 @@ class DbLoader(BasicLoader):
         Returns:
             - df: a DataFrame containing the first 10 rows of the csv file
         """
-        table_info = ConnectedTables.query.filter_by(table_id=table_id).first()
-        table_connection_id = table_info.connection_id
-        table_schema = table_info.schemaName
-        table_tablename = table_info.tableName
-        connection = DbConnections.query.filter_by(connection_id=table_connection_id).first()
-        password = connection.password
-        connection_dict = connection.to_dict()
+        connection_dict, table_info, password = self.get_connection_info(table_id)
+
         new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                      connection_dict, password)
-        preview = new_db_connection.get_preview_data(table_schema, table_tablename)      
-        columns = new_db_connection.get_table_columns(table_schema, table_tablename)      
+        preview = new_db_connection.get_preview_data(table_info['schemaName'], table_info['tableName'])      
+        columns = new_db_connection.get_table_columns(table_info['schemaName'], table_info['tableName'])      
         df = pd.DataFrame(preview, columns=columns)
         preview = df.to_html(index=False, classes=["table table-bordered", \
                                                                    "table-striped", "table-hover"])
@@ -68,14 +74,9 @@ class DbLoader(BasicLoader):
         Returns:
             - list: A list containing the column names of the specified table.
         """
-        table_info = ConnectedTables.query.filter_by(table_id=table_id).first()
-        table_connection_id = table_info.connection_id
-        table_tablename = table_info.tableName
-        table_schema = table_info.schemaName
-        connection = DbConnections.query.filter_by(connection_id=table_connection_id).first()
-        password = connection.password
-        connection_dict = connection.to_dict()
+        connection_dict, table_info, password = self.get_connection_info(table_id)
+
         new_db_connection = get_database_connection(connection_dict['db_type'], \
                                                                     connection_dict, password)
-        answer = new_db_connection.get_table_columns(table_schema, table_tablename)
+        answer = new_db_connection.get_table_columns(table_info['schemaName'], table_info['tableName'])
         return answer

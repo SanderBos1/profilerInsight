@@ -1,3 +1,4 @@
+import json
 from src.config import SingletonDB
 
 DB = SingletonDB.get_instance()
@@ -38,14 +39,14 @@ class IngestionOverview(DB.Model):
     connection_id = DB.Column(DB.String(80), nullable=False)
     column_length = DB.Column(DB.Integer, nullable=False)
     column_type = DB.Column(DB.String(80), nullable=False)
-    median_value = DB.Column(DB.Float, nullable=False)
-    mean_value = DB.Column(DB.Float, nullable=False)
-    min_value = DB.Column(DB.Float, nullable=False)
-    max_value = DB.Column(DB.Float, nullable=False)
+    median_value = DB.Column(DB.Float, nullable=True)
+    mean_value = DB.Column(DB.Float, nullable=True)
+    min_value = DB.Column(DB.String, nullable=False)
+    max_value = DB.Column(DB.String, nullable=False)
     number_nans = DB.Column(DB.Integer, nullable=False)
     number_unique = DB.Column(DB.Integer, nullable=False) 
     number_distinct = DB.Column(DB.Integer, nullable=False)
-    patterns = DB.Column(DB.String(80), nullable=True)
+    patterns = DB.Column(DB.Text, nullable=True)
     histogram = DB.Column(DB.Text, nullable=True)
     boxplot = DB.Column(DB.Text, nullable=True)
 
@@ -63,6 +64,13 @@ class IngestionOverview(DB.Model):
             str: A string representation of the IngestionOverview instance.
         """
         return f"IngestionOverview(table='{self.table}', column='{self.column}')"
+    
+    
+    @property
+    def patterns_list(self):
+        if self.patterns:
+            return json.loads(self.patterns)
+        return []
     
     def to_dict(self):
         """

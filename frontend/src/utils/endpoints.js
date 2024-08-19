@@ -1,7 +1,8 @@
 export const API_ENDPOINTS = {
     GET_CONNECTIONS: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT +   '/api/get_connections',
     DELETE_CONNECTION: connection_id => `http://` + process.env.VUE_APP_FLASK_HOST + ':' +process.env.VUE_APP_FLASK_PORT + `/api/delete_connection/${connection_id}`,
-    ingest_connection_tables: 'http://' + process.env.VUE_APP_FLASK_HOST +':' + process.env.VUE_APP_FLASK_PORT + '/api/ingest_connected_tables',
+    load_tables: connetion_id => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/load_tables/${connetion_id}`,
+    ingest_connection_tables: connection_id => 'http://' + process.env.VUE_APP_FLASK_HOST +':' + process.env.VUE_APP_FLASK_PORT +  `/api/ingest_connected_tables/${connection_id}`,
     GET_CSV_FILES: 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + '/api/get_all_files',
     DELETE_CSV_FILE: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/delete_file/${file}`,
     GET_CSV_COLUMNS: file => 'http://' + process.env.VUE_APP_FLASK_HOST + ':' + process.env.VUE_APP_FLASK_PORT + `/api/get_columns_file/${file}`,

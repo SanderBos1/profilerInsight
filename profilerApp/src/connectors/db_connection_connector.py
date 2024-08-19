@@ -41,11 +41,37 @@ def get_connected_tables():
         logging.error('Database error occurred: %s', e)
         return jsonify({"Error": "Database error occurred"}), 500
 
-
-@connections_bp.route('/api/ingest_connected_tables', methods=['GET'])
-def ingest_connected_table():
+@connections_bp.route('/api/load_tables/<connection_id>', methods=['GET'])
+def load_tables(connection_id:str):
     """
-    Ingests tables from all database connections into the ConnectedTables model.
+    Handle the GET request to load tables from a database connection.
+
+    This endpoint retrieves the tables from the specified database connection
+    and inserts them into the `ConnectedTables` model. If an error occurs during
+    the database operation or any other exception, an appropriate error message
+    is logged and returned.
+
+    Args:
+        connection_id (str): The unique identifier of the database connection.
+
+    Returns:
+        Response: A JSON response indicating success or failure, along with an
+                  HTTP status code.
+    Raises:
+        OperationalError
+    """
+    try:
+        tables = ConnectedTables.query.filter_by(connection_id=connection_id).all()
+        tables = [table.to_dict() for table in tables]     
+        return jsonify({"Answer": tables}), 200
+    except OperationalError as e:
+        logging.error('Database error occurred: %s', e)
+        return jsonify({"Error": "Something went wrong in the database"}), 500
+
+@connections_bp.route('/api/ingest_connected_tables/<connection_id>', methods=['GET'])
+def ingest_connected_table(connection_id:str):
+    """
+    Ingests tables from a database connections into the ConnectedTables model.
 
     This endpoint retrieves all database connections, 
     uses each connection to get tables from a PostgreSQL database,
@@ -58,14 +84,20 @@ def ingest_connected_table():
         OperationalError
     """
     try:
-        connection_list = DbConnections.query.all()
-        for connection in connection_list:
-            password = connection.password
-            connection_dict = connection.to_dict()
-            new_db_connection = get_database_connection(connection_dict['db_type'],\
+        connection = DbConnections.query.filter_by(connection_id=connection_id).first()
+        password = connection.password
+        connection_dict = connection.to_dict()
+        new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                          connection_dict, password)
-            answer = new_db_connection.get_all_tables()
-            for item in answer:
+        tables = new_db_connection.get_all_tables()
+        for item in tables:
+            exists = ConnectedTables.query.filter_by(
+                connection_id=connection.connection_id,
+                db_name=connection.database,
+                schemaName=item[0],
+                tableName=item[1]
+             ).first()
+            if not exists:
                 new_connection = ConnectedTables(connection_id = connection.connection_id, \
                                                 db_name=connection.database, \
                                                 schemaName = item[0], tableName = item[1])

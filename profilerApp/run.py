@@ -19,9 +19,9 @@ def main():
     - FLASK_HOST: The host address to bind the server to (default is '127.0.0.1').
     - FLASK_PORT: The port number to bind the server to (default is '5000').
     """
-    # app = create_app("development")
+    app = create_app("development")
     # app = create_app("test")
-    app = create_app("production")
+    # app = create_app("production")
 
     host = os.getenv('FLASK_HOST', '127.0.0.1')
     port = int(os.getenv('FLASK_PORT', '5000'))

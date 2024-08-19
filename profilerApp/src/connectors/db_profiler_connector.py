@@ -7,6 +7,7 @@ from src.models import IngestionOverview
 from src.config import SingletonDB
 from src.loaders import DbLoader
 from src.profiling import CheckType
+from src.utils import parse_tuples_from_db
 
 DB = SingletonDB.get_instance()
 
@@ -34,7 +35,7 @@ def get_columns(table_id:str):
     try:
         new_loader = DbLoader()
         columns = new_loader.load_columns(table_id)
-        return jsonify(columns), 200
+        return jsonify({"Answer": columns}), 200
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)
         return jsonify({"Error": "Database operation failed"}), 500
@@ -128,6 +129,7 @@ def db_profiler(table_id:str,  column:str):
         if IngestionOverview.query.filter_by(table_id=table_id, column=column).first() is not None:
             overview = IngestionOverview.query.filter_by(table_id=table_id, column=column).first()
             overview_dict = {
+                "column": overview.column,
                 "column_length": overview.column_length,
                 "nan_percantage": overview.number_nans,
                 "unique_values": overview.number_unique,
@@ -137,7 +139,7 @@ def db_profiler(table_id:str,  column:str):
                 "median": overview.median_value,
                 "min": overview.min_value,
                 "max": overview.max_value,
-                "pattern": overview.patterns,
+                "patterns":  parse_tuples_from_db(overview.patterns),
                 "histogram": overview.histogram,
                 "boxplot": overview.boxplot
             }

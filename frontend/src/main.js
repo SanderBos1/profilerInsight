@@ -11,7 +11,9 @@ import 'bootstrap/dist/css/bootstrap.css';
 
 // Import your Vue components and App component
 import App from './profilerInsight.vue';
-
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faDatabase, faServer, faTable, faUser } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 //css
 import './assets/css/main.css'; 
 
@@ -19,9 +21,9 @@ import './assets/css/main.css';
 import homePage from './components/views/homePage.vue';
 import fileProfiler from './components/views/fileProfiler.vue';
 import connectionPage from './components/views/connectionPage.vue';
-import profilerPage from './components/views/profilerPage.vue';
 import settingsPage from './components/views/settingsPage.vue';
-
+import connectionOverview from './components/views/connectionOverview.vue';
+import DbTableView from './components/views/DbTableView.vue';
 
 //global components
 import { fetchData } from './utils/globalFunctions.js';
@@ -40,16 +42,18 @@ const router = createRouter({
     { path: '/', component: homePage },
     { path: '/fileProfiler', component: fileProfiler },
     { path: '/connectionPage', component: connectionPage },
-    { path: '/profilerPage', component: profilerPage },
     { path: '/settingsPage', component: settingsPage },
+    {path: '/connectionOverview/:connection_id', component: connectionOverview},
+    {path: '/DbTableView/:table_id', component: DbTableView}
   ]
 });
-
+library.add(faDatabase, faTable, faServer, faUser);
 // Use the router instance in the app
 app.use(router);
 
 app.component('errorDialogue', errorDialogue);
 app.component('basicDialogue', basicDialogue);
+app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.config.globalProperties.$API_ENDPOINTS = API_ENDPOINTS;
 app.config.globalProperties.$fetchData = fetchData;

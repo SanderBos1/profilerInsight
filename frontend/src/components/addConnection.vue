@@ -48,7 +48,7 @@ export default {
             }
         }
     },
-    emits: ['loadConnections', 'ingestTables'],
+    emits: ['loadConnections'],
     methods: {
     closeForm(connectionType){
         if(connectionType == "postgres"){
@@ -71,7 +71,6 @@ export default {
     },
     conncetionAdded(){
         this.$emit('loadConnections');
-        this.$emit('ingestTables');
     }
 }
        

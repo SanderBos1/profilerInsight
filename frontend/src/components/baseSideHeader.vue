@@ -15,12 +15,6 @@
             <RouterLink to="/connectionPage" role="button" class="grey border-0 btn btn-secondary">
                 <div class=" icon">
                     <img class="icon rounded img-fluid " src="../assets/Images/databaseIcon.svg" alt="Database">
-                    <p>Connections</p>
-                </div>
-            </RouterLink>
-            <RouterLink to="/profilerPage" role="button" class="grey border-0 icon btn btn-secondary" >
-                <div class=" icon">
-                    <img class="icon rounded img-fluid " src="../assets/Images/profilerIcon.svg" alt="Profiler">
                     <p>Database Profiler</p>
                 </div>
             </RouterLink>
