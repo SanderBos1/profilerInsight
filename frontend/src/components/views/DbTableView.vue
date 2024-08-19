@@ -17,20 +17,21 @@
             <div v-if='encourageIngestion' class="alert alert-warning" role="alert">
                 {{ encourageIngestion }}
             </div>
-            <div v-if='selectedColumn'>
                 <div class="row">
-                <div class="col-md-3 mt-3">
-                    <button class="btn btn-primary grey" @click="ingestColumnData(this.table_id, this.selectedColumn)" data-bs-toggle="tooltip" title="Calculates data corresponding to the profiler and loads it to the database">Ingest</button>
+                    <div class="col-md-1">
+                        <button class="btn btn-primary grey" @click="returnTableOverview">Return</button>
+                    </div>
+                    <div v-if='selectedColumn' class="offset-md-1 col-md-1">
+                        <button class="btn btn-primary grey" @click="ingestColumnData(this.selectedColumn)" data-bs-toggle="tooltip" title="Calculates data corresponding to the profiler and loads it to the database">Ingest</button>
+                    </div>
                 </div>
-            </div>
             <div v-if=profilerOverview >
                 <baseIngestionOverview
                     :columnInfo="profilerOverview.overview"
                     :example="profilerOverview.example"
                 ></baseIngestionOverview>
+            </div>
         </div>
-        </div>
-    </div>
 
     <!-- error Display -->
     <errorDialogue :error="error"  @closeError="closeError" dialogTitle="file Error">
@@ -103,7 +104,7 @@ export default{
                 }
         });
     },
-    async ingestColumnData(table, column){
+    async ingestColumnData(column){
         const url = this.$API_ENDPOINTS.get_ingestion_data(column, this.table_id);
 
         await this.$fetchData(url, "GET")
@@ -115,6 +116,24 @@ export default{
                     this.error = data["Message"]
                 }
             });
+        },
+        async returnTableOverview(){
+        
+        const url = this.$API_ENDPOINTS.get_table_connection_id(this.table_id);
+
+        await this.$fetchData(url, "GET")
+            .then((data) => {
+                if ("Answer" in data){
+                    const connection_id = data["Answer"];
+                    console.log(connection_id)
+                    this.$router.push({path: `/connectionOverview/${connection_id}`});
+
+                }
+                else{
+                    this.error = data["Message"]
+                }
+            });
+
         }
     }
 }

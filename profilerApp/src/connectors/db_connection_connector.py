@@ -67,6 +67,35 @@ def load_tables(connection_id:str):
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)
         return jsonify({"Error": "Something went wrong in the database"}), 500
+    
+@connections_bp.route('/api/get_connection_id/<table_id>', methods=['GET'])
+def get_connection_id(table_id:str):
+    """
+    Handle the GET request to retrieve the connection ID of a table.
+
+    This endpoint retrieves the connection ID of the specified table
+    from the `ConnectedTables` model and returns it as a JSON response.
+    If the table is not found, an appropriate error message is returned.
+
+    Args:
+        table_id (str): The unique identifier of the table.
+
+    Returns:
+        Response: A JSON response containing the connection ID of the table,
+                  or an error message if the table is not found, along with an
+                  HTTP status code.
+    Raises: 
+        OperationalError
+    
+    """
+    try:
+        table = ConnectedTables.query.filter_by(table_id=table_id).first()
+        if table is None:
+            return jsonify({'Error': 'Table not found'}), 404
+        return jsonify({'Answer': table.connection_id}), 200
+    except OperationalError as e:
+        logging.error('Database error occurred: %s', e)
+        return jsonify({"Error": "Something went wrong in the database"}), 500
 
 @connections_bp.route('/api/ingest_connected_tables/<connection_id>', methods=['GET'])
 def ingest_connected_table(connection_id:str):

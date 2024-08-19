@@ -1,8 +1,6 @@
 <template>
     
-    <div class="offset-md-10">
-        <button class="btn btn-secondary" @click="showConnectionTypes=true" data-bs-toggle="tooltip" title="Define a connection to a database" >Add Connection</button>    
-    </div>
+    <button class="btn btn-secondary col-sm-12 col-12 col-md-3 mt-2" @click="showConnectionTypes=true" data-bs-toggle="tooltip" title="Define a connection to a database" >Add Connection</button>    
 
     <basicDialogue :visible="showConnectionTypes" @update:visible="showConnectionTypes = $event" dialogTitle="Choose Connection Type">
         <template v-slot:dialogueBody>

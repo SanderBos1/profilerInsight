@@ -3,8 +3,12 @@
         <h2 align="center"> Connection:  {{ this.connection_id}}</h2>
     </div>
     <div class="row">
-        <div class="offset-md-10 col-md-2">
-            <button @click="ingestTables">Load Tables</button>
+        <input type="text" class="col-md-9" v-model="searchTables" placeholder="Search tables..." />
+        <div class="col-md-3">
+            <div class="row">
+                <button class="col-12 col-md-5 btn btn-secondary grey mt-2 " @click="ingestTables" data-bs-toggle="tooltip" data-bs-placement="left" title="Loads all tables that are connected to this connection and adds them to the database">Load Tables</button>
+                <button class="col-12 offset-md-2 col-md-5 btn btn-secondary grey mt-2" @click="previousPage">Return</button>
+            </div>
         </div>
     </div>
 
@@ -13,8 +17,8 @@
             <h3 align="center">Tables</h3>
         </div>
         <div v-if="tables" class="row mt-5">
-            <div v-for="table in tables" :key="table.table_id">
-                <div class="col-md-3">
+            <div v-for="table in filteredTables" :key="table.table_id">
+                <div class="col-md-4 col-sm-6 col-12">
                     <div class="card">
                         <RouterLink :to="`/DbTableView/${table.table_id}`" >
                             <div class="card-header">
@@ -53,10 +57,19 @@
 
 export default {
     name: "connectionOverview",
+
     computed: {
-        // Access the parameter from the route
+        filteredTables() {
+            const searchQuery = this.searchTables.toLowerCase();
+            return this.tables.filter(table => {
+                return (
+                    table.tableName.toLowerCase().includes(searchQuery) ||
+                    table.schemaName.toLowerCase().includes(searchQuery)
+            ) 
+            });
+        },
         connection_id() {
-        return this.$route.params.connection_id;
+            return this.$route.params.connection_id;
         }
     },
     mounted(){
@@ -65,7 +78,8 @@ export default {
     data() {
         return {
             tables: [],
-            error: ""
+            error: "",
+            searchTables: "",
         }
     },
     methods: {
@@ -99,7 +113,12 @@ export default {
 
         });
     },
-    }
+    previousPage(){
+
+        this.$router.push('/connectionPage');
+        }
+    },
+
 }
     
 

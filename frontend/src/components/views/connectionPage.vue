@@ -1,9 +1,11 @@
 <template>
     <div class="row mt-3">
-        <addConncetion  @loadConnections="fetchConnections"></addConncetion>
+    
+        <input type="text" class="col-md-9 mt-2" v-model="searchConnection" placeholder="Search connections..." />
+        <addConncetion class="col-md-3"  @loadConnections="fetchConnections"></addConncetion>
     </div>
     <div class="row mt-3">
-        <div v-for="connection in connections" :key="connection.connection_id" class="col-md-4 col-sm-6">
+        <div v-for="connection in filteredConnections" :key="connection.connection_id" class="col-md-4 col-sm-6 col-12  mt-3">
             <connectionIcon :connection="connection" @fetchConnections="fetchConnections"></connectionIcon>
         </div>
         <errorDialogue :error="error"  @closeError="closeError" dialogTitle="connection Error">
@@ -30,11 +32,26 @@ export default {
         return {
         error: "",
         connections: [],
+        searchConnection: "",
     };
   },
   created() {
     this.fetchConnections();
   },
+  computed: {
+    filteredConnections() {
+        const searchQuery = this.searchConnection.toLowerCase();
+        return this.connections.filter(connection => {
+            return (
+                connection.connection_id.toLowerCase().includes(searchQuery) ||
+                connection.server.toLowerCase().includes(searchQuery) ||
+                connection.database.toLowerCase().includes(searchQuery) ||
+                connection.username.toLowerCase().includes(searchQuery) 
+
+        ) 
+        });
+  } ,
+},
   methods: {
     closeError() {
         this.error = "";
