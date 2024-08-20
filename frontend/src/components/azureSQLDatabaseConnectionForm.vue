@@ -127,7 +127,6 @@ export default{
         
         }
         catch (error) {
-            this.errorVisible = true;
             this.error = error;
         }
     },

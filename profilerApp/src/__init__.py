@@ -3,7 +3,8 @@ from flask import Flask
 from dotenv import load_dotenv
 from flask_cors import CORS
 from src.config import SingletonDB
-from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp, errors_bp
+from src.connectors import connections_bp, db_profiler_bp, file_profiler_bp, \
+    connection_tables_bp, errors_bp, data_quality_bp
 
 def create_app(config_name=None):
     """
@@ -35,6 +36,8 @@ def create_app(config_name=None):
     app.register_blueprint(file_profiler_bp)
     app.register_blueprint(connections_bp)
     app.register_blueprint(errors_bp)   
+    app.register_blueprint(data_quality_bp)
+    app.register_blueprint(connection_tables_bp)    
 
     # Configure Cross-Origin Resource Sharing (CORS)
     frontend_host = os.getenv("FRONTEND_HOST")

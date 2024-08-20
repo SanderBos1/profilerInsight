@@ -26,8 +26,9 @@ def test_db_loader_get_connection_info(app):
             "db_name": "testDB",
             "table_id": 1,
             "connection_id": 'conn123',
-            "schemaName": 'testSchema',
-            "tableName": 'testTable',
+            "schema_name": 'testSchema',
+            "table_name": 'testTable',
+            "data_quality": 100
         }
         
         assert connection_dict == expected_connection_dict

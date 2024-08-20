@@ -2,14 +2,14 @@
     
     <button class="btn btn-secondary col-sm-12 col-12 col-md-3 mt-2" @click="showConnectionTypes=true" data-bs-toggle="tooltip" title="Define a connection to a database" >Add Connection</button>    
 
-    <basicDialogue :visible="showConnectionTypes" @update:visible="showConnectionTypes = $event" dialogTitle="Choose Connection Type">
+    <basicDialogue  :visible="showConnectionTypes" @close="showConnectionTypes =false" dialogTitle="Choose Connection Type">
         <template v-slot:dialogueBody>
             <div class="row">
                 <div class="col-4">
-                    <img src="../assets/Images/postgresLogo.jpg" @click="postgres=true" class="img-fluid" alt="Postgres Logo">
+                    <img src="../assets/Images/postgresLogo.jpg" @click='connectionChosen("postgres")' class="img-fluid" alt="Postgres Logo">
                 </div>
                 <div class="col-4">
-                    <img src="../assets/Images/azureSQLDatabaseIcon.svg" @click="azureSQLDatabase=true" class="img-fluid" alt="Postgres Logo">
+                    <img src="../assets/Images/azureSQLDatabaseIcon.svg" @click='connectionChosen("azuresql")' class="img-fluid" alt="Postgres Logo">
                 </div>
             </div>
         </template>
@@ -48,6 +48,15 @@ export default {
     },
     emits: ['loadConnections'],
     methods: {
+    connectionChosen(db_type){
+        if(db_type == "postgres"){
+            this.postgres = true;
+        }
+        if(db_type == "azuresql"){
+            this.azureSQLDatabase = true;
+        }
+        this.showConnectionTypes = false;
+    },
     closeForm(connectionType){
         if(connectionType == "postgres"){
             this.postgres = false;

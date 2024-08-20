@@ -44,10 +44,10 @@ class DbLoader(BasicLoader):
         connection_dict, table_info, password = self.get_connection_info(table_id)
         new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                      connection_dict, password)
-        column_data = new_db_connection.get_column_data(table_info['schemaName'], table_info['tableName'], column)
+        column_data = new_db_connection.get_column_data(table_info['schema_name'], table_info['table_name'], column)
         column_data = np.array([row[0] for row in column_data])
         column_data = pd.Series(column_data)
-        return column_data, table_info['tableName'], table_info['connection_id']
+        return column_data, table_info['table_name'], table_info['connection_id']
     
     def load_examples(self, table_id:str) -> pd.DataFrame:
         """
@@ -60,8 +60,8 @@ class DbLoader(BasicLoader):
 
         new_db_connection = get_database_connection(connection_dict['db_type'],\
                                                                      connection_dict, password)
-        preview = new_db_connection.get_preview_data(table_info['schemaName'], table_info['tableName'])      
-        columns = new_db_connection.get_table_columns(table_info['schemaName'], table_info['tableName'])      
+        preview = new_db_connection.get_preview_data(table_info['schema_name'], table_info['table_name'])      
+        columns = new_db_connection.get_table_columns(table_info['schema_name'], table_info['table_name'])      
         df = pd.DataFrame(preview, columns=columns)
         preview = df.to_html(index=False, classes=["table table-bordered", \
                                                                    "table-striped", "table-hover"])
@@ -78,5 +78,5 @@ class DbLoader(BasicLoader):
 
         new_db_connection = get_database_connection(connection_dict['db_type'], \
                                                                     connection_dict, password)
-        answer = new_db_connection.get_table_columns(table_info['schemaName'], table_info['tableName'])
+        answer = new_db_connection.get_table_columns(table_info['schema_name'], table_info['table_name'])
         return answer

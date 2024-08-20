@@ -14,7 +14,7 @@ class DbConnections(DB.Model):
     Attributes:
         connection_id (str): Unique identifier for the connection.
         host (str): Hostname or IP address of the database server.
-        port (str): Port number used for the connection.
+        port (Int): Port number used for the connection.
         username (str): Username for the database connection.
         _password (bytes): Encrypted password for the database connection.
         database (str): Name of the database.

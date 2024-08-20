@@ -108,7 +108,7 @@ export default{
         },
         async submitPostgressForm() {
             try {
-                const response = await fetch(this.$API_ENDPOINTS.ADD_POSTGRES_CONNECTION, {
+                const response = await fetch(this.$API_ENDPOINTS.ADD_CONNECTION, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

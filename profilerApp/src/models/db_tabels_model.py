@@ -21,8 +21,9 @@ class ConnectedTables(DB.Model):
     db_name = DB.Column(DB.String(80), nullable=False)
     table_id = DB.Column(DB.Integer, primary_key=True)
     connection_id = DB.Column(DB.String(80), nullable=False)
-    schemaName = DB.Column(DB.String(80), nullable=False)
-    tableName = DB.Column(DB.String(80), nullable=False)
+    schema_name = DB.Column(DB.String(80), nullable=False)
+    table_name = DB.Column(DB.String(80), nullable=False)
+    data_quality = DB.Column(DB.Numeric, nullable=False)
 
     def __repr__(self):
         """
@@ -34,7 +35,7 @@ class ConnectedTables(DB.Model):
             str: A string representation of the ConnectedTables instance.
         """
         return f"ConnectedTables(connection_id='{self.connection_id}', \
-            schemaName='{self.schemaName}', tableName='{self.tableName}')"
+            schemaName='{self.schema_name}', tableName='{self.table_name}')"
     
     def to_dict(self):
         """
@@ -49,7 +50,8 @@ class ConnectedTables(DB.Model):
             "db_name": self.db_name,
             "table_id": self.table_id,
             "connection_id": self.connection_id,
-            "schemaName": self.schemaName,
-            "tableName": self.tableName,
+            "schema_name": self.schema_name,
+            "table_name": self.table_name,
+            "data_quality": self.data_quality
         }
         return connected_tables_dict

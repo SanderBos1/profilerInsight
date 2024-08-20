@@ -24,6 +24,7 @@ import connectionPage from './components/views/connectionPage.vue';
 import settingsPage from './components/views/settingsPage.vue';
 import connectionOverview from './components/views/connectionOverview.vue';
 import DbTableView from './components/views/DbTableView.vue';
+import tableQualityView from './components/views/tableQualityView.vue';
 
 //global components
 import { fetchData } from './utils/globalFunctions.js';
@@ -44,7 +45,8 @@ const router = createRouter({
     { path: '/connectionPage', component: connectionPage },
     { path: '/settingsPage', component: settingsPage },
     {path: '/connectionOverview/:connection_id', component: connectionOverview},
-    {path: '/DbTableView/:table_id', component: DbTableView}
+    {path: '/DbTableView/:table_id', component: DbTableView},
+    {path: '/tableQualityView/:table_id', component: tableQualityView}
   ]
 });
 library.add(faDatabase, faTable, faServer, faUser);

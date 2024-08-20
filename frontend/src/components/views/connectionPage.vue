@@ -1,8 +1,8 @@
 <template>
+    <h3 alling="center">Connections</h3>
     <div class="row mt-3">
-    
         <input type="text" class="col-md-9 mt-2" v-model="searchConnection" placeholder="Search connections..." />
-        <addConncetion class="col-md-3"  @loadConnections="fetchConnections"></addConncetion>
+        <addConncetion @loadConnections="fetchConnections"></addConncetion>
     </div>
     <div class="row mt-3">
         <div v-for="connection in filteredConnections" :key="connection.connection_id" class="col-md-4 col-sm-6 col-12  mt-3">

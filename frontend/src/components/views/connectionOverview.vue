@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <h2 align="center"> Connection:  {{ this.connection_id}}</h2>
+        <h2 align="center"> Tables of {{ this.connection_id}}</h2>
     </div>
     <div class="row">
         <input type="text" class="col-md-9" v-model="searchTables" placeholder="Search tables..." />
@@ -13,9 +13,6 @@
     </div>
 
     <div class="row">
-        <div class="col-md-12">
-            <h3 align="center">Tables</h3>
-        </div>
         <div v-if="tables" class="row mt-5">
             <div v-for="table in filteredTables" :key="table.table_id">
                 <div class="col-md-4 col-sm-6 col-12">
@@ -29,12 +26,14 @@
                                         </div>
                                     </div>
                                     <div class="col-md-10">
-                                        <p> {{ table.tableName }}</p>
+                                        <p> {{ table.table_name }}</p>
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body">
-                                <p> <b>Schema:</b> {{table.schemaName}}</p>
+                                <p> <b>Schema:</b> {{table.schema_name}}</p>
+                                <p> <b>Quality:</b> {{table.data_quality}}</p>
+
                             </div>
                         </RouterLink>
                     </div>
@@ -62,9 +61,12 @@ export default {
         filteredTables() {
             const searchQuery = this.searchTables.toLowerCase();
             return this.tables.filter(table => {
+                const table_name = (table.table_name || '').toLowerCase();
+                const schema_name = (table.schema_name || '').toLowerCase();
+
                 return (
-                    table.tableName.toLowerCase().includes(searchQuery) ||
-                    table.schemaName.toLowerCase().includes(searchQuery)
+                    table_name.includes(searchQuery) ||
+                    schema_name.includes(searchQuery)
             ) 
             });
         },
@@ -100,7 +102,7 @@ export default {
         });
     },
     async loadTables(){
-        const apiEndpoint = this.$API_ENDPOINTS.load_tables(this.connection_id);
+        const apiEndpoint = this.$API_ENDPOINTS.LOAD_TABLES(this.connection_id);
         this.tables = [];
         await this.$fetchData(apiEndpoint, 'GET')
             .then((data) => {

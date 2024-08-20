@@ -1,4 +1,6 @@
-from .db_connection_connector import connections_bp
+from .db_connections_connector import connections_bp
 from .db_profiler_connector import db_profiler_bp
 from .file_connector import file_profiler_bp
 from .errors_connector import errors_bp
+from .data_quality_connector import data_quality_bp
+from .connection_tables_connector import connection_tables_bp
