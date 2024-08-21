@@ -115,11 +115,11 @@ def delete_quality_rule(rule_id):
             return jsonify({'Error': 'Rule not found'}), 404
         DB.session.delete(rule)
         DB.session.commit()
-        return jsonify({'Message':"Connection deleted successfully!"}), 200
+        return jsonify({'Message':"Quality rule deleted successfully"}), 200
     except IntegrityError as e:
         DB.session.rollback()
         logging.error('Integrity error: %s', e)
-        return jsonify({"Error": "Connection_id already exists"}), 403
+        return jsonify({"Error": "Rule not found"}), 403
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)
         return jsonify({"Error": "Database operation failed"}), 500

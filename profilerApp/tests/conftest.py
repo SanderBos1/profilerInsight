@@ -52,12 +52,12 @@ def app():
         yield app
         
         # Teardown: Drop all tables after tests are done
-        with app.app_context():
-            # Drop all tables
-            db_instance = SingletonDB.get_instance()
+        try:
             db_instance.drop_all()
-            print("databases are dropped")
+            print("Databases are dropped")
+        except Exception as e:
+            print(f"Error dropping databases: {e}")
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def client(app):
     return app.test_client()

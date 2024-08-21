@@ -14,31 +14,6 @@ connection_tables_bp = Blueprint(
 
 
 DB = SingletonDB.get_instance()
-
-
-@connection_tables_bp.route('/api/get_connected_tables', methods=['GET'])
-def get_connected_tables():
-    """
-    Handle the GET request for retrieving a list of connected tables.
-
-    This endpoint queries the database for all connected tables and returns
-    their details in a JSON format. Each connected table is represented as
-    a dictionary. If an error occurs during the database operation or any
-    other exception, an appropriate error message is logged and returned.
-
-    Returns:
-        Response: A JSON response containing either the list of connected
-                  tables or an error message, along with an HTTP status code.        
-    Raises:
-        OperationalError
-    """
-    try:
-        connected_tables = ConnectedTables.query.all()
-        connected_table_list = [connected_table.to_dict() for connected_table in connected_tables]
-        return jsonify({'Answer': connected_table_list}), 200
-    except OperationalError as e:
-        logging.error('Database error occurred: %s', e)
-        return jsonify({"Error": "Database error occurred"}), 500
     
 
 @connection_tables_bp.route('/api/load_tables/<connection_id>', methods=['GET'])
@@ -62,7 +37,7 @@ def load_tables(connection_id:str):
     """
     try:
         tables = ConnectedTables.query.filter_by(connection_id=connection_id).all()
-        tables = [table.to_dict() for table in tables]     
+        tables = [table.to_dict() for table in tables]   
         return jsonify({"Answer": tables}), 200
     except OperationalError as e:
         logging.error('Database error occurred: %s', e)

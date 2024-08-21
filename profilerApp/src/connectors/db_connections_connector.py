@@ -85,7 +85,7 @@ def get_connections():
         return jsonify('Database error occurred: %s', e), 500
 
 @connections_bp.route('/api/add_connection', methods=['POST'])
-def add_postgres_connection():
+def add_connection():
     """
     Handle the POST request to add a new PostgreSQL connection.
 
