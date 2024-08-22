@@ -46,7 +46,9 @@ def app():
         db_instance.session.commit()
 
         # Set the CSV folder path in the app config
-        app.config['csv_folder'] = 'mock/path'
+        app.config['file_folder'] = 'mock/path'
+        app.config['properties_folder'] = 'mock/path/properties'
+
         
         # Yield the app object for testing
         yield app

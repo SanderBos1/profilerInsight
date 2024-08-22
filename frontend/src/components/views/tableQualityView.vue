@@ -34,8 +34,8 @@
                             <button class="btn btn-danger btn-sm col-md-2" @click="deleteRule(rule.rule_id)">X</button>
                         </div>
                         <div class="card-body" :style="getStatusStyle(rule.succeded)">
-                            <p class="mb-1"><b>Threshold:</b> {{ rule.threshold }}</p>        
-                            <p class="mb-1"><b>Calculated:</b> {{ rule.calculated_threshold }}</p>                            
+                            <p class="mb-1"><b>Threshold:</b> {{ rule.threshold }} %</p>        
+                            <p class="mb-1"><b>Calculated:</b> {{ rule.calculated_threshold }} %</p>                            
                         </div>
                     </div>
                 </div>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="row">
                     <div v-for="rule in rules" :key=rule.rule_id>
-                        <qualityRuleComponent :rule="rule" :table_id="table_id" :columns="columns" @reLoad="getTableRules"></qualityRuleComponent>
+                        <ruleComponents :type="rule.quality_rule" :rule="rule" :table_id="table_id" :columns="columns" @reLoad="getTableRules"></ruleComponents>
                     </div>  
                 </div>          
             </div>
@@ -69,13 +69,13 @@
 
 <script>
 
-import qualityRuleComponent from '../qualityRuleComponent.vue';
+import ruleComponents from  '../qualityRuleComponents/ruleComponent.vue';
 
 export default{
 
     name: "DbTableView",
     components:{
-        qualityRuleComponent
+        ruleComponents
     },
     computed: {
         table_id() {

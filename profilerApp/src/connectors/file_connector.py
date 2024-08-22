@@ -1,14 +1,13 @@
 import os
 import json
 import logging
-import io
 
 from flask import Blueprint, jsonify, request, current_app
 from werkzeug.utils import secure_filename
 from marshmallow import ValidationError
 
 from src.schemas import CSVUploadSchema
-from src.files import CsvHandler, XlsxHandler   
+from src.utils import FileSaver
 from src.loaders import FileLoader
 from src.profiling import CheckType
 
@@ -33,8 +32,10 @@ def file_column_overview(filename:str, column:str):
         Response: A JSON object containing column profiling information on success, 
         or an error message on failure, with HTTP status code 200, 400, 404, or 500.
     """
-    filename = secure_filename(filename)
+
+    
     try:
+        filename = secure_filename(filename)
         # loads data & example
         profiler_generator = FileLoader(filename)
         example = profiler_generator.load_examples()
@@ -64,7 +65,7 @@ def get_all_files():
     """
     Retrieve a list of all CSV files present in the configured directory.
 
-    This endpoint scans the directory specified by the `csv_folder` configuration \
+    This endpoint scans the directory specified by the `file_folder` configuration \
           and returns the filenames of CSV files without their extensions.
 
     Returns:
@@ -72,13 +73,10 @@ def get_all_files():
             or an error message on failure, with HTTP status code 200 or 500.
     """
     try: 
-        files = os.listdir(current_app.config['csv_folder'])
-        filenames = []
-        for file in files:
-            filename = file.split(".")
-            if filename[1] == "csv":
-                filenames.append(filename[0])
-        return jsonify({"Answer":filenames}), 200
+        all_files = [f for f in os.listdir(current_app.config['file_folder']) \
+                     if os.path.isfile(os.path.join(current_app.config['file_folder'], f))]
+
+        return jsonify({"Answer":all_files}), 200
     except FileNotFoundError as e:
         logging.error('FileNotFoundError: %s', e)
         return jsonify({"Error": "File not found."}), 404
@@ -99,8 +97,8 @@ def delete_file(filename):
     """
     try: 
         sec_filename =secure_filename(filename)
-        filename = os.path.join(current_app.config['csv_folder'], f"{sec_filename}.csv")
-        properties_filename = os.path.join(current_app.config['csv_folder'], f"{sec_filename}.json")
+        filename = os.path.join(current_app.config['file_folder'], f"{sec_filename}.csv")
+        properties_filename = os.path.join(current_app.config['file_folder'], f"{sec_filename}.json")
         os.remove(filename)
         os.remove(properties_filename)
         return jsonify({"Message":"Success"}), 200
@@ -168,8 +166,6 @@ def upload_file():
     try:
 
         file = request.files['flatDataSet']
-        filename, ext = os.path.splitext(file.filename)
-        filename = secure_filename(filename)
 
         delimiter = data.get('csvSeperator', ',')
         header_row = data.get('headerRow', 0) 
@@ -181,16 +177,9 @@ def upload_file():
             'quotechar': quotechar
         }
 
-        if ext == '.csv':
-            flat_file_handler = CsvHandler(properties)
-            df = flat_file_handler.clean(file)
-            flat_file_handler.save_properties(filename)
-            flat_file_handler.save(df, filename)
-        else:
-            xlsx_file = io.BytesIO(file.read())
-            df = flat_file_handler = XlsxHandler(properties)
-            flat_file_handler.save_properties(filename)
-            flat_file_handler.clean(df, xlsx_file)
+        file_saver = FileSaver(file, properties)
+        file_saver.save_file()
+        file_saver.save_properties()
         return jsonify(message="Success"), 200
     except FileNotFoundError as e:
         logging.error('File Not Found: %s', e)

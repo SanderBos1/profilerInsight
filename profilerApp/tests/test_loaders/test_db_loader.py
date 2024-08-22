@@ -18,8 +18,7 @@ def test_db_loader_get_connection_info(app):
             "port": 1234,
             "username": 'testUser',
             "database": 'testDB',
-            "db_type": 'postgres',
-            "extra_info": None
+            "db_type": 'postgres'
         }
 
         expected_table_info= {

@@ -12,7 +12,6 @@ def test_get_connections(client):
             "username": "testUser",
             "database": "testDB",
             "db_type": "postgres",
-            "extra_info": None
         }]
     }
 

@@ -6,7 +6,8 @@ from marshmallow import ValidationError
 
 from src.models import QualityRules, ConnectedTables
 from src.config import SingletonDB
-from src.data_quality import DataQualityRuleGenerator
+from src.data_quality import QualityRuleFactory
+from src.data_quality.data_quality_calculator import calculate_data_quality
 from src.schemas.quality_rule_schema import QualityRuleSchema
 
 DB = SingletonDB.get_instance()
@@ -28,7 +29,7 @@ def get_quality_rules():
     Returns:
         Response: A JSON response containing all quality rules.
     """
-    data_quality_calculator = DataQualityRuleGenerator()
+    data_quality_calculator = QualityRuleFactory()
     existing_rules = data_quality_calculator.get_existing_rules()
     return jsonify({"Answer":existing_rules})
     
@@ -80,6 +81,10 @@ def add_quality_rule():
         rule_name = data["rule_name"]
         column_name = data["column_name"]
         threshold = data["threshold"]
+        if "extra_info" in data:
+            extra_info = data["extra_info"]
+        else:
+            extra_info = ""
         connection_id = DB.session.query(ConnectedTables).filter_by(table_id=table_id).first().connection_id
         quality_rule = QualityRules(
             table_id=table_id,
@@ -87,6 +92,7 @@ def add_quality_rule():
             quality_rule=rule_name,
             column_name=column_name,
             threshold=threshold,
+            extra_info = extra_info
         )
         DB.session.add(quality_rule)
         DB.session.commit()
@@ -137,8 +143,7 @@ def calculate_quality(table_id):
         Response: A JSON response containing the quality of the table.
     """
     try:
-        data_quality_calculator = DataQualityRuleGenerator()
-        data_quality_calculator.calculate_data_quality(table_id)
+        calculate_data_quality(table_id)
         return jsonify({"Message": "quality calculated successfully"})
     except OperationalError as e:
         logging.error(f"Error calculating quality: {e}")

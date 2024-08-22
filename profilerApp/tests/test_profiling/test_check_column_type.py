@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+
 from src.profiling import CheckType, NumericalProfiler, TextProfiler
 
 def test_check_type_integer():
@@ -62,3 +64,10 @@ def test_check_type_mixed():
     profiler, data, dtype = checker.check_type()
     assert profiler == TextProfiler
     assert data.equals(mixed_series_converted)
+
+def check_type_all_nan():
+    check_data = pd.Series([np.nan, np.nan, np.nan, np.nan, np.nan])
+    checker = CheckType(check_data)
+    profiler, data, dtype = checker.check_type()
+    assert profiler == NumericalProfiler
+    assert data.equals(check_data)

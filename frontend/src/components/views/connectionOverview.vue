@@ -32,7 +32,7 @@
                             </div>
                             <div class="card-body">
                                 <p> <b>Schema:</b> {{table.schema_name}}</p>
-                                <p> <b>Quality:</b> {{table.data_quality}}</p>
+                                <p> <b>Quality:</b> {{table.data_quality}} %</p>
 
                             </div>
                         </RouterLink>

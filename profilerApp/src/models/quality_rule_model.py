@@ -25,6 +25,7 @@ class QualityRules(DB.Model):
     quality_rule = DB.Column(DB.String(80), nullable=False)
     column_name = DB.Column(DB.String(80), nullable=False)
     threshold = DB.Column(DB.Float, nullable=False)
+    extra_info = DB.Column(DB.String(80), nullable=True)
     calculated_threshold = DB.Column(DB.Float, nullable=True)
     succeded = DB.Column(DB.Boolean, nullable=False, default=False)
 
@@ -44,6 +45,7 @@ class QualityRules(DB.Model):
             "quality_rule": self.quality_rule,
             "column_name": self.column_name,
             "threshold": self.threshold,
+            "extra_info": self.extra_info,
             "calculated_threshold": self.calculated_threshold,
             "succeded": self.succeded   
         }

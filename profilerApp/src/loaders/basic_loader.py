@@ -10,7 +10,7 @@ class BasicLoader():
     
     def __init__(self):
         pass
-
+        
     def load(self, column):
         """ 
         Load data from a source into a pandas dataframe.

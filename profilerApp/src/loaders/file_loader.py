@@ -30,6 +30,22 @@ class FileLoader(BasicLoader):
         self.file_name = file_name
         self.properties= self.load_properties()
 
+    def load_data(self) -> pd.DataFrame:
+        """
+        Load the data from a csv file into a pandas DataFrame.
+
+        Returns:
+        - df: A pandas DataFrame containing the data of the csv file.
+        """
+        file_name = os.path.join(current_app.config['file_folder'], f"{self.file_name}" )
+        if file_name.split('.')[1] == 'csv':
+            df = pd.read_csv(file_name, index_col=0, header=self.properties['header_row'],  
+                            quotechar=self.properties['quotechar'], \
+                                delimiter=self.properties['delimiter'], engine="python")
+        else:
+            df = pd.read_excel(file_name, index_col=0, header=self.properties['header_row'], engine="openpyxl")
+        return df
+
     def load(self, column) -> pd.DataFrame:
         """
         Load the data from a csv file into a pandas series.
@@ -37,10 +53,7 @@ class FileLoader(BasicLoader):
         Returns:
         - column_data: A pandas series containing the data of the specified column.
         """
-        file_name = os.path.join(current_app.config['csv_folder'], f"{self.file_name}.csv")
-        df = pd.read_csv(file_name, quotechar=self.properties['quotechar'], \
-                         delimiter=self.properties['delimiter'],\
-                              header=self.properties['header_row'])
+        df = self.load_data()
         column_data = df.loc[:, column]
         return column_data
     
@@ -51,10 +64,8 @@ class FileLoader(BasicLoader):
         Returns:
         - df: a DataFrame containing the first 10 rows of the csv file converted to html
         """
-        file_name = os.path.join(current_app.config['csv_folder'], f"{self.file_name}.csv")
-        df = pd.read_csv(file_name, quotechar=self.properties['quotechar'], \
-                         delimiter=self.properties['delimiter'],\
-                              header=self.properties['header_row'], nrows=10) 
+        df = self.load_data()
+
         for column in df.columns:
             test_conversion = pd.to_numeric(df[column], errors='coerce')
             if test_conversion.notna().all():
@@ -72,10 +83,7 @@ class FileLoader(BasicLoader):
         Returns:
             - list: A list containing the column names of the csv file.
         """
-        file_name = os.path.join(current_app.config['csv_folder'], f"{self.file_name}.csv")
-        df = pd.read_csv(file_name, quotechar=self.properties['quotechar'], \
-                         delimiter=self.properties['delimiter'],\
-                              header=self.properties['header_row'], nrows=1) 
+        df = self.load_data()
         return df.columns.tolist()
     
     def load_properties(self) -> dict:
@@ -87,8 +95,9 @@ class FileLoader(BasicLoader):
         Returns:
             - dict: A dictionary containing the properties of the file.
         """
-        properties_filename = os.path.join(current_app.config['csv_folder'], \
-                                            f"{self.file_name}.json")
+        file_name = self.file_name.split('.')[0]
+        properties_filename = os.path.join(current_app.config['properties_folder'], \
+                                            f"{file_name}.json")
         with open(properties_filename, 'rb') as properties:
             properties = json.load(properties)
         

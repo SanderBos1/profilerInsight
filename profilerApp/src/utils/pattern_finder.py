@@ -49,3 +49,14 @@ class PatternFinder:
         sorted_patterns = sorted(pattern_counts.items(), key=lambda x: x[1], reverse=True)
     
         return sorted_patterns
+    
+    def check_pattern_matches(self, good_pattern:str, data:pd.Series) -> int:
+        """
+        Check if the pattern matches the good pattern.
+        """
+        count = 0
+        for item in data:
+            pattern = self.tokenize_string(item)
+            if pattern != good_pattern:
+                count += 1
+        return count

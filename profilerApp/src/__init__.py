@@ -76,7 +76,9 @@ def create_app(config_name=None):
 
     # Configure file upload settings
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    app.config['csv_folder'] = os.path.join(base_dir, 'data', 'csvFiles')
+    app.config['file_folder'] = os.path.join(base_dir, 'data')
+    app.config['properties_folder'] = os.path.join(base_dir, 'data', "properties")
+
     app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
 
     # Initialize database
@@ -86,6 +88,7 @@ def create_app(config_name=None):
     # Create tables if not using in-memory SQLite (usually not needed for tests)
     if config_name != 'test':
         with app.app_context():
+            # db.drop_all()
             db.create_all()
 
     return app

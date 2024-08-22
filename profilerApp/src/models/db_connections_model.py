@@ -84,6 +84,5 @@ class DbConnections(DB.Model):
             "username": self.username,
             "database": self.database,
             "db_type": self.db_type,
-            "extra_info": self.extra_info
         }
         return db_connection_dict

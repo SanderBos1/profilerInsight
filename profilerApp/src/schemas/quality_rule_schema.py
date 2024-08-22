@@ -7,6 +7,7 @@ class QualityRuleSchema(Schema):
     rule_name = fields.Str(required=True, validate=validate.Length(min=1))
     column_name = fields.Str(required=True, validate=validate.Length(min=1))
     threshold = fields.Int(required=True, validate=validate.Range(min=0, max=100))
+    extra_info = fields.Str(required=False, validate=validate.Length(min=1))
 
     class Meta:
         unknown = RAISE

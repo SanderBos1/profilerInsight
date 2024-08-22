@@ -23,4 +23,14 @@ def test_find_patterns():
     pattern_finder = PatternFinder()
     transformed_string = pattern_finder.find_patterns(input)
     assert expected_return == transformed_string
+
+def test_check_pattern_matches():
+    """
+    Test the find_patterns method of the PatternFinder class
+    """
+    input = pd.Series(["1234AB", "1234BC", "1234AB", "1234BC", "1234"])
+    expected_return = 1
+    pattern_finder = PatternFinder()
+    return_count = pattern_finder.check_pattern_matches("1111AA", input)
+    assert expected_return == return_count
    

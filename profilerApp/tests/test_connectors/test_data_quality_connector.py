@@ -1,3 +1,5 @@
+from src.data_quality import EmptyValuesRule, PatternRule
+
 
 def test_get_data_qualtiy_rules(client):
     """
@@ -6,12 +8,7 @@ def test_get_data_qualtiy_rules(client):
     response = client.get("/api/get_quality_rules")
     assert response.status_code == 200
     assert response.json == { \
-        "Answer": [{
-            "name":  "No Empty Rule",
-            "description": "Calculates the percantage of empty values in the column.\
-            If the percantage is higher than the treshold, the rule is not satisfied.\
-            "
-            }
+        "Answer": [EmptyValuesRule().get_rule_description(), PatternRule().get_rule_description()
     ]}
 
 
@@ -30,6 +27,7 @@ def test_get_data_quality_rules_table(client):
                 'quality_rule': 'No Empty Rule', 
                 'column_name': 'testColumn', 
                 'threshold': 1.0, 
+                'extra_info': None,
                 'calculated_threshold': None, 
                 'succeded': False
             }]

@@ -31,7 +31,7 @@ class CheckType:
             The TextProfiler class if the data is not numerical.
             First, the data is converted to a string type.
         """
-        if self.data.dtype not in ['int64', 'float64']:
+        if self.data.dtype not in ['int64', 'float64'] or self.data.isnull().all():
             dtype = "object"
             self.data = self.data.astype(str)
         else:
