@@ -23,7 +23,7 @@
               </div>
             </div>
           </div>
-            <button class="btn btn-primary btn-sm" @click="addQualityRule">
+            <button class="btn btn-primary btn-sm grey" @click="addQualityRule">
                 Add Quality Rule
             </button>
         </div>

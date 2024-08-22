@@ -39,11 +39,12 @@ class FileLoader(BasicLoader):
         """
         file_name = os.path.join(current_app.config['file_folder'], f"{self.file_name}" )
         if file_name.split('.')[1] == 'csv':
-            df = pd.read_csv(file_name, index_col=0, header=self.properties['header_row'],  
+            df = pd.read_csv(file_name, header=self.properties['header_row'],  
                             quotechar=self.properties['quotechar'], \
                                 delimiter=self.properties['delimiter'], engine="python")
         else:
-            df = pd.read_excel(file_name, index_col=0, header=self.properties['header_row'], engine="openpyxl")
+            df = pd.read_excel(file_name, header=self.properties['header_row'], engine="openpyxl")
+        print(df)
         return df
 
     def load(self, column) -> pd.DataFrame:

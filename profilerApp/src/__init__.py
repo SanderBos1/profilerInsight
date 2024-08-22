@@ -77,7 +77,7 @@ def create_app(config_name=None):
     # Configure file upload settings
     base_dir = os.path.dirname(os.path.abspath(__file__))
     app.config['file_folder'] = os.path.join(base_dir, 'data')
-    app.config['properties_folder'] = os.path.join(base_dir, 'data', "properties")
+    app.config['properties_folder'] = os.path.join(base_dir, 'data')
 
     app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
 

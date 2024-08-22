@@ -1,4 +1,4 @@
-src/data/csvFiles/*
+src/data/*
 src/migrations
 
 src/**/__pycache__

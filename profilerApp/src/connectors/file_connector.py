@@ -73,8 +73,9 @@ def get_all_files():
             or an error message on failure, with HTTP status code 200 or 500.
     """
     try: 
-        all_files = [f for f in os.listdir(current_app.config['file_folder']) \
-                     if os.path.isfile(os.path.join(current_app.config['file_folder'], f))]
+        all_files = [f for f in os.listdir(current_app.config['file_folder'])
+             if os.path.isfile(os.path.join(current_app.config['file_folder'], f))
+             and not f.lower().endswith('.json')]
 
         return jsonify({"Answer":all_files}), 200
     except FileNotFoundError as e:

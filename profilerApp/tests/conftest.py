@@ -1,4 +1,6 @@
+import os
 import pytest
+
 from src import create_app
 from src.config import SingletonDB
 from src.models import DbConnections, ConnectedTables, QualityRules
@@ -46,8 +48,10 @@ def app():
         db_instance.session.commit()
 
         # Set the CSV folder path in the app config
-        app.config['file_folder'] = 'mock/path'
-        app.config['properties_folder'] = 'mock/path/properties'
+        base_folder = os.path.dirname(os.path.abspath(__file__))
+
+        app.config['file_folder'] = os.path.join(base_folder, 'test_data')
+        app.config['properties_folder'] = os.path.join(base_folder, 'test_data')
 
         
         # Yield the app object for testing

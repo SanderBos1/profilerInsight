@@ -48,7 +48,7 @@
                 </div>
                 <div class="row">
                     <div v-for="rule in rules" :key=rule.rule_id>
-                        <ruleComponents :type="rule.quality_rule" :rule="rule" :table_id="table_id" :columns="columns" @reLoad="getTableRules"></ruleComponents>
+                        <ruleComponent :rule="rule" :table_id="table_id" :columns="columns" @reLoad="getTableRules"></ruleComponent>
                     </div>  
                 </div>          
             </div>
@@ -69,13 +69,13 @@
 
 <script>
 
-import ruleComponents from  '../qualityRuleComponents/ruleComponent.vue';
+import ruleComponent from  '../qualityRuleComponents/ruleComponent.vue';
 
 export default{
 
     name: "DbTableView",
     components:{
-        ruleComponents
+        ruleComponent
     },
     computed: {
         table_id() {
