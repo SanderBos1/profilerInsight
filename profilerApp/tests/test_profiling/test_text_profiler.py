@@ -81,7 +81,7 @@ def test_patterns():
     dtype = 'object'
     profiler = TextProfiler(data, column, dtype)
     patterns = profiler.get_patterns()
-    expected_patterns = [('AAAA', 4), ('AAA', 1)]
+    expected_patterns = [('aaaa', 4), ('aaa', 1)]
     assert patterns == expected_patterns
 
 def test_profiler_output():

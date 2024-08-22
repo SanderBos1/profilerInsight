@@ -19,20 +19,23 @@ class PatternFinder:
         Tokenize the string into patterns of numbers, letters, and special characters.
 
         """
-        imp_spe_char = ['.', ',', '/', '@']
-
-        returned_pattern = ""
+        imp_spe_char = {'.', ',', '/', '@'}
+    
+        returned_pattern = []
         for token in s:
             if token in imp_spe_char:
-                returned_pattern = returned_pattern + token
+                returned_pattern.append(token)
             elif token.isdigit():
-                returned_pattern = returned_pattern + "1"
+                returned_pattern.append("d")  # 'd' for digit
             elif token.isalpha():
-                returned_pattern = returned_pattern + "A"
+                if token.isupper():
+                    returned_pattern.append("A")  # 'A' for uppercase letter
+                else:
+                    returned_pattern.append("a")  # 'a' for lowercase letter
             else:
-                returned_pattern = returned_pattern + "&"
-        return returned_pattern
+                returned_pattern.append("&")  # '&' for special characters other than the defined set
 
+        return ''.join(returned_pattern)
     def find_patterns(self, data:pd.Series) -> list:
         """
         Find and return patterns in the given list of strings.

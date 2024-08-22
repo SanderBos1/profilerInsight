@@ -27,7 +27,7 @@
     </div>
 </div>
    
-    <basicDialogue :visible="deleteCSVDialogue"  @update:visible="deleteCSVDialogue = $event" dialogTitle="Delete CSV">
+    <basicDialogue :visible="deleteCSVDialogue" @close='deleteCSVDialogue=false' dialogTitle="Delete CSV">
         <template v-slot:dialogueBody>
             <select v-model="toBeDeleteCSV" id="deleteCSV" class="form-control">
                 <option disabled selected value="" >Choose a CSV File to Delete.</option>
@@ -40,7 +40,7 @@
             <button class="btn btn-primary" @click="deleteCSV()">Delete</button>
         </template>
     </basicDialogue>
-    <basicDialogue :visible="uploadCSV"  @update:visible="uploadCSV = $event" dialogTitle="Upload CSV">
+    <basicDialogue :visible="uploadCSV"  @close='uploadCSV=false' dialogTitle="Upload CSV">
         <template v-slot:dialogueBody>
             <div class="col-md-12 mt-3">
                 <form id="csvForm" v-on:submit.prevent="submitCSV" method="post" enctype="multipart/form-data">

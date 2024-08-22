@@ -101,7 +101,7 @@
       <div v-if="columnInfo.column_type=='object'">
         <div class="col-md-12">
         <div class="card mt-3">
-          <div class="card-header text-center grey" data-bs-toggle="tooltip" title="Show which patterns there are in your data. A represent a letter, 1 a number and & a special characters. The characters . , @ and / represent themself.">
+          <div class="card-header text-center grey" data-bs-toggle="tooltip" title="Show which patterns there are in your data. A represent a Capital letter, a a letter, d a number and & a special characters. The characters . , @ and / represent themself.">
             <h5>Data Patterns</h5>
           </div>
           <div class="card-body">

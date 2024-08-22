@@ -97,8 +97,9 @@ def delete_file(filename):
     """
     try: 
         sec_filename =secure_filename(filename)
-        filename = os.path.join(current_app.config['file_folder'], f"{sec_filename}.csv")
-        properties_filename = os.path.join(current_app.config['file_folder'], f"{sec_filename}.json")
+        properties_filename = sec_filename.split('.')[0]
+        filename = os.path.join(current_app.config['file_folder'], f"{sec_filename}")
+        properties_filename = os.path.join(current_app.config['properties_folder'], f"{properties_filename}.json")
         os.remove(filename)
         os.remove(properties_filename)
         return jsonify({"Message":"Success"}), 200
