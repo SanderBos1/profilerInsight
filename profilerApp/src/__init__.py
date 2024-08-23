@@ -79,7 +79,7 @@ def create_app(config_name=None):
     app.config['file_folder'] = os.path.join(base_dir, 'data')
     app.config['properties_folder'] = os.path.join(base_dir, 'data')
 
-    app.config['ALLOWED_EXTENSIONS'] = ['.xlsx', '.csv']
+    app.config['ALLOWED_EXTENSIONS'] = ('.xlsx', '.csv')
 
     # Initialize database
     db = SingletonDB.get_instance()

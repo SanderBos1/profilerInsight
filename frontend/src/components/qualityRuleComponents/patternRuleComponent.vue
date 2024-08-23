@@ -10,7 +10,8 @@
             <div class="col-md-6">
                 <div class="mb-2">
                     <label for="pattern" class="form-label">Pattern:</label>
-                    <input type="text" id="pattern" v-model="qualityForm.extra_info" class="form-control form-control-sm" aria-describedby="threshold-help"/>
+                    <input type="text" id="pattern" v-model="qualityForm.extra_info" class="form-control form-control-sm" aria-describedby="threshold-help" 
+                    data-bs-toggle="tooltip" title="Checks if data correspond to your chosen Pattern, Keep in mind: A: capital letter, a: letter, d: digit, &: special character and ['.', ',', '/', '@'] represent themselves." />
                 </div>
                 <div class="mb-2">
                     <label for="threshold" class="form-label">Threshold:</label>

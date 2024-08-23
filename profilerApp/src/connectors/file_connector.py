@@ -179,10 +179,13 @@ def upload_file():
             'quotechar': quotechar
         }
 
-        file_saver = FileSaver(file, properties)
-        file_saver.save_file()
-        file_saver.save_properties()
-        return jsonify(message="Success"), 200
+        if not file.filename.endswith((current_app.config['ALLOWED_EXTENSIONS'])):
+            return jsonify({"Error": "Invalid file type"}), 400
+        else:
+            file_saver = FileSaver(file, properties)
+            file_saver.save_file()
+            file_saver.save_properties()
+            return jsonify(message="Success"), 200
     except FileNotFoundError as e:
         logging.error('File Not Found: %s', e)
         return jsonify({"Error": "File not found."}), 404

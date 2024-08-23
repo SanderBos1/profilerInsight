@@ -12,7 +12,6 @@ def main():
 
     The application is created based on the environment configuration:
     - 'development'
-    - 'test' (commented out)
     - 'production' (commented out)
 
     Environment variables:

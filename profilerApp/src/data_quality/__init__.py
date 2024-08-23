@@ -1,4 +1,4 @@
-from .data_quality_rules import QualityRuleFactory
-from .data_quality_rules import EmptyValuesRule
-from .data_quality_calculator import calculate_data_quality
+from .data_quality_factory import QualityRuleFactory
+from .data_quality_factory import EmptyValuesRule
+from .data_quality_calculator import DataQualityCalculator
 from .matching_pattern_rule import PatternRule 

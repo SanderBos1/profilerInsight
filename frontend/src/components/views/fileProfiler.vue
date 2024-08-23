@@ -37,7 +37,7 @@
             </select> 
         </template>
         <template v-slot:dialogueFooter>
-            <button class="btn btn-primary" @click="deleteCSV()">Delete</button>
+            <button class="btn btn-primary grey" @click="deleteCSV()">Delete</button>
         </template>
     </basicDialogue>
     <basicDialogue :visible="uploadCSV"  @close='uploadCSV=false' dialogTitle="Upload CSV">
@@ -66,7 +66,7 @@
                             <label for="csvFile" class="form-label">csv File</label>
                             <input type="file" id="csvFile" v-on:change="handleFileUpload" class="form-control"  data-bs-toggle="tooltip" title="Choose which file to upload, current supported extensions are csv and xlsx.">
                         </div>
-                            <button class="btn btn-primary" type="submit">Submit</button>
+                            <button class="btn btn-primary grey" type="submit">Submit</button>
                         </div>
                     </form>
                 </div>

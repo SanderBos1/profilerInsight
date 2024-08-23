@@ -10,7 +10,7 @@
                     <div class="btn-group w-100" id="columnButton">
                         <button class="btn btn-primary grey" @click="returnTableOverview">Return</button>
                         <button class="btn btn-primary grey" @click="changeView">Data Profiler</button>
-                        <button class="btn btn-primary grey" @click="calculateQuality">Calculate Quality</button>
+                        <button class="btn btn-primary grey" @click="calculateQuality" data-bs-toggle="tooltip" title="Checks all defined quality rules on your data, can take a while.">Calculate Quality</button>
                     </div>
                 </div> 
             </div>  

@@ -7,7 +7,7 @@ from marshmallow import ValidationError
 from src.models import QualityRules, ConnectedTables
 from src.config import SingletonDB
 from src.data_quality import QualityRuleFactory
-from src.data_quality.data_quality_calculator import calculate_data_quality
+from src.data_quality.data_quality_calculator import DataQualityCalculator
 from src.schemas.quality_rule_schema import QualityRuleSchema
 
 DB = SingletonDB.get_instance()
@@ -143,7 +143,7 @@ def calculate_quality(table_id):
         Response: A JSON response containing the quality of the table.
     """
     try:
-        calculate_data_quality(table_id)
+        DataQualityCalculator().calculate_data_quality_db(table_id)
         return jsonify({"Message": "quality calculated successfully"})
     except OperationalError as e:
         logging.error(f"Error calculating quality: {e}")

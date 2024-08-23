@@ -44,7 +44,6 @@ class FileLoader(BasicLoader):
                                 delimiter=self.properties['delimiter'], engine="python")
         else:
             df = pd.read_excel(file_name, header=self.properties['header_row'], engine="openpyxl")
-        print(df)
         return df
 
     def load(self, column) -> pd.DataFrame:
