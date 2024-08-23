@@ -16,6 +16,7 @@ profilerApp/.env.test
 profilerApp/.env.production
 frontend/dist/
 local_installation/
+azure_push.bat
 # local env files
 .env.local
 .env.*.local

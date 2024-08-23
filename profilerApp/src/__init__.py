@@ -13,9 +13,9 @@ def load_configuration(app, config_name):
     Load environment variables and configure the app based on the environment.
     """
     env_files = {
-        'development': '.env.development',
-        'test': '.env.test',
-        'production': '.env.production'
+        'development': os.path.join('..', '.env.development'),
+        'test': os.path.join('..', '.env.test'),
+        'production': os.path.join('..', '.env.production')
     }
     
     env_file = env_files.get(config_name, '.env')
