@@ -3,7 +3,7 @@
 
 ## Overview
 
-Profiler Insight is an open-source tool that helps data stewards and data analysts gain easy insights into the quality of their data. Through data profiling, users can assess data quality, prioritize cleansing actions, and perform impact analyses. Improving data quality at the source leads to better data throughout all operational processes, ultimately resulting in lower operational costs and more efficient workflows.
+Profiler Insight is an tool that helps data stewards and data analysts gain easy insights into the quality of their data. Through data profiling, users can assess data quality, prioritize cleansing actions, and perform impact analyses. Improving data quality at the source leads to better data throughout all operational processes, ultimately resulting in lower operational costs and more efficient workflows.
 
 ## Why Profiler Insight?
 
