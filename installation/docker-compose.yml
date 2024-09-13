@@ -3,9 +3,9 @@ services:
     image: postgres:16
     container_name: profiler-insight-psql-db
     environment:
-      - POSTGRES_USER=${databaseUser:-postgres}
-      - POSTGRES_PASSWORD=${databasePassword:-admin}
-      - POSTGRES_DB=${databaseName:-profilerDB}
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=profilerDB
     ports:
       - "5432:5432"
     volumes:
@@ -22,7 +22,7 @@ services:
     depends_on:
       - profiler-insight
     ports:
-      - "${VUE_APP_FRONTEND_PORT-8080}:80"
+      - 8080:80
 
   profiler-insight:
     image: sanderbos/profiler-insight:0.4.0
@@ -32,15 +32,25 @@ services:
     environment:
     # databse configuration
       - databaseHost=psql-db
-      - databasePort=${databasePort:-5432}
-      - databaseName=${databaseName:-profilerDB}
-      - databaseUser=${databaseUser:-postgres}
-      - databasePassword=${databasePassword:-admin}
+      - databasePort=5432
+      - databaseName=profilerDB
+      - databaseUser=postgres
+      - databasePassword=admin
     # flask configuration 
-      - SECRET_KEY=${SECRET_KEY:-mysecretkey}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-uzxnpF4cpPrhmz7BBkTwAevXlxWOFjdIMECIgD9Yk1M=}
+      - SECRET_KEY=1234
+      - ENCRYPTION_KEY=uzxnpF4cpPrhmz7BBkTwAevXlxWOFjdIMECIgD9Yk1M=
+      - FLASK_PORT=5000
+      - APP_HOST=0.0.0.0
+      - FRONTEND_HOST=localhost
+      - FRONTEND_PORT=8080
     ports:
-      - "${FLASK_PORT:-5000}:5000"
+      - "5000:5000"
+    volumes:
+      - data_db:/data_db
+      - data_file:/data_file
 volumes:
   db-data:
+  data_db:
+  data_file:
+
 
